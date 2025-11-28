@@ -1,0 +1,308 @@
+% ============================================
+% PROYECTO FINAL: ANÁLISIS CRÍTICO DEL CURRÍCULUM
+% Autor: Hesus Garcia Cobos
+% Curso: Análisis del Currículum - UPAEP
+% ============================================
+\documentclass[12pt, letterpaper]{article}
+
+% --- Idioma y codificación ---
+% Nota: Instalar texlive-lang-spanish para babel completo
+% Por ahora usamos configuración básica
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% --- Fuente Times New Roman ---
+\usepackage{mathptmx}
+
+% --- Bibliografía ---
+\usepackage{natbib}
+\bibliographystyle{apalike}
+
+% --- Tablas y figuras ---
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+
+% --- URLs y enlaces ---
+\usepackage{url}
+\usepackage[breaklinks=true]{hyperref}
+\usepackage{csquotes}
+
+% --- Formato de página (APA 7) ---
+\usepackage{geometry}
+\geometry{margin=2.5cm, headheight=15pt}  % Márgenes de 2.5cm según instrucciones
+
+\usepackage{setspace}
+\onehalfspacing  % Interlineado 1.5 según instrucciones
+
+% --- Encabezados ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% --- Justificación ---
+\usepackage{ragged2e}
+
+% --- Microtype para mejor tipografía ---
+\usepackage{microtype}
+
+% ============================================
+% DATOS DEL TRABAJO
+% ============================================
+\newcommand{\myTitle}{Análisis y Propuesta de Adecuación Curricular: Del Aprendizaje Fragmentado al Diseño Integrado de Significado}
+\newcommand{\myAuthor}{Hesus Garcia Cobos}
+\newcommand{\myAffiliation}{Universidad Popular Autónoma del Estado de Puebla}
+\newcommand{\myCourse}{147-139-PED605NE-702: Análisis del Currículum}
+\newcommand{\myProfessor}{Dra. Melissa Isaaly Mendoza Bernabe}
+\newcommand{\myDate}{29 de noviembre de 2025}
+
+% ============================================
+\begin{document}
+
+% --- Página de título estilo APA ---
+\thispagestyle{empty}
+\vspace*{2in}
+\begin{center}
+    \textbf{\Large \myTitle} \\[24pt]
+    \myAuthor \\[12pt]
+    \myAffiliation \\[12pt]
+    \myCourse \\[12pt]
+    \myProfessor \\[12pt]
+    \myDate
+\end{center}
+
+\newpage
+\justifying
+
+% ============================================
+\section{Introducción}
+% ============================================
+
+El currículum, siguiendo a \citet{Gimeno2010}, es ``el contenido cultural que las instituciones educativas tratan de difundir en quienes las frecuentan, así como los efectos que dicho contenido provoque en sus receptores.'' Esta definición nos recuerda que el currículum no es un documento neutro ni estático: refleja decisiones sobre qué conocimiento se considera valioso y con qué fines se transmite.
+
+El presente trabajo analiza el currículum del curso \textit{MT1001B: Descubrimientos del mercado para el desarrollo de estrategias}, un módulo de 60 horas impartido en el segundo semestre de la Entrada de Negocios del Tecnológico de Monterrey. A través de este análisis, propongo una adecuación curricular fundamentada en tres marcos teóricos complementarios:
+
+\begin{enumerate}
+    \item \textbf{Pedagogía de Multiliteracidades} \citep{Cope2009}: Los estudiantes no son receptores pasivos de información, sino diseñadores activos de significado a través de múltiples modos de comunicación (lingüístico, visual, espacial, auditivo, gestual).
+
+    \item \textbf{Enfoque Socio-Crítico} \citep{Apple1979}: El currículum nunca es neutral; representa relaciones de poder e ideología. La pregunta central es: ``¿para qué enseñamos esto y a quién sirve?''
+
+    \item \textbf{Conectivismo} \citep{Siemens2005}: En la era digital, el aprendizaje ocurre a través de redes y conexiones. Saber dónde encontrar información es tan importante como poseerla.
+\end{enumerate}
+
+Mi perspectiva integra estos tres elementos para proponer un currículum operacional que trascienda lo oficial y se convierta en práctica transformadora. El análisis distingue claramente entre el \textit{ser} (estado actual del curso) y el \textit{deber ser} (propuesta de mejora), siguiendo los niveles de concreción curricular que identifican \citet{Marsh2007}.
+
+% ============================================
+\section{Diagnóstico del Lugar e Institución}
+% ============================================
+
+\subsection{Contexto Institucional}
+
+El curso MT1001B forma parte del modelo Tec21 del Tecnológico de Monterrey, un diseño curricular basado en competencias y retos. Se imparte a estudiantes de segundo semestre que inician su exploración en el área de negocios. El bloque tiene una duración de 5 semanas con 60 horas de contacto, divididas en tres componentes:
+
+\begin{itemize}
+    \item Módulo 1: Diagnóstico y desarrollo de la estrategia (20 horas)
+    \item Módulo 2: Análisis del mercado para generación de insights (20 horas)
+    \item Reto del bloque (20 horas)
+\end{itemize}
+
+\subsection{Perfil del Estudiante}
+
+Los estudiantes que ingresan a este bloque presentan las siguientes características:
+
+\begin{itemize}
+    \item \textbf{Nivel de dominio}: Trabajan subcompetencias a nivel A (situaciones controladas, acompañamiento docente) y B (mayor autonomía, complejidad creciente).
+
+    \item \textbf{Actitudes}: Buscan aplicación práctica inmediata; desean que lo aprendido tenga uso real en el mercado laboral.
+
+    \item \textbf{Saberes previos}: Poseen capacidades de análisis y síntesis, interpretan gráficos, usan plataformas digitales y tienen habilidades básicas de investigación.
+
+    \item \textbf{Tensión pedagógica}: Aunque requieren enfoque práctico, necesitan profundidad teórica reflexiva que conecte teoría y práctica.
+\end{itemize}
+
+\subsection{Diagnóstico Curricular: El ``Ser''}
+
+Tras analizar la documentación curricular del curso, identifico las siguientes características del estado actual:
+
+\begin{table}[H]
+\centering
+\caption{Estado Actual del Currículum (El ``Ser'')}
+\small
+\begin{tabular}{p{3.5cm}p{10cm}}
+\toprule
+\textbf{Dimensión} & \textbf{Características Actuales} \\
+\midrule
+Estructura & Módulos independientes con secuencia lineal preestablecida \\
+Contenido & Transmisión de conceptos teóricos mediante exposición docente \\
+Actividades & Casos controlados, mini-casos simulados, ejercicios prediseñados \\
+Evaluación & Exámenes conceptuales (Objeto 2), reportes individuales, rúbricas fijas \\
+Tecnología & Herramientas como fin (Excel, PowerPoint) no como medio de creación \\
+Rol del estudiante & Receptor de contenido, ejecutor de tareas predefinidas \\
+Reflexión crítica & Mínima o ausente; énfasis en ``hacer bien'' no en ``cuestionar'' \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Esta estructura refleja lo que \citet{Cope2012} denominan ``aprendizaje antiguo'': conocimiento fragmentado, descontextualizado de las prácticas profesionales reales. Siguiendo a \citet{Apple1979}, me pregunto: ¿qué tipo de conocimiento se está legitimando con esta estructura tradicional? ¿A quiénes beneficia mantener la separación entre teoría académica y práctica del mercado?
+
+\subsection{Problema Curricular Identificado}
+
+El problema central es la \textbf{fragmentación entre teoría y práctica}, manifestada en:
+
+\begin{enumerate}
+    \item Desconexión entre los contenidos conceptuales y los problemas reales del mercado
+    \item Ausencia de oportunidades para que los estudiantes diseñen significado multimodal
+    \item Falta de reflexión crítica sobre el poder e ideología en las decisiones de marketing
+    \item Evaluación centrada en reproducción de contenidos, no en creación de conocimiento
+\end{enumerate}
+
+% ============================================
+\section{Objetivo del Proyecto}
+% ============================================
+
+\subsection{Objetivo General}
+
+Transformar el Módulo 1 del curso MT1001B de una estructura tradicional y fragmentada hacia un modelo integrado y auténtico donde los estudiantes se conviertan en diseñadores activos de significado, conecten múltiples fuentes de información, y reflexionen críticamente sobre las implicaciones ideológicas de sus análisis de mercado.
+
+\subsection{Objetivos Específicos}
+
+\begin{enumerate}
+    \item Rediseñar las actividades del módulo para integrar los principios de multiliteracidades.
+    \item Incorporar momentos de reflexión crítica basados en el enfoque socio-crítico de Apple.
+    \item Aplicar principios conectivistas para que los estudiantes construyan redes de conocimiento.
+    \item Proponer un sistema de evaluación que valore la creación de significado, no solo la reproducción.
+\end{enumerate}
+
+% ============================================
+\section{Diseño de la Propuesta Curricular}
+% ============================================
+
+\subsection{Nivel de Concreción}
+
+Esta propuesta opera en el \textbf{nivel micro (áulico)} de concreción curricular. No modifica el plan de estudios institucional (nivel macro) ni el diseño programático del bloque (nivel meso), sino que propone adecuaciones dentro del aula que el docente puede implementar manteniendo los objetivos de aprendizaje oficiales.
+
+\subsection{Comparación: Ser vs Deber Ser}
+
+\begin{table}[H]
+\centering
+\caption{Transformación Curricular: Del Ser al Deber Ser}
+\small
+\begin{tabular}{p{2.5cm}p{5.5cm}p{5.5cm}}
+\toprule
+\textbf{Aspecto} & \textbf{Ser (Estado Actual)} & \textbf{Deber Ser (Propuesta)} \\
+\midrule
+Estructura & Módulos independientes & Secuencia integrada donde cada fase construye sobre la anterior \\
+Epistemología & Conocimiento transmitido y fragmentado & Conocimiento multimodal, colaborativo, construido \\
+Casos & Mini-casos ficticios controlados & Problemas auténticos con empresas reales o emprendimientos locales \\
+Rol estudiante & Receptor pasivo & Diseñador activo de significado \\
+Reflexión & Ausente & Integrada: ``¿A quién sirve este análisis?'' \\
+Evaluación & Exámenes y reportes tradicionales & Portafolios multimodales, presentaciones, productos reales \\
+Tecnología & Herramientas para entregar tareas & Medio para crear, conectar y comunicar \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Integración de Marcos Teóricos en la Propuesta}
+
+Cada actividad del módulo rediseñado integra los tres marcos teóricos:
+
+\begin{table}[H]
+\centering
+\caption{Integración de Marcos Teóricos en Actividades}
+\small
+\begin{tabular}{p{3cm}p{3.5cm}p{3.5cm}p{3.5cm}}
+\toprule
+\textbf{Actividad} & \textbf{Multiliteracidades} & \textbf{Socio-Crítico} & \textbf{Conectivismo} \\
+\midrule
+Diagnóstico de industria & Análisis visual de datos, infografías & ``¿Qué datos priorizamos y cuáles invisibilizamos?'' & Conexión con múltiples fuentes (INEGI, reportes, redes) \\
+Mapeo de competidores & Diseño de mapas visuales interactivos & ``¿A quién beneficia esta segmentación?'' & Colaboración en plataformas digitales \\
+Análisis FODA & Presentación multimodal (video, visual, escrito) & ``¿Qué voces están ausentes en este análisis?'' & Retroalimentación en red de pares \\
+Reporte final & Portafolio digital integrado & Reflexión sobre poder e ideología & Publicación en comunidad de práctica \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Secuencia Didáctica Propuesta}
+
+La secuencia se organiza en cuatro fases que corresponden a los procesos de conocimiento de \citet{Cope2015}: Experimentar, Conceptualizar, Analizar y Aplicar.
+
+\begin{table}[H]
+\centering
+\caption{Secuencia Didáctica del Módulo 1 Rediseñado}
+\small
+\begin{tabular}{p{2cm}p{3cm}p{8.5cm}}
+\toprule
+\textbf{Semana} & \textbf{Fase} & \textbf{Actividades Principales} \\
+\midrule
+1 & \textbf{Experimentar} & Inmersión en reto auténtico. Investigación de industria usando múltiples fuentes. Creación de muro colaborativo digital. \\
+2 & \textbf{Conceptualizar} & Análisis de competencia. Construcción de mapas visuales. Discusión crítica: ``¿Qué no nos dicen estos datos?'' \\
+3 & \textbf{Analizar} & FODA contextualizado. Reflexión sobre sesgos. Identificación de oportunidades estratégicas. \\
+4-5 & \textbf{Aplicar} & Elaboración de portafolio multimodal. Presentación ante pares. Reflexión crítica final. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Impacto Esperado}
+
+La implementación de esta adecuación curricular tendría los siguientes impactos:
+
+\begin{enumerate}
+    \item \textbf{En los estudiantes}: Mayor engagement al trabajar con problemas auténticos; desarrollo de competencias de pensamiento crítico; capacidad de crear y comunicar en múltiples modos.
+
+    \item \textbf{En el aprendizaje}: Conocimiento más profundo y transferible; conexiones significativas entre teoría y práctica; reflexión sobre las implicaciones éticas del marketing.
+
+    \item \textbf{En la práctica docente}: Rol facilitador más que transmisor; evaluación más rica y diversificada; oportunidad de innovación pedagógica dentro del marco institucional.
+\end{enumerate}
+
+% ============================================
+\section{Reflexión Final}
+% ============================================
+
+Este proceso de análisis y diseño curricular me ha permitido comprender de manera profunda los niveles de concreción curricular y su impacto en la práctica educativa cotidiana.
+
+\subsection{Sobre los Niveles de Concreción Curricular}
+
+\citet{Marsh2007} distinguen entre el currículum macro (políticas nacionales), meso (diseño institucional) y micro (implementación en aula). Mi propuesta opera en el nivel micro, lo cual tiene implicaciones importantes:
+
+\begin{itemize}
+    \item \textbf{Posibilidad}: Un docente puede implementar cambios significativos sin modificar el programa oficial.
+    \item \textbf{Limitación}: Los cambios profundos requieren articulación con los niveles meso y macro.
+    \item \textbf{Tensión}: El currículum operacional (lo que realmente sucede en el aula) puede diferir del oficial.
+\end{itemize}
+
+Reconozco que esta propuesta, al ser de nivel micro, enfrenta restricciones estructurales. Sin embargo, como señala \citet{Stenhouse1975}, el currículum es hipótesis a probar en la práctica, y el docente es el investigador de su propia práctica.
+
+\subsection{Sobre el Proceso de Análisis}
+
+Realizar este trabajo me permitió:
+
+\begin{enumerate}
+    \item \textbf{Integrar teoría y práctica}: Aplicar los marcos de Cope, Kalantzis, Apple y Siemens no como contenido a memorizar, sino como lentes para analizar y transformar una realidad curricular concreta.
+
+    \item \textbf{Cuestionar lo naturalizado}: Gracias al enfoque socio-crítico, pude preguntarme por qué el currículum actual tiene la forma que tiene y a quiénes beneficia o perjudica.
+
+    \item \textbf{Valorar la complejidad}: El diseño curricular no es un proceso técnico neutral; involucra decisiones epistemológicas, políticas y éticas.
+\end{enumerate}
+
+\subsection{Implicaciones para mi Desarrollo Profesional}
+
+Como futuro profesional de la educación, este análisis me deja aprendizajes fundamentales:
+
+\begin{itemize}
+    \item El currículum es un espacio de disputa y posibilidad, no un documento fijo.
+    \item La reflexión crítica constante es esencial para no reproducir desigualdades.
+    \item Los estudiantes merecen ser tratados como diseñadores de significado, no como receptáculos vacíos.
+    \item La tecnología debe ser medio de creación, no fin en sí misma.
+\end{itemize}
+
+Finalmente, me pregunto: ¿qué pasaría si más docentes se permitieran cuestionar el currículum que implementan? Quizás, como sugiere \citet{Apple1979}, podríamos construir una educación que no solo transmita cultura, sino que empodere a los estudiantes para transformarla.
+
+% ============================================
+% REFERENCIAS
+% ============================================
+\newpage
+\bibliography{referencias}
+
+\end{document}

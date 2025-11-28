@@ -1,0 +1,44 @@
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+
+# Compiled output (keep in artifacts)
+# *.pdf
+
+# Editor
+.vscode/settings.json.local
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules (Slidev)
+node_modules/
+slides/node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# Claude local settings
+.claude/settings.local.json
+
+# Build output
+dist/
+slides/dist/
