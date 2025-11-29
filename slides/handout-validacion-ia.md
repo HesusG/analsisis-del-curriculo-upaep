@@ -49,14 +49,14 @@ Cada agente evaluó el currículum en 6 dimensiones, usando una escala de 1 a 10
 
 ## Resultados: Puntuaciones Consolidadas
 
-| Dimensión | Crítico | Multilit. | Conect. | Marketing | **Promedio** |
-|-----------|:-------:|:---------:|:-------:|:---------:|:------------:|
-| Coherencia epistemológica | 7 | 7 | 7 | 7 | **7.0** |
-| Rol del estudiante | 8 | 8 | 6 | 8 | **7.5** |
-| Integración tecnológica | 6 | 6 | 5 | 5 | **5.5** |
-| Reflexión crítica | 5 | 7 | 6 | 6 | **6.0** |
-| Conexión teoría-práctica | 8 | 8 | 8 | 8 | **8.0** |
-| Evaluación del aprendizaje | 7 | 6 | 5 | 5 | **5.75** |
+| Dimensión | Crítico | Multilit. | Conect. | Marketing | Ped. Crítica | **Promedio** |
+|-----------|:-------:|:---------:|:-------:|:---------:|:------------:|:------------:|
+| Coherencia epistemológica | 7 | 7 | 7 | 7 | 7 | **7.0** |
+| Rol del estudiante | 8 | 8 | 6 | 8 | 7.5 | **7.5** |
+| Integración tecnológica | 6 | 6 | 5 | 5 | 5.5 | **5.5** |
+| Reflexión crítica | 5 | 7 | 6 | 6 | 6 | **6.0** |
+| Conexión teoría-práctica | 8 | 8 | 8 | 8 | 8 | **8.0** |
+| Evaluación del aprendizaje | 7 | 6 | 5 | 5 | 5.75 | **5.75** |
 
 ### Interpretación
 
