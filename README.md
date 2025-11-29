@@ -46,17 +46,6 @@ Ronda 3: Discusión de discrepancias, búsqueda de consenso
 Resultado: Puntuaciones consolidadas + retroalimentación cualitativa
 ```
 
-### Resultados Obtenidos
-
-| Criterio | Puntuación | Desv. Est. |
-|----------|------------|------------|
-| Coherencia teórica | 8.4 | 0.5 |
-| Viabilidad de implementación | 7.2 | 0.8 |
-| Alineación con competencias | 8.0 | 0.7 |
-| Innovación pedagógica | 8.6 | 0.5 |
-| Potencial de impacto | 7.8 | 0.8 |
-| Claridad de la propuesta | 8.2 | 0.4 |
-
 El código de la simulación está disponible en [`simulation/`](simulation/).
 
 ---
