@@ -6,10 +6,16 @@
 \documentclass[12pt, letterpaper]{article}
 
 % --- Idioma y codificación ---
-% Nota: Instalar texlive-lang-spanish para babel completo
-% Por ahora usamos configuración básica
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+
+% --- Nombres en español (sin babel para evitar dependencias) ---
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\figurename}{Figura}
+
+% --- Formato de captions (tablas en negritas) ---
+\usepackage{caption}
+\captionsetup[table]{labelfont=bf, textfont=bf}
 
 % --- Fuente Times New Roman ---
 \usepackage{mathptmx}
@@ -387,7 +393,7 @@ Mi propuesta de evaluación multimodal (40\% examen, 30\% análisis de datos, 30
 
 \subsection{Justificación Teórica de los Cambios}
 
-Los cambios propuestos se fundamentan en la integración de tres marcos teóricos complementarios. Esta sección detalla cómo cada elemento de la propuesta se alinea con estos fundamentos.
+Los cambios propuestos se fundamentan en la integración de tres marcos teóricos complementarios. Esta sección detalla cómo cada elemento de la propuesta se alinea con estos fundamentos. Es importante destacar que los tres marcos no operan de forma aislada: cada cambio curricular propuesto integra simultáneamente al menos dos de ellos, como se evidencia en las tablas siguientes.
 
 \subsubsection*{Los Cuatro Procesos de Conocimiento (Cope \& Kalantzis)}
 
