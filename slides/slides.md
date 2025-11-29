@@ -31,7 +31,7 @@ Análisis y Adecuación Curricular · MT1001B
 
 ---
 layout: image-right
-image: https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800
+image: https://images.unsplash.com/photo-1592280771190-3e2e4d571952?w=800
 backgroundSize: cover
 ---
 
@@ -520,7 +520,7 @@ class: text-center
 <div class="text-gray-500 mb-4">Ejemplo de sistema de badges y logros en educación</div>
 
 <div class="flex justify-center">
-  <img src="https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=600&h=400&fit=crop" class="max-h-80 rounded-xl shadow-lg" alt="Sistema de gamificación educativa" />
+  <img src="./public/gamification.jpg" class="max-h-80 rounded-xl shadow-lg" alt="Sistema de gamificación educativa" />
 </div>
 
 <div class="text-xs text-gray-400 mt-4 text-center">
@@ -537,7 +537,7 @@ class: text-center
 <div class="text-gray-500 mb-4">Comunidad de aprendizaje y datos abiertos</div>
 
 <div class="flex justify-center">
-  <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" class="max-h-80 rounded-xl shadow-lg" alt="Plataforma Kaggle con datasets" />
+  <img src="./public/kaggle.jpg" class="max-h-80 rounded-xl shadow-lg" alt="Plataforma Kaggle con datasets" />
 </div>
 
 <div class="text-xs text-gray-400 mt-4 text-center">
@@ -554,7 +554,7 @@ class: text-center
 <div class="text-gray-500 mb-4">GPT programado para preguntas socráticas</div>
 
 <div class="flex justify-center">
-  <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop" class="max-h-80 rounded-xl shadow-lg" alt="Ejemplo de diálogo socrático con IA" />
+  <img src="./public/dialogo-ia.png" class="max-h-80 rounded-xl shadow-lg" alt="Ejemplo de diálogo socrático con IA" />
 </div>
 
 <div class="text-xs text-gray-400 mt-4 text-center">
@@ -657,7 +657,7 @@ backgroundSize: cover
 
 <div class="text-center">
   <div class="w-20 h-20 mx-auto mb-2 rounded-full overflow-hidden bg-red-100 flex items-center justify-center">
-    <img src="https://ui-avatars.com/api/?name=Mary+Kalantzis&background=DC2626&color=fff&size=200" class="w-full h-full object-cover" alt="Mary Kalantzis" />
+    <img src="./public/mary-kalantzis.jpg" class="w-full h-full object-cover" alt="Mary Kalantzis" />
   </div>
   <div class="font-bold text-sm text-gray-800">Mary Kalantzis</div>
   <div class="text-xs text-gray-500 mb-1">U. Illinois</div>
@@ -669,7 +669,7 @@ backgroundSize: cover
 
 <div class="text-center">
   <div class="w-20 h-20 mx-auto mb-2 rounded-full overflow-hidden bg-red-100 flex items-center justify-center">
-    <img src="https://ui-avatars.com/api/?name=Bill+Cope&background=DC2626&color=fff&size=200" class="w-full h-full object-cover" alt="Bill Cope" />
+    <img src="./public/bill-cope.jpg" class="w-full h-full object-cover" alt="Bill Cope" />
   </div>
   <div class="font-bold text-sm text-gray-800">Bill Cope</div>
   <div class="text-xs text-gray-500 mb-1">U. Illinois</div>
@@ -681,7 +681,7 @@ backgroundSize: cover
 
 <div class="text-center">
   <div class="w-20 h-20 mx-auto mb-2 rounded-full overflow-hidden bg-amber-100 flex items-center justify-center">
-    <img src="https://ui-avatars.com/api/?name=Michael+Apple&background=F59E0B&color=fff&size=200" class="w-full h-full object-cover" alt="Michael Apple" />
+    <img src="./public/michael-apple.jpg" class="w-full h-full object-cover" alt="Michael Apple" />
   </div>
   <div class="font-bold text-sm text-gray-800">Michael Apple</div>
   <div class="text-xs text-gray-500 mb-1">U. Wisconsin</div>
@@ -693,7 +693,7 @@ backgroundSize: cover
 
 <div class="text-center">
   <div class="w-20 h-20 mx-auto mb-2 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center">
-    <img src="https://ui-avatars.com/api/?name=George+Siemens&background=3B82F6&color=fff&size=200" class="w-full h-full object-cover" alt="George Siemens" />
+    <img src="./public/george-siemens.jpg" class="w-full h-full object-cover" alt="George Siemens" />
   </div>
   <div class="font-bold text-sm text-gray-800">George Siemens</div>
   <div class="text-xs text-gray-500 mb-1">U. Texas Arlington</div>
