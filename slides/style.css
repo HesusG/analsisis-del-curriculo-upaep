@@ -139,3 +139,60 @@ img[alt="QR Code"] {
 .rounded-full {
   font-weight: 500;
 }
+
+/* ============================================
+   ESTILOS PARA EXPORTACIÓN PDF
+   ============================================ */
+@media print {
+  /* Títulos más grandes en PDF */
+  h1 {
+    font-size: 2.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  h2 {
+    font-size: 2rem !important;
+  }
+
+  h3 {
+    font-size: 1.5rem !important;
+  }
+
+  /* Mermaid diagrams - escalar para PDF */
+  .mermaid {
+    transform: scale(1.2) !important;
+    transform-origin: top left !important;
+  }
+
+  .mermaid svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Texto base más grande */
+  .slidev-layout {
+    font-size: 1.1rem !important;
+  }
+
+  /* Tablas legibles */
+  table {
+    font-size: 0.95rem !important;
+  }
+
+  /* Eliminar animaciones */
+  .slidev-vclick-hidden {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Asegurar que todo sea visible */
+  .slidev-vclick-target {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Padding consistente */
+  .slidev-page {
+    padding: 2rem !important;
+  }
+}
