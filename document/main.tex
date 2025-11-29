@@ -28,6 +28,9 @@
 \usepackage[breaklinks=true]{hyperref}
 \usepackage{csquotes}
 
+% --- Colores para marcar cambios propuestos ---
+\usepackage{xcolor}
+
 % --- Formato de página (APA 7) ---
 \usepackage{geometry}
 \geometry{margin=2.5cm, headheight=15pt}  % Márgenes de 2.5cm según instrucciones
@@ -87,7 +90,7 @@ El presente trabajo analiza el currículum del curso \textit{MT1001B: Descubrimi
 \begin{enumerate}
     \item \textbf{Pedagogía de Multiliteracidades} \citep{Cope2009}: Los estudiantes no son receptores pasivos de información, sino diseñadores activos de significado a través de múltiples modos de comunicación (lingüístico, visual, espacial, auditivo, gestual).
 
-    \item \textbf{Enfoque Socio-Crítico} \citep{Apple1979}: El currículum nunca es neutral; representa relaciones de poder e ideología. La pregunta central es: ``¿para qué enseñamos esto y a quién sirve?''
+    \item \textbf{Enfoque Socio-Crítico} \citep{Apple1979}: El currículum nunca es neutral, pues representa relaciones de poder e ideología. La pregunta central es: ``¿para qué enseñamos esto y a quién sirve?''
 
     \item \textbf{Conectivismo} \citep{Siemens2005}: En la era digital, el aprendizaje ocurre a través de redes y conexiones. Saber dónde encontrar información es tan importante como poseerla.
 \end{enumerate}
@@ -115,7 +118,7 @@ Los estudiantes que ingresan a este bloque presentan las siguientes característ
 \begin{itemize}
     \item \textbf{Nivel de dominio}: Trabajan subcompetencias a nivel A (situaciones controladas, acompañamiento docente) y B (mayor autonomía, complejidad creciente).
 
-    \item \textbf{Actitudes}: Buscan aplicación práctica inmediata; desean que lo aprendido tenga uso real en el mercado laboral.
+    \item \textbf{Actitudes}: Buscan aplicación práctica inmediata y desean que lo aprendido tenga uso real en el mercado laboral.
 
     \item \textbf{Saberes previos}: Poseen capacidades de análisis y síntesis, interpretan gráficos, usan plataformas digitales y tienen habilidades básicas de investigación.
 
@@ -140,12 +143,37 @@ Actividades & Casos controlados, mini-casos simulados, ejercicios prediseñados 
 Evaluación & Exámenes conceptuales (Objeto 2), reportes individuales, rúbricas fijas \\
 Tecnología & Herramientas como fin (Excel, PowerPoint) no como medio de creación \\
 Rol del estudiante & Receptor de contenido, ejecutor de tareas predefinidas \\
-Reflexión crítica & Mínima o ausente; énfasis en ``hacer bien'' no en ``cuestionar'' \\
+Reflexión crítica & Mínima o ausente, con énfasis en ``hacer bien'' más que en ``cuestionar'' \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 Esta estructura refleja lo que \citet{Cope2012} denominan ``aprendizaje antiguo'': conocimiento fragmentado, descontextualizado de las prácticas profesionales reales. Siguiendo a \citet{Apple1979}, me pregunto: ¿qué tipo de conocimiento se está legitimando con esta estructura tradicional? ¿A quiénes beneficia mantener la separación entre teoría académica y práctica del mercado?
+
+\subsection{Validación Complementaria con Inteligencia Artificial}
+
+Como ejercicio exploratorio, realicé una evaluación complementaria del currículum utilizando agentes de inteligencia artificial configurados con diferentes perspectivas teóricas (véase Anexo \ref{anexo:ia} para el detalle metodológico). Los resultados consolidados se muestran en la Tabla \ref{tab:scores-ia}.
+
+\begin{table}[H]
+\centering
+\caption{Puntuaciones de Evaluación por Agentes IA (escala 1-10)}
+\label{tab:scores-ia}
+\small
+\begin{tabular}{lc}
+\toprule
+\textbf{Dimensión} & \textbf{Promedio} \\
+\midrule
+Conexión teoría-práctica & 8.0 \\
+Rol del estudiante & 7.5 \\
+Coherencia epistemológica & 7.0 \\
+Reflexión crítica & 6.0 \\
+Evaluación del aprendizaje & 5.75 \\
+Integración tecnológica & 5.5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Si bien los modelos de lenguaje no reemplazan el juicio de expertos humanos, este ejercicio permitió triangular mi análisis inicial y confirmar las debilidades identificadas: baja reflexión crítica e integración tecnológica limitada, con una conexión teoría-práctica como principal fortaleza.
 
 \subsection{Problema Curricular Identificado}
 
@@ -169,11 +197,13 @@ Transformar el Módulo 1 del curso MT1001B de una estructura tradicional y fragm
 \subsection{Objetivos Específicos}
 
 \begin{enumerate}
-    \item Rediseñar las actividades del módulo para integrar los principios de multiliteracidades.
-    \item Incorporar momentos de reflexión crítica basados en el enfoque socio-crítico de Apple.
-    \item Aplicar principios conectivistas para que los estudiantes construyan redes de conocimiento.
-    \item Proponer un sistema de evaluación que valore la creación de significado, no solo la reproducción.
+    \item Modificar al menos dos objetos de aprendizaje del Módulo 1 para que incluyan productos multimodales (infografías o presentaciones visuales) además de los reportes escritos tradicionales.
+    \item Agregar una pregunta de reflexión crítica en las sesiones de análisis de mercado: ``¿a quién beneficia este análisis y qué perspectivas estamos dejando fuera?''
+    \item Incorporar el uso de fuentes de datos abiertas (INEGI, reportes sectoriales públicos) como parte de las actividades de investigación, fomentando la conexión con información real.
+    \item Diversificar la evaluación del Objeto 2 para incluir un componente de aplicación práctica además del examen conceptual.
 \end{enumerate}
+
+Reconozco que estos objetivos son modestos y operan dentro de las restricciones del diseño institucional. Mi intención no es revolucionar el currículum, sino introducir ajustes viables que un docente puede implementar sin modificar la estructura oficial del bloque.
 
 % ============================================
 \section{Diseño de la Propuesta Curricular}
@@ -183,63 +213,251 @@ Transformar el Módulo 1 del curso MT1001B de una estructura tradicional y fragm
 
 Esta propuesta opera en el \textbf{nivel micro (áulico)} de concreción curricular. No modifica el plan de estudios institucional (nivel macro) ni el diseño programático del bloque (nivel meso), sino que propone adecuaciones dentro del aula que el docente puede implementar manteniendo los objetivos de aprendizaje oficiales.
 
-\subsection{Comparación: Ser vs Deber Ser}
+\subsection{Cambios Propuestos en Objetos de Aprendizaje}
+
+La propuesta de cambios en los objetos de aprendizaje se fundamenta en tres principios: (1) transición de casos ficticios a datos auténticos, (2) productos multimodales que desarrollen al estudiante como diseñador de significado \citep{Cope2009}, y (3) integración de reflexión crítica sobre las decisiones de marketing \citep{Apple1979}. Los cambios se marcan en \textcolor{red}{rojo}.
+
+\subsubsection*{Objeto de Aprendizaje 1: Diagnóstico Básico de Mercadotecnia}
 
 \begin{table}[H]
 \centering
-\caption{Transformación Curricular: Del Ser al Deber Ser}
+\caption{Rediseño del Objeto de Aprendizaje 1}
 \small
-\begin{tabular}{p{2.5cm}p{5.5cm}p{5.5cm}}
+\begin{tabular}{p{6cm}p{7cm}}
 \toprule
-\textbf{Aspecto} & \textbf{Ser (Estado Actual)} & \textbf{Deber Ser (Propuesta)} \\
+\textbf{Estado Actual (SER)} & \textbf{Propuesta (DEBER SER)} \\
 \midrule
-Estructura & Módulos independientes & Secuencia integrada donde cada fase construye sobre la anterior \\
-Epistemología & Conocimiento transmitido y fragmentado & Conocimiento multimodal, colaborativo, construido \\
-Casos & Mini-casos ficticios controlados & Problemas auténticos con empresas reales o emprendimientos locales \\
-Rol estudiante & Receptor pasivo & Diseñador activo de significado \\
-Reflexión & Ausente & Integrada: ``¿A quién sirve este análisis?'' \\
-Evaluación & Exámenes y reportes tradicionales & Portafolios multimodales, presentaciones, productos reales \\
-Tecnología & Herramientas para entregar tareas & Medio para crear, conectar y comunicar \\
+El alumno identifica: categoría de industria, competidores, propuesta de valor y síntomas de la empresa. & El alumno identifica los mismos elementos, \textcolor{red}{pero organiza su análisis en un mapa conceptual que visualice las conexiones entre estos componentes.} \\
+\midrule
+Fuentes: Caso de estudio ficticio proporcionado por el docente. & Fuentes: \textcolor{red}{Caso construido con datos reales de plataformas abiertas como Kaggle (E-commerce Customer Behavior, Customer Segmentation), INEGI (encuestas de consumo, indicadores sectoriales) o datos.gob.mx.} \\
+\midrule
+Entregable: Reporte escrito individual. & Entregable multimodal: (1) Reporte escrito, (2) \textcolor{red}{Mapa conceptual digital}, (3) \textcolor{red}{Presentación visual de 3-5 slides generada con herramientas de IA como Gamma, Beautiful.ai o Canva.} \\
+\midrule
+Sin reflexión crítica explícita. & \textcolor{red}{Incluir una oración de reflexión: ``¿Qué perspectivas del mercado podrían estar ausentes en este diagnóstico?''} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Integración de Marcos Teóricos en la Propuesta}
+La incorporación de datos reales responde al principio conectivista de que ``saber dónde encontrar información es tan importante como poseerla'' \citep{Siemens2005}. Plataformas como Kaggle ofrecen datasets específicos de marketing (Bank Marketing UCI, E-commerce Behavior, Customer Segmentation) que permiten a los estudiantes trabajar con patrones auténticos de comportamiento del consumidor.
 
-Cada actividad del módulo rediseñado integra los tres marcos teóricos:
+\subsubsection*{Objeto de Aprendizaje 2: Evaluación Conceptual (Rediseño Mayor)}
+
+El objeto de aprendizaje 2 presenta el mayor desafío de transformación. Actualmente consiste en un examen conceptual que representa el 70\% de la evaluación del módulo, evaluando memorización de capítulos del libro de texto. Desde la perspectiva de multiliteracidades, este formato es ``aprendizaje antiguo'' que fragmenta el conocimiento y posiciona al estudiante como receptor pasivo.
 
 \begin{table}[H]
 \centering
-\caption{Integración de Marcos Teóricos en Actividades}
+\caption{Rediseño del Objeto de Aprendizaje 2: De Examen a Evaluación Multimodal}
 \small
-\begin{tabular}{p{3cm}p{3.5cm}p{3.5cm}p{3.5cm}}
+\begin{tabular}{p{6cm}p{7cm}}
 \toprule
-\textbf{Actividad} & \textbf{Multiliteracidades} & \textbf{Socio-Crítico} & \textbf{Conectivismo} \\
+\textbf{Estado Actual (SER)} & \textbf{Propuesta (DEBER SER)} \\
 \midrule
-Diagnóstico de industria & Análisis visual de datos, infografías & ``¿Qué datos priorizamos y cuáles invisibilizamos?'' & Conexión con múltiples fuentes (INEGI, reportes, redes) \\
-Mapeo de competidores & Diseño de mapas visuales interactivos & ``¿A quién beneficia esta segmentación?'' & Colaboración en plataformas digitales \\
-Análisis FODA & Presentación multimodal (video, visual, escrito) & ``¿Qué voces están ausentes en este análisis?'' & Retroalimentación en red de pares \\
-Reporte final & Portafolio digital integrado & Reflexión sobre poder e ideología & Publicación en comunidad de práctica \\
+Examen conceptual (100\% de OA2): opción múltiple y respuesta corta sobre capítulos del libro. & \textcolor{red}{Examen conceptual reducido al 40\%: preguntas esenciales que evalúen comprensión, no memorización.} \\
+\midrule
+Sin aplicación práctica de conceptos. & \textcolor{red}{Análisis de datos reales (30\%): el estudiante aplica conceptos de segmentación a un dataset de Kaggle, identificando clusters de consumidores y justificando su estrategia.} \\
+\midrule
+Evaluación individual y aislada. & \textcolor{red}{Diálogo con IA + Foro de Canvas (30\%): el estudiante dialoga con un GPT programado sobre implicaciones éticas de su segmentación, comparte su reflexión en foro, y responde a dos compañeros.} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Secuencia Didáctica Propuesta}
+\subsubsection*{Actividad Innovadora: Diálogo Guiado con Inteligencia Artificial}
 
-La secuencia se organiza en cuatro fases que corresponden a los procesos de conocimiento de \citet{Cope2015}: Experimentar, Conceptualizar, Analizar y Aplicar.
+Una propuesta central es incorporar diálogos estructurados con asistentes de IA programados específicamente para fomentar pensamiento crítico. El docente configura un GPT personalizado con el siguiente prompt:
+
+\begin{quote}
+\small
+\textit{``Eres un experto en ética de marketing. Cuando el estudiante te presente una estrategia de segmentación, haz preguntas socráticas: ¿Quién queda excluido de este segmento? ¿Qué sesgos podría tener esta clasificación? ¿Qué implicaciones éticas tiene priorizar ciertos consumidores? No des respuestas directas, guía al estudiante a descubrirlas.''}
+\end{quote}
+
+El estudiante exporta su conversación, escribe una reflexión de 150 palabras, y la comparte en un foro de Canvas donde debe responder constructivamente a dos compañeros. Esta estructura integra los cuatro procesos de conocimiento de \citet{Cope2009}: experimentar (el caso real), conceptualizar (mapas y organización), analizar (diálogo crítico con IA), y aplicar (síntesis para el foro).
+
+\subsubsection*{Plataformas de Datos Abiertos Recomendadas}
 
 \begin{table}[H]
 \centering
-\caption{Secuencia Didáctica del Módulo 1 Rediseñado}
+\caption{Fuentes de Datos Abiertos para Casos de Marketing}
 \small
-\begin{tabular}{p{2cm}p{3cm}p{8.5cm}}
+\begin{tabular}{lp{8cm}}
 \toprule
-\textbf{Semana} & \textbf{Fase} & \textbf{Actividades Principales} \\
+\textbf{Plataforma} & \textbf{Datasets Relevantes} \\
 \midrule
-1 & \textbf{Experimentar} & Inmersión en reto auténtico. Investigación de industria usando múltiples fuentes. Creación de muro colaborativo digital. \\
-2 & \textbf{Conceptualizar} & Análisis de competencia. Construcción de mapas visuales. Discusión crítica: ``¿Qué no nos dicen estos datos?'' \\
-3 & \textbf{Analizar} & FODA contextualizado. Reflexión sobre sesgos. Identificación de oportunidades estratégicas. \\
-4-5 & \textbf{Aplicar} & Elaboración de portafolio multimodal. Presentación ante pares. Reflexión crítica final. \\
+Kaggle & Customer Segmentation, E-commerce Behavior, Bank Marketing UCI, Online Retail Dataset \\
+Google Dataset Search & Búsqueda federada de datasets académicos multidisciplinarios \\
+INEGI (México) & Encuesta Nacional de Ingresos y Gastos, indicadores de consumo, demografía por entidad \\
+datos.gob.mx & Indicadores económicos, datos de comercio exterior, información empresarial \\
+UCI ML Repository & Datasets clásicos para análisis de clasificación y segmentación \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cambios Propuestos en Sesiones}
+
+Las modificaciones a las sesiones buscan transformar el rol del estudiante de receptor pasivo a participante activo. Se proponen cambios en seis de las diez sesiones del módulo, integrando trabajo colaborativo, uso de foros de Canvas, y actividades con inteligencia artificial. Los cambios mantienen la estructura temporal oficial pero enriquecen las dinámicas de aula.
+
+\begin{table}[H]
+\centering
+\caption{Modificaciones Propuestas a Sesiones del Módulo 1}
+\small
+\begin{tabular}{cp{2.5cm}p{4cm}p{5cm}}
+\toprule
+\textbf{Sesión} & \textbf{Tema} & \textbf{Estado Actual} & \textbf{Propuesta de Cambio} \\
+\midrule
+2 & Identificación de necesidades & Análisis de situación del caso proporcionado. & \textcolor{red}{Trabajo en equipos de 3: cada equipo analiza datos reales de INEGI o Kaggle sobre una industria diferente (20 min). Comparación grupal de hallazgos.} \\
+\midrule
+3 & Diferenciación y propuesta de valor & Exposición docente sobre propuesta de valor. & \textcolor{red}{Foro de Canvas previo: cada estudiante publica su propuesta de valor del caso asignado (post inicial obligatorio). En clase, responde a 2 compañeros cuestionando: ¿es realmente diferenciador?} \\
+\midrule
+5 & Propuestas de solución & Resolución del mini caso con herramientas vistas en clase. & \textcolor{red}{Diálogo con IA: cada equipo conversa con GPT programado sobre viabilidad ética de su propuesta. Presentación de 3 minutos al grupo con síntesis del diálogo.} \\
+\midrule
+6 & Evaluación conceptual & Examen individual sobre capítulos del libro. & \textcolor{red}{Evaluación tripartita: 40\% examen conceptual + 30\% análisis de dataset + 30\% reflexión compartida en foro de Canvas.} \\
+\midrule
+7 & Plan de mercadotecnia & Exposición de estructura del plan y mezcla de mercadotecnia. & \textcolor{red}{Mapa visual colaborativo de las 4 P's usando Miro o FigJam. Cada equipo presenta su mapa en 2 minutos.} \\
+\midrule
+10 & Design thinking & Taller de design thinking con metodología estándar. & \textcolor{red}{Antes del taller: equipos analizan tendencias de redes sociales (Google Trends, hashtags relevantes) para informar su propuesta de innovación.} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Estructura de Foros en Canvas}
+
+Los foros de Canvas se estructuran siguiendo un modelo de tres fases que fomenta el aprendizaje colaborativo:
+
+\begin{enumerate}
+    \item \textbf{Post inicial obligatorio}: El estudiante publica su análisis o reflexión antes de ver las contribuciones de otros. Esto evita el ``efecto eco'' donde todos repiten la primera respuesta.
+
+    \item \textbf{Respuestas constructivas}: Cada estudiante debe responder a al menos dos compañeros, no solo validando sino cuestionando respetuosamente o expandiendo ideas.
+
+    \item \textbf{Síntesis integradora} (opcional para crédito extra): Un post final donde el estudiante integra lo aprendido de sus compañeros con su posición inicial.
+\end{enumerate}
+
+Esta estructura operacionaliza el principio conectivista de que ``el aprendizaje ocurre a través de redes'' \citep{Siemens2005} y democratiza la voz del estudiante en el proceso de construcción de conocimiento.
+
+\subsection{Gamificación como Estrategia Didáctica}
+
+La gamificación (entendida como la aplicación de elementos de diseño de juegos en contextos educativos) opera en el \textbf{nivel micro (áulico)} de concreción curricular. Esto significa que puede implementarse sin modificar el diseño programático oficial del bloque, quedando a discreción del docente.
+
+\subsubsection*{Elementos de Gamificación Propuestos}
+
+\begin{enumerate}
+    \item \textbf{Sistema de badges digitales}: Insignias otorgadas por logros específicos:
+    \begin{itemize}
+        \item ``Analista de Datos'': completar análisis con dataset real de Kaggle
+        \item ``Pensador Crítico'': participación destacada en diálogos con IA
+        \item ``Colaborador Destacado'': retroalimentación constructiva valorada por compañeros en foros
+    \end{itemize}
+
+    \item \textbf{Tabla de clasificación voluntaria}: Ranking por equipos (no individual, para reducir ansiedad) con opción de opt-out para estudiantes que prefieran no participar.
+
+    \item \textbf{Módulos desbloqueables}: Completar satisfactoriamente el OA1 desbloquea recursos adicionales sobre analytics y visualización de datos.
+
+    \item \textbf{Narrativa envolvente}: El curso se presenta como una ``misión de consultoría'' donde los equipos son firmas consultoras compitiendo por resolver el reto de un cliente real (basado en datos auténticos).
+\end{enumerate}
+
+Desde la perspectiva de multiliteracidades, la gamificación transforma el aprendizaje en una experiencia multimodal donde el estudiante no solo procesa información, sino que participa en un sistema de significados interconectados. Los badges funcionan como ``textos'' que comunican logros y motivan mediante retroalimentación visual inmediata.
+
+\subsection{Integración de Analytics y Redes Sociales}
+
+El marketing contemporáneo es inseparable de los analytics digitales. Sin embargo, el currículum actual trata la tecnología como herramienta de presentación (PowerPoint, Excel) más que como fuente de datos y medio de análisis. Esta subsección propone actividades que acerquen a los estudiantes a las prácticas reales de la industria.
+
+\subsubsection*{Actividades Propuestas}
+
+\begin{enumerate}
+    \item \textbf{Análisis de tendencias en redes sociales}: Antes del taller de design thinking (Sesión 10), los equipos investigan hashtags relevantes usando herramientas gratuitas como Google Trends o la búsqueda avanzada de X (Twitter). El objetivo es identificar conversaciones actuales sobre la industria del caso asignado.
+
+    \item \textbf{Simulación de A/B testing conceptual}: Los estudiantes crean dos versiones de un mensaje de marketing y, basándose en principios de segmentación, predicen cuál tendría mejor engagement. Esta actividad conecta teoría con práctica sin requerir herramientas costosas.
+
+    \item \textbf{Reflexión crítica sobre algoritmos}: Siguiendo a \citet{Apple1979}, se introduce la pregunta: ``¿Cómo los algoritmos de redes sociales determinan qué consumidores `vemos' y cuáles quedan invisibles para nuestras estrategias?'' Esta reflexión opera en el nivel del currículum oculto, revelando sesgos implícitos en las herramientas digitales.
+\end{enumerate}
+
+\subsubsection*{Precauciones sobre el Uso de IA}
+
+Es importante reconocer las limitaciones de los modelos de lenguaje. Investigaciones recientes señalan tasas de alucinación cercanas al 15\% en respuestas de ChatGPT sobre temas específicos. Por ello, en esta propuesta la IA se utiliza como \textbf{herramienta de reflexión}, no como fuente de respuestas correctas. El estudiante dialoga con el modelo para ser cuestionado, no para recibir información factual.
+
+\subsection{Elementos que Considero Anticuados pero No Sé Cómo Cambiar}
+
+Debo confesar que hay aspectos del currículum actual que me parecen desactualizados, pero no tengo claridad sobre cómo modificarlos sin romper la coherencia del diseño institucional:
+
+\begin{itemize}
+    \item \textbf{El examen conceptual (Objeto 2)}: Evaluar memorización de capítulos de un libro me parece poco alineado con el desarrollo de competencias. Sin embargo, es parte del diseño oficial y no sé cómo proponer una alternativa que sea aceptada institucionalmente.
+
+    \item \textbf{La dependencia de casos ficticios}: El currículum trabaja con ``mini casos'' simulados. Idealmente, los estudiantes trabajarían con problemas reales de empresas locales, pero esto requiere gestión de socios formadores que excede mi capacidad actual.
+
+    \item \textbf{La ausencia de reflexión crítica}: Aunque propongo agregar preguntas reflexivas, siento que son parches superficiales. Una verdadera integración del enfoque de \citet{Apple1979} requeriría repensar todo el currículum desde sus fundamentos, algo que está fuera de mi alcance en este momento.
+\end{itemize}
+
+\subsection{Justificación Teórica de los Cambios}
+
+Los cambios propuestos se fundamentan en la integración de tres marcos teóricos complementarios. Esta sección detalla cómo cada elemento de la propuesta se alinea con estos fundamentos.
+
+\subsubsection*{Los Cuatro Procesos de Conocimiento (Cope \& Kalantzis)}
+
+La pedagogía de multiliteracidades propone que el aprendizaje profundo ocurre cuando los estudiantes transitan por cuatro procesos de conocimiento \citep{Cope2009}. La siguiente tabla muestra cómo nuestra propuesta integra cada proceso:
+
+\begin{table}[H]
+\centering
+\caption{Integración de los Cuatro Procesos de Conocimiento}
+\small
+\begin{tabular}{p{2.5cm}p{4.5cm}p{5.5cm}}
+\toprule
+\textbf{Proceso} & \textbf{Descripción} & \textbf{Actividades Propuestas} \\
+\midrule
+Experimentar & Conexión con el mundo conocido y nuevo del estudiante & Casos con datos reales de Kaggle/INEGI, análisis de tendencias en redes sociales \\
+\midrule
+Conceptualizar & Organización y categorización del conocimiento & Mapas conceptuales digitales, estructuración visual de las 4 P's \\
+\midrule
+Analizar & Examen crítico de funciones y relaciones & Diálogos con IA sobre implicaciones éticas, preguntas sobre ``¿a quién beneficia?'' \\
+\midrule
+Aplicar & Transferencia del conocimiento a nuevos contextos & Productos multimodales, presentaciones generadas con IA, foros colaborativos \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection*{Currículum Crítico y Relaciones de Poder}
+
+Siguiendo a \citet{Apple1979}, el currículum nunca es neutral: representa decisiones sobre qué conocimiento se considera legítimo. Nuestra propuesta introduce preguntas explícitas sobre poder e ideología:
+
+\begin{itemize}
+    \item ``¿A quién beneficia esta estrategia de segmentación?''
+    \item ``¿Qué consumidores quedan invisibles en nuestro análisis?''
+    \item ``¿Cómo los algoritmos de redes sociales reproducen sesgos?''
+\end{itemize}
+
+Estas preguntas operan en el nivel del \textit{currículum oculto}, haciendo visible lo que normalmente permanece implícito. No pretendo que los estudiantes lleguen a respuestas ``correctas'', sino que desarrollen el hábito de cuestionar los supuestos de las herramientas y métodos que utilizan.
+
+\subsubsection*{Conectivismo y Aprendizaje en Red}
+
+El conectivismo de \citet{Siemens2005} sostiene que en la era digital, el aprendizaje ocurre a través de conexiones entre nodos de información. Esta perspectiva resulta particularmente idónea para nuestra propuesta porque el marketing contemporáneo (con su dependencia de redes sociales, analytics y comunidades digitales) es en sí mismo un campo conectivista. Enseñar marketing sin conectar a los estudiantes con las redes reales donde ocurre el conocimiento sería contradictorio.
+
+\textbf{Kaggle como comunidad de aprendizaje.} Kaggle no es simplemente un repositorio de datasets, sino una comunidad de práctica donde científicos de datos, analistas y estudiantes comparten notebooks, discuten metodologías y aprenden de las soluciones de otros. Cuando un estudiante descarga el dataset ``Customer Segmentation'' de Kaggle, no solo obtiene datos: puede explorar los notebooks públicos donde otros usuarios han analizado ese mismo dataset, comparar enfoques de clustering, y participar en discusiones sobre las decisiones metodológicas. El estudiante se conecta con una red global de conocimiento que trasciende el aula.
+
+\textbf{Stack Exchange y foros especializados.} De manera similar, plataformas como Cross Validated (Stack Exchange para estadística) o el foro de Data Science de Reddit representan nodos de conocimiento donde profesionales y aprendices negocian significados, resuelven problemas, y construyen conocimiento colectivo. Incorporar estas fuentes en el aula (ya sea como referencia o como espacio de participación) expande las conexiones del estudiante más allá del libro de texto y el profesor.
+
+\textbf{Canvas como red interna.} Los foros de Canvas, aunque más acotados, replican esta lógica conectivista dentro del grupo. Cuando estructuramos los foros con post inicial, respuestas a compañeros, y síntesis, estamos entrenando a los estudiantes en las prácticas de participación en comunidades de conocimiento. La habilidad de articular una posición, responder constructivamente a otros, e integrar perspectivas diversas es transferible a cualquier comunidad profesional en la que participen después.
+
+\textbf{IA como nodo de conexión.} El modelo de lenguaje funciona como un nodo que conecta al estudiante con patrones de conocimiento distribuidos en millones de textos. A diferencia de un libro estático, el diálogo con IA permite explorar ramificaciones, solicitar clarificaciones, y recibir perspectivas alternativas en tiempo real. Esto no reemplaza la conexión humana, pero la complementa como un tipo diferente de nodo en la red de aprendizaje del estudiante.
+
+Nuestra propuesta materializa estos principios conectivistas mediante:
+
+\begin{itemize}
+    \item \textbf{Conexión con comunidades de práctica}: Kaggle, INEGI, datos.gob.mx como redes donde el conocimiento se produce y negocia colectivamente
+    \item \textbf{Foros de Canvas estructurados}: Entrenamiento en participación en comunidades de conocimiento, con prácticas transferibles a foros profesionales
+    \item \textbf{Análisis de redes sociales}: Google Trends, hashtags, conversaciones en X/Twitter como manifestaciones del conocimiento distribuido del mercado
+    \item \textbf{Diálogos con IA}: El modelo de lenguaje como nodo que amplía las perspectivas y conexiones del estudiante
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{Síntesis: Marcos Teóricos y su Operacionalización}
+\small
+\begin{tabular}{p{3cm}p{4.5cm}p{5cm}}
+\toprule
+\textbf{Marco Teórico} & \textbf{Principio Central} & \textbf{Implementación Concreta} \\
+\midrule
+Multiliteracidades \citep{Cope2009} & Estudiante como diseñador de significado multimodal & Mapas conceptuales, slides con IA, productos visuales \\
+\midrule
+Currículum Crítico \citep{Apple1979} & El conocimiento legitima relaciones de poder & Preguntas sobre beneficiarios, sesgos, exclusiones \\
+\midrule
+Conectivismo \citep{Siemens2005} & Aprendizaje en redes y comunidades de práctica & Kaggle como comunidad, foros Canvas, Stack Exchange, redes sociales, IA como nodo \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -249,55 +467,52 @@ La secuencia se organiza en cuatro fases que corresponden a los procesos de cono
 La implementación de esta adecuación curricular tendría los siguientes impactos:
 
 \begin{enumerate}
-    \item \textbf{En los estudiantes}: Mayor engagement al trabajar con problemas auténticos; desarrollo de competencias de pensamiento crítico; capacidad de crear y comunicar en múltiples modos.
+    \item \textbf{En los estudiantes}: Mayor engagement al trabajar con problemas auténticos, desarrollo de competencias de pensamiento crítico y capacidad de crear y comunicar en múltiples modos.
 
-    \item \textbf{En el aprendizaje}: Conocimiento más profundo y transferible; conexiones significativas entre teoría y práctica; reflexión sobre las implicaciones éticas del marketing.
+    \item \textbf{En el aprendizaje}: Conocimiento más profundo y transferible, conexiones significativas entre teoría y práctica, y reflexión sobre las implicaciones éticas del marketing.
 
-    \item \textbf{En la práctica docente}: Rol facilitador más que transmisor; evaluación más rica y diversificada; oportunidad de innovación pedagógica dentro del marco institucional.
+    \item \textbf{En la práctica docente}: Rol facilitador más que transmisor, evaluación más rica y diversificada, y oportunidad de innovación pedagógica dentro del marco institucional.
 \end{enumerate}
+
+\subsection{Limitaciones y Oportunidades de Escalamiento}
+
+Esta propuesta opera conscientemente en el nivel micro de concreción curricular. Sin embargo, es importante reflexionar sobre las posibilidades de escalamiento y las limitaciones inherentes a este enfoque.
+
+\subsubsection*{Por qué no modificamos los Objetivos de Aprendizaje Oficiales}
+
+Los objetivos de aprendizaje del bloque MT1001B están definidos a nivel meso (programático), lo cual requiere aprobación institucional para cualquier modificación. Esta propuesta respeta esa estructura por dos razones:
+
+\begin{enumerate}
+    \item \textbf{Viabilidad inmediata}: Un docente puede implementar los cambios propuestos sin necesidad de procesos de aprobación que podrían tomar semestres.
+
+    \item \textbf{Coherencia sistémica}: Los objetivos oficiales están articulados con competencias que atraviesan múltiples bloques. Modificarlos unilateralmente podría generar incoherencias en la trayectoria del estudiante.
+\end{enumerate}
+
+\subsubsection*{Propuestas para Escalamiento Futuro}
+
+Si los cambios a nivel micro demuestran efectividad (medida en calidad de los productos estudiantiles, retroalimentación cualitativa y resultados de evaluación), podrían proponerse formalmente las siguientes modificaciones a nivel meso:
+
+\begin{enumerate}
+    \item \textbf{Nuevo objetivo de aprendizaje}: ``El estudiante reflexiona críticamente sobre las implicaciones éticas y sociales de las decisiones de segmentación y targeting.''
+
+    \item \textbf{Incorporación de competencia digital}: ``El estudiante utiliza fuentes de datos abiertos (INEGI, Kaggle) para fundamentar diagnósticos de mercado con información actualizada.''
+
+    \item \textbf{Evaluación multimodal institucionalizada}: Formalizar que los objetos de aprendizaje incluyan productos en múltiples formatos (escrito, visual, colaborativo).
+\end{enumerate}
+
+Este enfoque de ``innovación desde el aula'' es consistente con la visión de \citet{Stenhouse1975} del docente como investigador de su propia práctica, capaz de generar conocimiento pedagógico que posteriormente pueda sistematizarse e institucionalizarse.
 
 % ============================================
 \section{Reflexión Final}
 % ============================================
 
-Este proceso de análisis y diseño curricular me ha permitido comprender de manera profunda los niveles de concreción curricular y su impacto en la práctica educativa cotidiana.
+Lo que me llevo de este curso es una certeza incómoda: diseñar un buen currículum es mucho más difícil de lo que pensaba. No basta con ordenar contenidos y definir evaluaciones. Hay factores que complican todo: políticas institucionales, diversidad de estudiantes, recursos limitados, ideologías implícitas, voces que quedan fuera. Y lo peor es que no podemos garantizar las condiciones de operación. Podemos diseñar el currículum más innovador del mundo, pero si el docente no tiene tiempo, si los estudiantes no tienen acceso a tecnología, si la institución no da espacio para la experimentación, el diseño se queda en papel.
 
-\subsection{Sobre los Niveles de Concreción Curricular}
+Me quedo con tres autores que quiero seguir leyendo. \citet{Cope2009} y su propuesta de multiliteracidades me convencieron de que el estudiante debe ser tratado como diseñador de significado, no como receptor de información. La idea de que existen múltiples modos de comunicación (visual, espacial, gestual) y que todos son válidos para aprender me parece más honesta que pretender que solo el texto escrito importa. \citet{Apple1979} me hizo ver que detrás de cada decisión curricular hay una pregunta de poder: ¿quién decide qué se enseña? ¿A quién beneficia? ¿Qué perspectivas quedan invisibles? No tengo respuestas claras, pero al menos ahora sé que debo hacer esas preguntas. Y \citet{Siemens2005} con el conectivismo me confirmó algo que intuía: en la era de Kaggle, Stack Exchange y comunidades en línea, saber dónde encontrar conocimiento es tan importante como poseerlo. El aula no puede seguir siendo una isla desconectada.
 
-\citet{Marsh2007} distinguen entre el currículum macro (políticas nacionales), meso (diseño institucional) y micro (implementación en aula). Mi propuesta opera en el nivel micro, lo cual tiene implicaciones importantes:
+Mi propuesta en este trabajo es modesta. Opera en el nivel micro porque es el único donde tengo margen de maniobra. No puedo cambiar los objetivos de aprendizaje institucionales ni rediseñar el bloque completo. Pero sí puedo, como docente, incorporar datos reales en lugar de casos ficticios, estructurar foros que fomenten discusión genuina, y hacer preguntas incómodas sobre a quién sirven las estrategias de marketing que enseñamos.
 
-\begin{itemize}
-    \item \textbf{Posibilidad}: Un docente puede implementar cambios significativos sin modificar el programa oficial.
-    \item \textbf{Limitación}: Los cambios profundos requieren articulación con los niveles meso y macro.
-    \item \textbf{Tensión}: El currículum operacional (lo que realmente sucede en el aula) puede diferir del oficial.
-\end{itemize}
-
-Reconozco que esta propuesta, al ser de nivel micro, enfrenta restricciones estructurales. Sin embargo, como señala \citet{Stenhouse1975}, el currículum es hipótesis a probar en la práctica, y el docente es el investigador de su propia práctica.
-
-\subsection{Sobre el Proceso de Análisis}
-
-Realizar este trabajo me permitió:
-
-\begin{enumerate}
-    \item \textbf{Integrar teoría y práctica}: Aplicar los marcos de Cope, Kalantzis, Apple y Siemens no como contenido a memorizar, sino como lentes para analizar y transformar una realidad curricular concreta.
-
-    \item \textbf{Cuestionar lo naturalizado}: Gracias al enfoque socio-crítico, pude preguntarme por qué el currículum actual tiene la forma que tiene y a quiénes beneficia o perjudica.
-
-    \item \textbf{Valorar la complejidad}: El diseño curricular no es un proceso técnico neutral; involucra decisiones epistemológicas, políticas y éticas.
-\end{enumerate}
-
-\subsection{Implicaciones para mi Desarrollo Profesional}
-
-Como futuro profesional de la educación, este análisis me deja aprendizajes fundamentales:
-
-\begin{itemize}
-    \item El currículum es un espacio de disputa y posibilidad, no un documento fijo.
-    \item La reflexión crítica constante es esencial para no reproducir desigualdades.
-    \item Los estudiantes merecen ser tratados como diseñadores de significado, no como receptáculos vacíos.
-    \item La tecnología debe ser medio de creación, no fin en sí misma.
-\end{itemize}
-
-Finalmente, me pregunto: ¿qué pasaría si más docentes se permitieran cuestionar el currículum que implementan? Quizás, como sugiere \citet{Apple1979}, podríamos construir una educación que no solo transmita cultura, sino que empodere a los estudiantes para transformarla.
+Reconozco también lo que no sé hacer. Quisiera integrar reflexión crítica de manera más profunda, no solo como preguntas añadidas al final de una actividad. Quisiera que los estudiantes trabajaran con empresas reales y no con simulaciones. Quisiera evaluar de formas que no dependan tanto del examen escrito. Pero cada uno de esos cambios requiere condiciones que no controlo: tiempo, recursos, apoyo institucional, disposición de los estudiantes. El currículum, como dice \citet{Stenhouse1975}, es una hipótesis a probar en la práctica. Esta propuesta es mi hipótesis inicial, sabiendo que la realidad la va a modificar.
 
 % ============================================
 % REFERENCIAS
@@ -475,7 +690,7 @@ El Módulo 1 sigue un modelo pedagógico de 6 fases con retroalimentación conti
 
 \begin{itemize}
     \item \textbf{Conceptuales}: Orientación al consumidor, identificación de necesidades, diferenciación, propuesta de valor, estructura del plan de mercadotecnia, mezcla de mercadotecnia (4 P's).
-    \item \textbf{Procedimentales}: Elaboración de reportes ejecutivos, gráficos dinámicos y digitales; identificación de oportunidades a partir de problemas detectados.
+    \item \textbf{Procedimentales}: Elaboración de reportes ejecutivos, gráficos dinámicos y digitales. Identificación de oportunidades a partir de problemas detectados.
     \item \textbf{Actitudinales}: Actitud proactiva ante la generación de soluciones para la problemática presentada.
 \end{itemize}
 
@@ -530,6 +745,99 @@ Capítulos específicos evaluados:
     \item Strategic Planning for Competitive Advantage
     \item Segmenting and Targeting Markets
     \item Product Concepts
+\end{itemize}
+
+% --------------------------------------------
+\newpage
+\section{Evaluación Complementaria con Inteligencia Artificial}
+\label{anexo:ia}
+
+Como ejercicio exploratorio, se realizó una simulación de juicio de expertos utilizando agentes de inteligencia artificial. El objetivo fue triangular el análisis curricular desde múltiples perspectivas teóricas.
+
+\subsection*{Metodología: Wideband Delphi Simulado}
+
+Se implementó el método Wideband Delphi en tres rondas:
+
+\begin{enumerate}
+    \item \textbf{Ronda 1}: Cada agente evaluó el currículum de forma independiente según su marco teórico.
+    \item \textbf{Ronda 2}: Los agentes revisaron las posiciones de sus pares y debatieron puntos de convergencia y divergencia.
+    \item \textbf{Ronda 3}: Un moderador sintetizó consensos, disensos y recomendaciones priorizadas.
+\end{enumerate}
+
+\subsection*{Panel de Agentes}
+
+\begin{table}[H]
+\centering
+\caption{Configuración del Panel de Expertos Simulados}
+\small
+\begin{tabular}{llp{5cm}}
+\toprule
+\textbf{Agente} & \textbf{Perspectiva} & \textbf{Referencias Base} \\
+\midrule
+Dr. Crítico & Teoría curricular crítica & Apple (2004), Gimeno Sacristán (1991) \\
+Dra. Multiliteracidades & Diseño de significado & Cope \& Kalantzis (2009, 2012) \\
+Dr. Conectivista & Era digital & Siemens (2005) \\
+Dra. Marketing Educativo & PBL e IA en negocios & Guha et al. (2024), Demirci et al. (2023) \\
+Dr. Pedagogía Crítica & Pedagogía de la liberación & Freire (1970), Giroux (1997) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Los agentes fueron implementados usando modelos de lenguaje (Llama 3.3 70B, Qwen 72B vía Together AI) con un moderador GPT-4o (OpenAI) para la síntesis final.
+
+\subsection*{Extractos Representativos}
+
+\textbf{Dr. Crítico} (Ronda 1):
+\begin{quote}
+``Aunque el currículum aborda aspectos importantes de la estrategia de mercado, parece haber una falta de enfoque en la perspectiva crítica, especialmente en relación con la reproducción de las estructuras de poder y la ideología dominante en el mercado. [...] La estructura del currículum y los objetivos de aprendizaje parecen centrarse principalmente en la visión empresarial y del mercado, sin considerar suficientemente las voces y perspectivas de otros actores sociales.''
+\end{quote}
+
+\textbf{Dra. Multiliteracidades} (Ronda 1):
+\begin{quote}
+``Podría profundizarse más en la integración de modos visuales, espaciales, gestuales, auditivos, y táctiles para abordar las diversas necesidades de aprendizaje. [...] La estructura del curso, con sesiones donde el profesor explica contenidos conceptuales, podría sugerir un enfoque transmisionista. Esto podría limitar la agencia del estudiante como diseñador activo de significado.''
+\end{quote}
+
+\subsection*{Limitaciones del Ejercicio}
+
+Este ejercicio tiene limitaciones importantes que deben considerarse:
+
+\begin{itemize}
+    \item Los modelos de lenguaje no son expertos reales con experiencia vivida ni juicio profesional genuino.
+    \item Pueden reflejar sesgos presentes en sus datos de entrenamiento.
+    \item No sustituyen una evaluación curricular formal con expertos humanos.
+    \item El ejercicio tiene valor exploratorio y didáctico, no validez empírica.
+\end{itemize}
+
+\subsection*{Resultados Principales}
+
+\begin{table}[H]
+\centering
+\caption{Puntuaciones Consolidadas del Panel (escala 1-10)}
+\small
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Dimensión} & \textbf{Crítico} & \textbf{Multilit.} & \textbf{Conect.} & \textbf{Marketing} & \textbf{Promedio} \\
+\midrule
+Coherencia epistemológica & 7 & 7 & 7 & 7 & 7.0 \\
+Rol del estudiante & 8 & 8 & 6 & 8 & 7.5 \\
+Integración tecnológica & 6 & 6 & 5 & 5 & 5.5 \\
+Reflexión crítica & 5 & 7 & 6 & 6 & 6.0 \\
+Conexión teoría-práctica & 8 & 8 & 8 & 8 & 8.0 \\
+Evaluación del aprendizaje & 7 & 6 & 5 & 5 & 5.75 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Recomendaciones de alta prioridad} (unanimidad):
+\begin{itemize}
+    \item Diversificar los métodos de evaluación para promover pensamiento crítico.
+    \item Mejorar la integración de tecnologías emergentes.
+\end{itemize}
+
+\textbf{Recomendaciones de media prioridad} (mayoría):
+\begin{itemize}
+    \item Incorporar perspectiva crítica sobre estructuras de poder.
+    \item Fomentar colaboración en red y trabajo en equipo.
 \end{itemize}
 
 \end{document}
