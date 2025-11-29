@@ -23,7 +23,7 @@ Este repositorio contiene el **proyecto final** para el curso de Análisis del C
 | Recurso | Descripción |
 |---------|-------------|
 | [**Presentación en línea**](https://hgcoder.github.io/analsisis-del-curriculo-upaep/) | Slides interactivos (18 diapositivas) |
-| [**Documento académico**](document/main.tex) | Análisis completo en LaTeX (~10 cuartillas) |
+| [**Documento académico (PDF)**](document/main.pdf) | Análisis completo (~28 páginas con anexos) |
 | [**Handout: Validación IA**](slides/handout-validacion-ia.md) | Metodología Wideband Delphi con agentes |
 | [**Handout: Objetos de Aprendizaje**](slides/handout-objetos-aprendizaje.md) | Rediseño de OA1 y OA2 |
 | [**Handout: Sesiones**](slides/handout-sesiones-modificadas.md) | Cambios propuestos en sesiones |
