@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Context Engineering — From Prompt Engineering to Discipline</title>
+<meta name="description" content="The story of how context engineering emerged as a discipline — who the authoritative voices are, what research drove it, and the chronological arc from 2023 to 2025.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ========== CSS VARIABLES ========== */
+:root {
+  --bg: #F5F0E8;
+  --fg: #1a1a1a;
+  --accent: #FFD54F;
+  --border: 3px solid #1a1a1a;
+  --shadow: 6px 6px 0 #1a1a1a;
+  --shadow-sm: 3px 3px 0 #1a1a1a;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --c1: #E57373; /* Warm Coral */
+  --c2: #64B5F6; /* Sky Blue */
+  --c3: #81C784; /* Green */
+  --c4: #BA68C8; /* Purple */
+  --c5: #FFB74D; /* Orange */
+  --c6: #FF8A65; /* Deep Coral */
+  --c7: #4DB6AC; /* Teal */
+  --c8: #7986CB; /* Indigo */
+  --max-w: 1200px;
+  --gap: 2rem;
+}
+
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 18px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--fg); }
+
+/* ========== TYPOGRAPHY ========== */
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; font-weight: 800; }
+h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); }
+h4 { font-size: 1.1rem; }
+
+.mono { font-family: var(--font-mono); }
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: var(--border);
+  background: var(--accent);
+}
+
+/* ========== PROGRESS BAR ========== */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background: var(--accent);
+  z-index: 1000;
+  transition: width 0.1s linear;
+}
+
+/* ========== SIDEBAR NAV ========== */
+.sidebar-nav {
+  position: fixed;
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar-nav a {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--fg);
+  background: transparent;
+  transition: background 0.3s, transform 0.3s;
+  text-decoration: none;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: var(--accent);
+  transform: scale(1.4);
+}
+
+/* ========== HERO ========== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  background: var(--fg);
+  color: var(--bg);
+  position: relative;
+}
+
+.hero h1 {
+  margin-bottom: 0.5rem;
+}
+
+.hero h1 span {
+  background: linear-gradient(90deg, var(--accent), #FFE082);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  max-width: 640px;
+  margin: 0 auto 2rem;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+
+.hero .badge {
+  background: transparent;
+  color: var(--accent);
+  border-color: var(--accent);
+  margin-bottom: 2rem;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  animation: bounce 2s infinite;
+}
+
+.scroll-indicator svg { width: 28px; height: 28px; }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+
+/* ========== SECTION LAYOUT ========== */
+.section {
+  padding: 5rem 2rem;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+
+.section-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  align-items: start;
+}
+
+.section:nth-child(even) .section-inner {
+  direction: rtl;
+}
+
+.section:nth-child(even) .section-inner > * {
+  direction: ltr;
+}
+
+.section-text, .section-visual {
+  min-width: 0;
+}
+
+/* Number Badge */
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border: var(--border);
+  margin-bottom: 0.75rem;
+}
+
+/* Era label */
+.era-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  opacity: 0.7;
+}
+
+/* Thesis */
+.thesis {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  padding-left: 1rem;
+  margin: 1.25rem 0;
+  line-height: 1.5;
+}
+
+/* Body */
+.section-body p {
+  margin-bottom: 1rem;
+}
+
+.section-body p:last-child { margin-bottom: 0; }
+
+/* Key voice tag */
+.voice-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border: 2px solid var(--fg);
+  margin-bottom: 1rem;
+  background: var(--bg);
+}
+
+/* ========== COLLAPSIBLE ========== */
+.collapsible {
+  border: var(--border);
+  margin: 1.5rem 0;
+}
+
+.collapsible-header {
+  padding: 0.75rem 1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  background: var(--bg);
+}
+
+.collapsible-header::after {
+  content: '+';
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+}
+
+.collapsible.open .collapsible-header::after {
+  transform: rotate(45deg);
+}
+
+.collapsible-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding: 0 1rem;
+}
+
+.collapsible.open .collapsible-body {
+  max-height: 2000px;
+  padding: 1rem;
+}
+
+.collapsible-body p {
+  margin-bottom: 0.75rem;
+  font-size: 0.92rem;
+}
+
+/* ========== TAKEAWAY BOX ========== */
+.takeaway {
+  border: var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--bg);
+}
+
+.takeaway-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.takeaway p {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* ========== LINKS ========== */
+.ext-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.ext-links a {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.2rem 0.6rem;
+  border: 2px solid var(--fg);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.ext-links a:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ========== SVG DIAGRAMS ========== */
+.diagram-container {
+  border: var(--border);
+  box-shadow: var(--shadow);
+  background: #fff;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diagram-container svg {
+  width: 100%;
+  height: auto;
+  max-height: 350px;
+}
+
+/* ========== ANIMATIONS ========== */
+.anim-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.anim-up.vis {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.anim-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.anim-left.vis {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.anim-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.anim-right.vis {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.stagger-1 { transition-delay: 0.1s; }
+.stagger-2 { transition-delay: 0.2s; }
+.stagger-3 { transition-delay: 0.3s; }
+.stagger-4 { transition-delay: 0.4s; }
+.stagger-5 { transition-delay: 0.5s; }
+.stagger-6 { transition-delay: 0.6s; }
+
+/* SVG animation classes */
+.draw-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 1.5s ease;
+}
+
+.vis .draw-path,
+.diagram-container.vis .draw-path {
+  stroke-dashoffset: 0;
+}
+
+.scale-in {
+  transform: scale(0);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+}
+
+.vis .scale-in {
+  transform: scale(1);
+}
+
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.vis .fade-in {
+  opacity: 1;
+}
+
+/* Pulse animation for nodes */
+@keyframes pulse {
+  0%, 100% { r: 6; opacity: 1; }
+  50% { r: 9; opacity: 0.7; }
+}
+
+.vis .pulse-node {
+  animation: pulse 2s infinite;
+}
+
+/* Needle sweep */
+@keyframes sweep {
+  from { transform: rotate(-90deg); }
+  to { transform: rotate(45deg); }
+}
+
+.vis .needle-sweep {
+  animation: sweep 1.5s ease-out forwards;
+  transform-origin: center bottom;
+}
+
+/* ========== DARK SECTIONS ========== */
+.dark-section {
+  background: var(--fg);
+  color: var(--bg);
+  padding: 5rem 2rem;
+}
+
+.dark-section .takeaway {
+  background: #2a2a2a;
+  border-color: #444;
+  box-shadow: 6px 6px 0 #000;
+}
+
+/* ========== SYNTHESIS ========== */
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: var(--max-w);
+  margin: 2.5rem auto 0;
+}
+
+.principle-card {
+  border: 3px solid #444;
+  padding: 1.5rem;
+  background: #2a2a2a;
+  box-shadow: 6px 6px 0 #000;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.principle-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 #000;
+}
+
+.principle-num {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  opacity: 0.3;
+  margin-bottom: 0.5rem;
+}
+
+.principle-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.principle-card p {
+  font-size: 0.88rem;
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+.principle-attr {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  opacity: 0.5;
+  margin-top: 0.75rem;
+}
+
+/* ========== QUOTES ========== */
+.quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  max-width: var(--max-w);
+  margin: 2.5rem auto 0;
+}
+
+.quote-card {
+  border: 3px solid #444;
+  padding: 1.5rem;
+  background: #2a2a2a;
+  position: relative;
+}
+
+.quote-card::before {
+  content: '\201C';
+  font-family: var(--font-display);
+  font-size: 3rem;
+  position: absolute;
+  top: -0.2rem;
+  left: 0.75rem;
+  opacity: 0.2;
+}
+
+.quote-card blockquote {
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+
+.quote-card cite {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-style: normal;
+  opacity: 0.6;
+}
+
+/* ========== FOOTER ========== */
+footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  opacity: 0.6;
+  background: var(--fg);
+  color: var(--bg);
+  line-height: 1.8;
+}
+
+footer a { color: var(--accent); }
+
+/* ========== SUB-TIMELINE (Section 6) ========== */
+.sub-timeline {
+  position: relative;
+  padding-left: 2rem;
+  margin: 1.5rem 0;
+}
+
+.sub-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--fg);
+}
+
+.sub-event {
+  position: relative;
+  margin-bottom: 1.25rem;
+  padding-left: 0.5rem;
+}
+
+.sub-event::before {
+  content: '';
+  position: absolute;
+  left: -1.75rem;
+  top: 0.5rem;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--fg);
+  background: var(--bg);
+}
+
+.sub-event-date {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.sub-event p {
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .sidebar-nav { display: none; }
+
+  .section-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .section:nth-child(even) .section-inner {
+    direction: ltr;
+  }
+
+  .principles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  html { font-size: 16px; }
+
+  .section { padding: 3rem 1rem; }
+  .dark-section { padding: 3rem 1rem; }
+
+  .principles-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quotes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero { padding: 1.5rem; }
+}
+
+/* ========== ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .anim-up, .anim-left, .anim-right {
+    opacity: 1;
+    transform: none;
+  }
+
+  .draw-path {
+    stroke-dashoffset: 0;
+  }
+
+  .scale-in { transform: scale(1); }
+  .fade-in { opacity: 1; }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ========== SECTION-SPECIFIC COLORS ========== */
+.s1 .section-num, .s1 .thesis { border-left: 4px solid var(--c1); }
+.s1 .section-num { background: var(--c1); color: #fff; }
+.s2 .section-num, .s2 .thesis { border-left: 4px solid var(--c2); }
+.s2 .section-num { background: var(--c2); color: #fff; }
+.s3 .section-num, .s3 .thesis { border-left: 4px solid var(--c3); }
+.s3 .section-num { background: var(--c3); color: #fff; }
+.s4 .section-num, .s4 .thesis { border-left: 4px solid var(--c4); }
+.s4 .section-num { background: var(--c4); color: #fff; }
+.s5 .section-num, .s5 .thesis { border-left: 4px solid var(--c5); }
+.s5 .section-num { background: var(--c5); color: #fff; }
+.s6 .section-num, .s6 .thesis { border-left: 4px solid var(--c6); }
+.s6 .section-num { background: var(--c6); color: #fff; }
+.s7 .section-num, .s7 .thesis { border-left: 4px solid var(--c7); }
+.s7 .section-num { background: var(--c7); color: #fff; }
+.s8 .section-num, .s8 .thesis { border-left: 4px solid var(--c8); }
+.s8 .section-num { background: var(--c8); color: #fff; }
+
+/* Quote border-left highlights */
+.s1 .quote-highlight { border-left: 4px solid var(--c1); padding-left: 1rem; }
+.s2 .quote-highlight { border-left: 4px solid var(--c2); padding-left: 1rem; }
+.s3 .quote-highlight { border-left: 4px solid var(--c3); padding-left: 1rem; }
+.s4 .quote-highlight { border-left: 4px solid var(--c4); padding-left: 1rem; }
+.s5 .quote-highlight { border-left: 4px solid var(--c5); padding-left: 1rem; }
+.s6 .quote-highlight { border-left: 4px solid var(--c6); padding-left: 1rem; }
+.s7 .quote-highlight { border-left: 4px solid var(--c7); padding-left: 1rem; }
+.s8 .quote-highlight { border-left: 4px solid var(--c8); padding-left: 1rem; }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- Sidebar Navigation -->
+<nav class="sidebar-nav" aria-label="Section navigation">
+  <a href="#s1" title="The Foundations" aria-label="Section 1: The Foundations"></a>
+  <a href="#s2" title="Compound AI Systems" aria-label="Section 2: Compound AI Systems"></a>
+  <a href="#s3" title="The Long Context Promise" aria-label="Section 3: The Long Context Promise"></a>
+  <a href="#s4" title="Building Effective Agents" aria-label="Section 4: Building Effective Agents"></a>
+  <a href="#s5" title="12 Factor Agents" aria-label="Section 5: 12 Factor Agents"></a>
+  <a href="#s6" title="The Critical Week" aria-label="Section 6: The Critical Week"></a>
+  <a href="#s7" title="Context Rot" aria-label="Section 7: Context Rot"></a>
+  <a href="#s8" title="The Discipline Matures" aria-label="Section 8: The Discipline Matures"></a>
+</nav>
+
+<!-- ============================================================ -->
+<!-- HERO                                                         -->
+<!-- ============================================================ -->
+<header class="hero" id="hero">
+  <div class="badge mono">2023–2025 · 8 moments · 1 discipline</div>
+  <h1><span>Context Engineering</span></h1>
+  <p class="hero-subtitle">From prompt engineering to the discipline that defines modern AI development</p>
+  <div class="scroll-indicator" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#FFD54F" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- SECTION 1 — The Foundations (2023)                            -->
+<!-- ============================================================ -->
+<section class="section s1" id="s1">
+  <div class="section-inner">
+    <div class="section-text">
+      <span class="section-num anim-up">01</span>
+      <div class="era-label anim-up stagger-1">July – November 2023</div>
+      <h2 class="anim-up stagger-2">The Foundations</h2>
+      <div class="voice-tag anim-up stagger-3">Liu et al. (Stanford) · Greg Kamradt</div>
+      <div class="thesis anim-up stagger-3">
+        Two landmark studies revealed that LLMs don't treat their context windows uniformly — attention has a shape, and that shape has consequences.
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>In July 2023, researchers at Stanford published <strong>"Lost in the Middle"</strong>, demonstrating a striking U-shaped attention pattern. Language models paid close attention to the beginning and end of their context windows but significantly degraded on information placed in the middle. This wasn't a quirk of one model — it was a structural property of transformer attention.</p>
+        <p>Months later, in November 2023, Greg Kamradt released the <strong>"Needle in a Haystack"</strong> benchmark — a deceptively simple test that asked models to find a planted fact within a sea of filler text. Every frontier model aced it. But as Kelly Hong of Chroma later pointed out, the benchmark was essentially a lexical matching exercise requiring zero reasoning.</p>
+      </div>
+
+      <div class="collapsible anim-up stagger-5" role="region">
+        <button class="collapsible-header" aria-expanded="false">Why Needle in a Haystack Is "Too Easy"</button>
+        <div class="collapsible-body">
+          <p>Kelly Hong's analysis cuts to the heart of the problem: "The question is 'What was the best writing advice I got from my college classmate?' and the needle is literally 'The best writing advice I got from my college classmate was to write every week.' The model just needs to perform a simple lexical match, not reason through ambiguity or do any deeper processing."</p>
+          <p>This created a dangerous disconnect. Labs showcased perfect NIAH scores in their marketing, implying that their full context windows were equally reliable for any task. The reality was far more nuanced — and it would take nearly two years for the field to fully reckon with this gap.</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>Context position matters. Not all tokens in the window receive equal attention, and passing a simple identification task tells you nothing about real-world performance.</p>
+      </div>
+
+      <div class="ext-links anim-up stagger-6">
+        <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener">Lost in the Middle — arXiv</a>
+        <a href="https://github.com/gkamradt/LLMTest_NeedleInAHaystack" target="_blank" rel="noopener">NIAH Benchmark — GitHub</a>
+      </div>
+    </div>
+
+    <div class="section-visual">
+      <div class="diagram-container anim-right stagger-3">
+        <!-- SVG: U-shaped attention curve -->
+        <svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" opacity="0.6">Attention Distribution Across Context Window</text>
+          <!-- Axes -->
+          <line x1="50" y1="220" x2="370" y2="220" stroke="#1a1a1a" stroke-width="2"/>
+          <line x1="50" y1="220" x2="50" y2="40" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="210" y="250" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#1a1a1a">Position in Context</text>
+          <text x="20" y="130" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#1a1a1a" transform="rotate(-90, 20, 130)">Attention</text>
+          <!-- U-shaped curve -->
+          <path class="draw-path" d="M 60 70 C 100 80, 130 180, 170 190 C 210 195, 240 195, 260 190 C 300 180, 330 80, 360 65" fill="none" stroke="#E57373" stroke-width="3"/>
+          <!-- Data points -->
+          <circle class="scale-in stagger-1" cx="60" cy="70" r="5" fill="#E57373"/>
+          <circle class="scale-in stagger-2" cx="120" cy="150" r="5" fill="#E57373"/>
+          <circle class="scale-in stagger-3" cx="170" cy="190" r="5" fill="#E57373"/>
+          <circle class="scale-in stagger-3" cx="210" cy="195" r="5" fill="#E57373"/>
+          <circle class="scale-in stagger-4" cx="260" cy="190" r="5" fill="#E57373"/>
+          <circle class="scale-in stagger-5" cx="310" cy="150" r="5" fill="#E57373"/>
+          <circle class="scale-in stagger-6" cx="360" cy="65" r="5" fill="#E57373"/>
+          <!-- Labels -->
+          <text x="60" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#E57373">Start</text>
+          <text x="210" y="212" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#E57373">"Lost in the Middle"</text>
+          <text x="360" y="55" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#E57373">End</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2 — Compound AI Systems (Feb 2024)                   -->
+<!-- ============================================================ -->
+<section class="section s2" id="s2">
+  <div class="section-inner">
+    <div class="section-text">
+      <span class="section-num anim-up">02</span>
+      <div class="era-label anim-up stagger-1">February 2024</div>
+      <h2 class="anim-up stagger-2">Compound AI Systems</h2>
+      <div class="voice-tag anim-up stagger-3">Matei Zaharia · Berkeley BAIR · Drew Breunig</div>
+      <div class="thesis anim-up stagger-3">
+        The shift from monolithic model calls to multi-component systems — where retrieval, tools, memory, and coordination work together — redefined what it meant to "build with AI."
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>In early 2024, Matei Zaharia and the Berkeley BAIR lab published their position paper on <strong>Compound AI Systems</strong>. The central argument: the most effective AI applications aren't single model calls — they're engineered systems with multiple interacting components. Retrievers, tool callers, memory stores, evaluators, and orchestrators all collaborating around a central LLM.</p>
+        <p>Drew Breunig observed this pattern emerging across real companies: "The data pipeline people have been doing this quietly at their own conferences. The agents and application builders are only just now starting to think about it." He pointed to teams like Cognition who discovered that their large coding agent spent 50% of its time on code search — so they trained a specialized model just for that subtask, cutting latency by 40% with identical quality.</p>
+      </div>
+
+      <div class="collapsible anim-up stagger-5">
+        <button class="collapsible-header" aria-expanded="false">The Data Pipeline Insight</button>
+        <div class="collapsible-body">
+          <p>Drew Breunig identified two categories of AI builders: data pipeline engineers who dealt with scale and reliability from day one, and application builders who were "still held together with vibe, duct tape, and system prompts." The compound AI insight was that the former group's techniques — decomposition, specialized models, multi-step pipelines — were becoming essential for everyone.</p>
+          <p>As he put it: "In the data world, you're at scale from day zero. If I'm writing a pipeline to process a terabyte of PDFs, I can't throw that at Opus 4.5. I'd be spending a ton of money or waiting a month."</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>The future belongs to systems, not models. The best AI applications compose multiple specialized components rather than relying on a single monolithic model call.</p>
+      </div>
+
+      <div class="ext-links anim-up stagger-6">
+        <a href="https://bair.berkeley.edu/blog/2024/02/18/compound-ai-systems/" target="_blank" rel="noopener">Compound AI Systems — BAIR Blog</a>
+      </div>
+    </div>
+
+    <div class="section-visual">
+      <div class="diagram-container anim-left stagger-3">
+        <!-- SVG: Multi-component network -->
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" opacity="0.6">Compound AI System</text>
+          <!-- Connection lines -->
+          <line class="draw-path" x1="200" y1="150" x2="90" y2="70" stroke="#64B5F6" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="300"/>
+          <line class="draw-path" x1="200" y1="150" x2="310" y2="70" stroke="#64B5F6" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="300"/>
+          <line class="draw-path" x1="200" y1="150" x2="70" y2="200" stroke="#64B5F6" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="300"/>
+          <line class="draw-path" x1="200" y1="150" x2="330" y2="200" stroke="#64B5F6" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="300"/>
+          <line class="draw-path" x1="200" y1="150" x2="130" y2="260" stroke="#64B5F6" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="300"/>
+          <line class="draw-path" x1="200" y1="150" x2="270" y2="260" stroke="#64B5F6" stroke-width="2" stroke-dasharray="300" stroke-dashoffset="300"/>
+          <!-- Central LLM node -->
+          <circle class="scale-in" cx="200" cy="150" r="30" fill="#64B5F6" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="200" y="154" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#fff">LLM</text>
+          <!-- Satellite nodes -->
+          <circle class="scale-in stagger-1 pulse-node" cx="90" cy="70" r="22" fill="#fff" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="90" y="74" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a">Retriever</text>
+          <circle class="scale-in stagger-2 pulse-node" cx="310" cy="70" r="22" fill="#fff" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="310" y="74" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a">Tools</text>
+          <circle class="scale-in stagger-3 pulse-node" cx="70" cy="200" r="22" fill="#fff" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="70" y="204" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a">Memory</text>
+          <circle class="scale-in stagger-4 pulse-node" cx="330" cy="200" r="22" fill="#fff" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="330" y="204" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a">Evaluator</text>
+          <circle class="scale-in stagger-5 pulse-node" cx="130" cy="260" r="22" fill="#fff" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="130" y="264" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a">Search</text>
+          <circle class="scale-in stagger-6 pulse-node" cx="270" cy="260" r="22" fill="#fff" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="270" y="264" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a">Reranker</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3 — The Long Context Promise (2024)                  -->
+<!-- ============================================================ -->
+<section class="section s3" id="s3">
+  <div class="section-inner">
+    <div class="section-text">
+      <span class="section-num anim-up">03</span>
+      <div class="era-label anim-up stagger-1">March – November 2024</div>
+      <h2 class="anim-up stagger-2">The Long Context Promise</h2>
+      <div class="voice-tag anim-up stagger-3">Google DeepMind · Anthropic · Drew Breunig</div>
+      <div class="thesis anim-up stagger-3">
+        Context windows grew from 32K to 1M tokens in a single year. But bigger windows didn't automatically mean better understanding — they created a dangerous illusion of capability.
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>2024 was the year of the long context arms race. Google's <strong>Gemini 1.5</strong> launched in March with a 1M token context window. Anthropic released <strong>Contextual Retrieval</strong> in September, followed by the <strong>Model Context Protocol (MCP)</strong> in November. The narrative was intoxicating: RAG would die, you'd just throw everything into the window, and the model would figure it out.</p>
+        <p>But Drew Breunig discovered a telling detail buried in the Gemini 2.5 technical paper's appendix: "Anytime they went over 200,000 tokens, it all kind of went south." A throwaway line that contradicted the marketing of the rest of the paper. This tension — between what labs promised and what engineers experienced — would define the next chapter of the field.</p>
+      </div>
+
+      <div class="collapsible anim-up stagger-5">
+        <button class="collapsible-header" aria-expanded="false">The Gemini Appendix Discovery</button>
+        <div class="collapsible-body">
+          <p>Drew Breunig described the moment: "One of my favorite technical papers was Gemini 2.5. In the appendix, they did two or three pages explaining how they got Gemini to play Pokemon. They actually walked through the harness, the prompts — things labs never share. And in there was one throwaway line: anytime they went over 200,000 tokens, it all kind of went south."</p>
+          <p>He compared this to the 2024 conversation: "Long context would come and save us all. We didn't need harnesses. We didn't need RAG. You could just throw the entire internet into the context and the problem would be solved. Here we had a very different message."</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>Bigger context windows are a capability, not a solution. The gap between theoretical capacity and practical reliability created the need for a new engineering discipline.</p>
+      </div>
+
+      <div class="ext-links anim-up stagger-6">
+        <a href="https://arxiv.org/abs/2403.05530" target="_blank" rel="noopener">Gemini 1.5 Paper — arXiv</a>
+        <a href="https://www.anthropic.com/news/contextual-retrieval" target="_blank" rel="noopener">Contextual Retrieval — Anthropic</a>
+        <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP — Anthropic</a>
+      </div>
+    </div>
+
+    <div class="section-visual">
+      <div class="diagram-container anim-right stagger-3">
+        <!-- SVG: Nested expanding rectangles -->
+        <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" opacity="0.6">Context Window Growth</text>
+          <!-- 4K -->
+          <rect class="scale-in stagger-1" x="170" y="120" width="60" height="40" fill="none" stroke="#81C784" stroke-width="2" rx="0"/>
+          <text x="200" y="145" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#81C784" font-weight="700">4K</text>
+          <!-- 32K -->
+          <rect class="scale-in stagger-2" x="140" y="95" width="120" height="90" fill="none" stroke="#81C784" stroke-width="2" rx="0" opacity="0.8"/>
+          <text x="200" y="83" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#81C784">32K</text>
+          <!-- 128K -->
+          <rect class="scale-in stagger-3" x="100" y="65" width="200" height="150" fill="none" stroke="#81C784" stroke-width="2" rx="0" opacity="0.6"/>
+          <text x="200" y="55" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#81C784">128K</text>
+          <!-- 1M -->
+          <rect class="scale-in stagger-4" x="50" y="35" width="300" height="210" fill="none" stroke="#81C784" stroke-width="2" rx="0" opacity="0.4"/>
+          <text x="200" y="265" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#81C784">1M tokens</text>
+          <!-- Scattered fading dots -->
+          <circle class="fade-in stagger-4" cx="80" cy="80" r="3" fill="#81C784" opacity="0.3"/>
+          <circle class="fade-in stagger-5" cx="120" cy="200" r="3" fill="#81C784" opacity="0.2"/>
+          <circle class="fade-in stagger-4" cx="300" cy="100" r="3" fill="#81C784" opacity="0.25"/>
+          <circle class="fade-in stagger-5" cx="250" cy="180" r="3" fill="#81C784" opacity="0.15"/>
+          <circle class="fade-in stagger-6" cx="320" cy="210" r="3" fill="#81C784" opacity="0.2"/>
+          <circle class="fade-in stagger-5" cx="90" cy="160" r="3" fill="#81C784" opacity="0.2"/>
+          <!-- Warning zone -->
+          <line class="draw-path" x1="50" y1="105" x2="350" y2="105" stroke="#E57373" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <text class="fade-in stagger-6" x="355" y="109" font-family="JetBrains Mono, monospace" font-size="7" fill="#E57373">~200K practical limit</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4 — Building Effective Agents (Dec 2024)             -->
+<!-- ============================================================ -->
+<section class="section s4" id="s4">
+  <div class="section-inner">
+    <div class="section-text">
+      <span class="section-num anim-up">04</span>
+      <div class="era-label anim-up stagger-1">December 2024</div>
+      <h2 class="anim-up stagger-2">Building Effective Agents</h2>
+      <div class="voice-tag anim-up stagger-3">Anthropic · Hammad Bashir (Chroma CTO)</div>
+      <div class="thesis anim-up stagger-3">
+        Anthropic's guide established a critical distinction: workflows are human-defined, agents are model-driven. Both require fundamentally different approaches to context management.
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>In December 2024, Anthropic published <strong>"Building Effective Agents"</strong> — a guide that cut through the hype with a simple principle: start with the simplest solution that could work, then add complexity only when needed. The key insight was the distinction between <em>workflows</em> (human-defined multi-step processes) and <em>agents</em> (model-driven autonomous systems).</p>
+        <p>Hammad Bashir of Chroma framed the landscape through three LLM topologies: the single function call, the composed workflow, and the agentic loop. "LLMs are just another unreliable non-deterministic component in your software stack," he argued. "They're just a function. You call them, they take some input and produce some output. We don't need to make them more complicated than that."</p>
+      </div>
+
+      <div class="collapsible anim-up stagger-5">
+        <button class="collapsible-header" aria-expanded="false">Reliability as the Real Metric</button>
+        <div class="collapsible-body">
+          <p>Hammad proposed a powerful framing: "If we want to make AI systems economically productive, what you're really maximizing is the lowest number of interventions per token. The number of human interventions per mile is the agentic metric for self-driving cars. We can think about an agentic metric for AI systems."</p>
+          <p>He demonstrated the fragility with a deceptively simple email classification task: given four natural-language rules about email priority, models would fail under trivial perturbations like removing spacing or changing a few words. "If you just take this prompt and remove the spacing, the output will change."</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>Agents aren't magic — they're composed software systems. Reliability comes from engineering discipline, not model capability.</p>
+      </div>
+
+      <div class="ext-links anim-up stagger-6">
+        <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">Building Effective Agents — Anthropic</a>
+      </div>
+    </div>
+
+    <div class="section-visual">
+      <div class="diagram-container anim-left stagger-3">
+        <!-- SVG: Dual workflow vs agent flow -->
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" opacity="0.6">Workflows vs. Agents</text>
+          <!-- Left: Workflow (linear) -->
+          <text x="110" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#BA68C8" font-weight="700">WORKFLOW</text>
+          <rect class="scale-in stagger-1" x="75" y="65" width="70" height="30" fill="#fff" stroke="#BA68C8" stroke-width="2"/>
+          <text x="110" y="84" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8">Step 1</text>
+          <line class="draw-path" x1="110" y1="95" x2="110" y2="115" stroke="#BA68C8" stroke-width="2" marker-end="url(#arrow4)"/>
+          <rect class="scale-in stagger-2" x="75" y="115" width="70" height="30" fill="#fff" stroke="#BA68C8" stroke-width="2"/>
+          <text x="110" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8">Step 2</text>
+          <line class="draw-path" x1="110" y1="145" x2="110" y2="165" stroke="#BA68C8" stroke-width="2"/>
+          <rect class="scale-in stagger-3" x="75" y="165" width="70" height="30" fill="#fff" stroke="#BA68C8" stroke-width="2"/>
+          <text x="110" y="184" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8">Step 3</text>
+          <line class="draw-path" x1="110" y1="195" x2="110" y2="215" stroke="#BA68C8" stroke-width="2"/>
+          <rect class="scale-in stagger-4" x="75" y="215" width="70" height="30" fill="#BA68C8" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="110" y="234" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#fff">Output</text>
+          <text x="110" y="268" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#999">Human-defined path</text>
+          <!-- Right: Agent (loop) -->
+          <text x="290" y="50" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#BA68C8" font-weight="700">AGENT</text>
+          <circle class="scale-in stagger-2" cx="290" cy="100" r="25" fill="#fff" stroke="#BA68C8" stroke-width="2"/>
+          <text x="290" y="104" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8">Think</text>
+          <rect class="scale-in stagger-3" x="260" y="160" width="60" height="25" fill="#fff" stroke="#BA68C8" stroke-width="2"/>
+          <text x="290" y="177" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8">Act</text>
+          <rect class="scale-in stagger-4" x="260" y="210" width="60" height="25" fill="#fff" stroke="#BA68C8" stroke-width="2"/>
+          <text x="290" y="227" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8">Observe</text>
+          <!-- Loop arrows -->
+          <path class="draw-path" d="M 290 125 L 290 160" fill="none" stroke="#BA68C8" stroke-width="2"/>
+          <path class="draw-path" d="M 290 185 L 290 210" fill="none" stroke="#BA68C8" stroke-width="2"/>
+          <path class="draw-path" d="M 260 222 C 230 222, 230 100, 265 100" fill="none" stroke="#BA68C8" stroke-width="2" stroke-dasharray="4 3"/>
+          <text class="fade-in stagger-5" x="235" y="165" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#999" transform="rotate(-90, 235, 165)">Loop</text>
+          <text x="290" y="268" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#999">Model-driven loop</text>
+          <!-- Divider -->
+          <line x1="200" y1="40" x2="200" y2="280" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 4" opacity="0.3"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5 — 12 Factor Agents (Apr 2025)                     -->
+<!-- ============================================================ -->
+<section class="section s5" id="s5">
+  <div class="section-inner">
+    <div class="section-text">
+      <span class="section-num anim-up">05</span>
+      <div class="era-label anim-up stagger-1">April 2025</div>
+      <h2 class="anim-up stagger-2">12 Factor Agents</h2>
+      <div class="voice-tag anim-up stagger-3">Dex Horthy (HumanLayer)</div>
+      <div class="thesis anim-up stagger-3">
+        A manifesto that reframed LLMs as pure functions and established the "own your context window" principle — the first operational playbook for context engineering.
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>On April 22, 2025, Dex Horthy published <strong>"12 Factor Agents"</strong> — a manifesto inspired by the 12-Factor App principles. The core insight: "LLMs are pure functions. The only thing that improves the quality of your outputs is the quality of what you put in, which is your context window."</p>
+        <p>Horthy's team discovered through practice that context utilization past ~40% led to degraded performance — a "dumb zone" where models became unreliable. Their solution was a three-phase workflow: <strong>Research → Plan → Implement</strong>, with intentional context compaction between each phase. "If I'm shouting at Claude, it's because the plan was bad."</p>
+      </div>
+
+      <div class="collapsible anim-up stagger-5">
+        <button class="collapsible-header" aria-expanded="false">The Hierarchy of Errors</button>
+        <div class="collapsible-body">
+          <p>"A bad line of code is a bad line of code. A bad part of a plan can be hundreds of bad lines of code. And a bad line of research — a misunderstanding of how the system works — can be thousands of bad lines of code."</p>
+          <p>This hierarchy inverted where developers spent their time. Instead of reviewing code line-by-line, Horthy's team reviewed research files and implementation plans. "I haven't opened a non-markdown file in an editor in almost two months," he reported. Their intern shipped two PRs on his first day. By day eight, he shipped ten in a single day.</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>Own your context window. Keep utilization under 40%, invest in research and planning over code, and build your entire development workflow around context management.</p>
+      </div>
+
+      <div class="ext-links anim-up stagger-6">
+        <a href="https://github.com/humanlayer/12-factor-agents" target="_blank" rel="noopener">12 Factor Agents — GitHub</a>
+      </div>
+    </div>
+
+    <div class="section-visual">
+      <div class="diagram-container anim-right stagger-3">
+        <!-- SVG: Utilization gauge (semicircle) -->
+        <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="25" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" opacity="0.6">Context Window Utilization</text>
+          <!-- Gauge arc background -->
+          <path d="M 80 220 A 120 120 0 0 1 320 220" fill="none" stroke="#eee" stroke-width="24" stroke-linecap="butt"/>
+          <!-- Green zone (0-40%) -->
+          <path class="draw-path" d="M 80 220 A 120 120 0 0 1 152 108" fill="none" stroke="#81C784" stroke-width="24" stroke-linecap="butt" stroke-dasharray="500" stroke-dashoffset="500"/>
+          <!-- Yellow zone (40-65%) -->
+          <path class="draw-path stagger-2" d="M 152 108 A 120 120 0 0 1 240 102" fill="none" stroke="#FFB74D" stroke-width="24" stroke-linecap="butt" stroke-dasharray="500" stroke-dashoffset="500"/>
+          <!-- Red zone (65-100%) -->
+          <path class="draw-path stagger-3" d="M 240 102 A 120 120 0 0 1 320 220" fill="none" stroke="#E57373" stroke-width="24" stroke-linecap="butt" stroke-dasharray="500" stroke-dashoffset="500"/>
+          <!-- Labels -->
+          <text x="105" y="255" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#81C784">0%</text>
+          <text x="160" y="90" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#FFB74D">40%</text>
+          <text x="255" y="86" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#E57373">65%</text>
+          <text x="310" y="255" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#E57373">100%</text>
+          <!-- Needle -->
+          <g class="needle-sweep" style="transform-origin: 200px 220px;">
+            <line x1="200" y1="220" x2="200" y2="125" stroke="#1a1a1a" stroke-width="3"/>
+            <circle cx="200" cy="220" r="6" fill="#1a1a1a"/>
+          </g>
+          <!-- Center label -->
+          <text x="200" y="200" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" font-weight="700">~75%</text>
+          <!-- Zone labels -->
+          <text x="120" y="180" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#81C784">SAFE</text>
+          <text x="200" y="140" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#FFB74D">CAUTION</text>
+          <text x="275" y="170" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#E57373">DUMB ZONE</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6 — The Critical Week (Jun 18–27, 2025)              -->
+<!-- ============================================================ -->
+<section class="section s6" id="s6">
+  <div class="section-inner" style="grid-template-columns: 1fr;">
+    <div class="section-text" style="max-width: 100%;">
+      <span class="section-num anim-up">06</span>
+      <div class="era-label anim-up stagger-1">June 18–27, 2025</div>
+      <h2 class="anim-up stagger-2">The Critical Week</h2>
+      <div class="voice-tag anim-up stagger-3">Karpathy · Lutke · Breunig · Martin · Willison</div>
+      <div class="thesis anim-up stagger-3">
+        In ten days, "context engineering" went from niche term to industry consensus. A cascade of voices — from YC talks to viral tweets to taxonomies — crystallized a discipline.
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>What happened in late June 2025 was less a single event than a chain reaction. Andrej Karpathy's YC talk provided the metaphor. Tobi Lutke's tweet provided the signal. Drew Breunig's framework provided the structure. And the community provided the amplification. In ten days, a term that had been circulating among practitioners became the central framing for an entire discipline.</p>
+      </div>
+
+      <!-- Sub-timeline -->
+      <div class="sub-timeline anim-up stagger-4">
+        <div class="sub-event">
+          <div class="sub-event-date">Jun 18 — Karpathy's YC Talk</div>
+          <p>Andrej Karpathy presents at YC, introducing the metaphor that would define the discourse: <strong>"The LLM is the CPU, context is the RAM."</strong> Just as programs need their data loaded into RAM, AI systems need their context engineered into the window. The term "context engineering" is foregrounded as the successor to "prompt engineering."</p>
+        </div>
+        <div class="sub-event">
+          <div class="sub-event-date">Jun 19 — Lutke's Canonical Tweet</div>
+          <p>Shopify CEO Tobi Lutke tweets: "I don't think 'prompt engineering' is going to be a thing... the real skill is context engineering." The tweet goes viral — 1.9 million views. It signals that the reframing isn't just technical; it's strategic.</p>
+        </div>
+        <div class="sub-event">
+          <div class="sub-event-date">Jun 22 — Breunig's "How Long Contexts Fail"</div>
+          <p>Drew Breunig publishes his synthesis of how long contexts fail, identifying four failure modes: <strong>attention degradation, distractor sensitivity, ambiguity compounding, and reasoning collapse</strong>. The post had been published earlier to modest reception — Karpathy's framing made it explode.</p>
+        </div>
+        <div class="sub-event">
+          <div class="sub-event-date">Jun 23 — Martin's Taxonomy</div>
+          <p>Lance Martin of LangChain publishes a taxonomy of context engineering operations: <strong>Write, Select, Compress, Isolate</strong>. This gives practitioners a shared vocabulary for the different kinds of work involved in curating context windows.</p>
+        </div>
+        <div class="sub-event">
+          <div class="sub-event-date">Jun 25 — Karpathy's Viral "+1"</div>
+          <p>Karpathy tweets his endorsement: "I think 'context engineering' is a much better term." The "+1" from the field's most respected educator amplifies everything that came before.</p>
+        </div>
+        <div class="sub-event">
+          <div class="sub-event-date">Jun 27 — Willison's Endorsement</div>
+          <p>Simon Willison publishes a blog post acknowledging context engineering as "a better term" and pointing to Breunig's work as the substantive framework. The endorsement from Willison — trusted by a vast developer audience — seals the consensus.</p>
+        </div>
+      </div>
+
+      <div class="collapsible anim-up stagger-5">
+        <button class="collapsible-header" aria-expanded="false">Drew Breunig on the Cascade</button>
+        <div class="collapsible-body">
+          <p>"I published the first article on how long contexts fail and kind of nothing happened. I was lucky enough to be on a bicycling vacation in Napa with my wife. I was a little disappointed. This is something I very rarely put long research efforts into writing."</p>
+          <p>"Then Karpathy said 'context engineering.' Suddenly everybody scrambled to find context engineering pieces. Simon Willison and someone else pointed to my pieces and they're like 'this is the only framework we have.'"</p>
+          <p>He later reflected on a conversation with Stanford professor Chris Potts: "'Sometimes it's hard to convince people because they're just so excited about AI,' and he got that thousand-yard stare and said, 'Or you can just wait for Karpathy to say it in a couple months.'"</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>Disciplines don't emerge from a single paper — they crystallize when the right voices, the right frameworks, and the right frustrations converge in a short window of time.</p>
+      </div>
+    </div>
+
+    <!-- Full-width timeline diagram -->
+    <div class="section-visual" style="max-width: 100%;">
+      <div class="diagram-container anim-up stagger-4" style="padding: 2rem;">
+        <!-- SVG: 10-day timeline burst -->
+        <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- Central timeline line -->
+          <line class="draw-path" x1="30" y1="100" x2="670" y2="100" stroke="#FF8A65" stroke-width="3" stroke-dasharray="700" stroke-dashoffset="700"/>
+          <!-- Event markers and cards -->
+          <g class="scale-in stagger-1">
+            <circle cx="80" cy="100" r="8" fill="#FF8A65" stroke="#1a1a1a" stroke-width="2"/>
+            <line x1="80" y1="92" x2="80" y2="50" stroke="#1a1a1a" stroke-width="1"/>
+            <text x="80" y="42" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#1a1a1a" font-weight="700">Jun 18</text>
+            <text x="80" y="30" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#FF8A65">Karpathy</text>
+            <text x="80" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#999">YC Talk</text>
+          </g>
+          <g class="scale-in stagger-2">
+            <circle cx="190" cy="100" r="8" fill="#FF8A65" stroke="#1a1a1a" stroke-width="2"/>
+            <line x1="190" y1="108" x2="190" y2="150" stroke="#1a1a1a" stroke-width="1"/>
+            <text x="190" y="162" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#1a1a1a" font-weight="700">Jun 19</text>
+            <text x="190" y="174" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#FF8A65">Lutke</text>
+            <text x="190" y="184" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#999">1.9M tweet</text>
+          </g>
+          <g class="scale-in stagger-3">
+            <circle cx="320" cy="100" r="8" fill="#FF8A65" stroke="#1a1a1a" stroke-width="2"/>
+            <line x1="320" y1="92" x2="320" y2="50" stroke="#1a1a1a" stroke-width="1"/>
+            <text x="320" y="42" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#1a1a1a" font-weight="700">Jun 22</text>
+            <text x="320" y="30" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#FF8A65">Breunig</text>
+            <text x="320" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#999">4 Failures</text>
+          </g>
+          <g class="scale-in stagger-4">
+            <circle cx="420" cy="100" r="8" fill="#FF8A65" stroke="#1a1a1a" stroke-width="2"/>
+            <line x1="420" y1="108" x2="420" y2="150" stroke="#1a1a1a" stroke-width="1"/>
+            <text x="420" y="162" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#1a1a1a" font-weight="700">Jun 23</text>
+            <text x="420" y="174" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#FF8A65">Martin</text>
+            <text x="420" y="184" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#999">Taxonomy</text>
+          </g>
+          <g class="scale-in stagger-5">
+            <circle cx="530" cy="100" r="8" fill="#FF8A65" stroke="#1a1a1a" stroke-width="2"/>
+            <line x1="530" y1="92" x2="530" y2="50" stroke="#1a1a1a" stroke-width="1"/>
+            <text x="530" y="42" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#1a1a1a" font-weight="700">Jun 25</text>
+            <text x="530" y="30" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#FF8A65">Karpathy</text>
+            <text x="530" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#999">"+1" Tweet</text>
+          </g>
+          <g class="scale-in stagger-6">
+            <circle cx="630" cy="100" r="8" fill="#FF8A65" stroke="#1a1a1a" stroke-width="2"/>
+            <line x1="630" y1="108" x2="630" y2="150" stroke="#1a1a1a" stroke-width="1"/>
+            <text x="630" y="162" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#1a1a1a" font-weight="700">Jun 27</text>
+            <text x="630" y="174" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="6" fill="#FF8A65">Willison</text>
+            <text x="630" y="184" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#999">Blog Post</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7 — Context Rot (Jul 2025)                           -->
+<!-- ============================================================ -->
+<section class="section s7" id="s7">
+  <div class="section-inner">
+    <div class="section-text">
+      <span class="section-num anim-up">07</span>
+      <div class="era-label anim-up stagger-1">July 2025</div>
+      <h2 class="anim-up stagger-2">Context Rot</h2>
+      <div class="voice-tag anim-up stagger-3">Jeff Huber · Kelly Hong (Chroma)</div>
+      <div class="thesis anim-up stagger-3">
+        Chroma's technical report proved what practitioners had felt: model performance doesn't just plateau with more tokens — it actively degrades. Context rot gave the problem a name and the field its urgency.
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>Chroma's research team, led by Kelly Hong, published a technical report testing 18 frontier models on tasks of increasing input length. The findings were stark: even on a task as simple as replicating a list of words, performance dropped precipitously past a few thousand tokens. Models would hallucinate extra words, skip entries, or generate random outputs entirely.</p>
+        <p>Jeff Huber framed the implication with characteristic directness: "Context rot implies the need for context engineering." He introduced the <strong>Gather-and-Glean</strong> framework — first maximize recall (gather all possibly relevant information), then maximize precision (remove everything irrelevant). "Brute forcing search" with LLMs as rerankers emerged as a dominant pattern.</p>
+      </div>
+
+      <div class="collapsible anim-up stagger-5">
+        <button class="collapsible-header" aria-expanded="false">Kelly Hong's Four Key Findings</button>
+        <div class="collapsible-body">
+          <p><strong>1. Models struggle with reasoning over long conversations.</strong> On the LongMemEval benchmark (~120K tokens of chat history), all models performed dramatically better on condensed (~300 token) versions versus full context.</p>
+          <p><strong>2. Ambiguity compounds the challenge of long inputs.</strong> At short lengths, models handle even highly ambiguous needle-question pairs. But as input grows, performance on ambiguous cases collapses first.</p>
+          <p><strong>3. Distractors become devastating at scale.</strong> Topically related but incorrect information — common in any real knowledge base — causes models to confuse answers at long contexts even when they distinguish them perfectly at short lengths.</p>
+          <p><strong>4. Models cannot be treated as reliable computing systems.</strong> Even on pure replication tasks (repeat this list exactly), models fail past 500 words. "This serves as another demonstration that models do not process their context uniformly."</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>Your model's context window is a theoretical maximum, not an operational budget. Engineer your context: maximize relevant information, minimize irrelevant context.</p>
+      </div>
+
+      <div class="ext-links anim-up stagger-6">
+        <a href="https://research.trychroma.com/context-rot" target="_blank" rel="noopener">Context Rot Report — Chroma</a>
+        <a href="https://research.trychroma.com/generative-benchmarking" target="_blank" rel="noopener">Generative Benchmarking — Chroma</a>
+      </div>
+    </div>
+
+    <div class="section-visual">
+      <div class="diagram-container anim-right stagger-3">
+        <!-- SVG: Multi-line degradation chart -->
+        <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" opacity="0.6">Performance vs. Input Length</text>
+          <!-- Axes -->
+          <line x1="50" y1="240" x2="370" y2="240" stroke="#1a1a1a" stroke-width="2"/>
+          <line x1="50" y1="240" x2="50" y2="40" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="210" y="265" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a">Input Tokens →</text>
+          <text x="15" y="140" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#1a1a1a" transform="rotate(-90, 15, 140)">Accuracy</text>
+          <!-- Danger zone -->
+          <rect class="fade-in stagger-5" x="250" y="150" width="120" height="90" fill="#E57373" opacity="0.1"/>
+          <text class="fade-in stagger-6" x="310" y="168" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#E57373">DANGER ZONE</text>
+          <!-- Curve 1: Best model (slow decline) -->
+          <path class="draw-path stagger-1" d="M 60 60 C 120 62, 180 80, 220 110 C 260 140, 310 180, 360 200" fill="none" stroke="#4DB6AC" stroke-width="2.5" stroke-dasharray="500" stroke-dashoffset="500"/>
+          <text x="365" y="195" font-family="JetBrains Mono, monospace" font-size="7" fill="#4DB6AC">Model A</text>
+          <!-- Curve 2: Mid model (moderate decline) -->
+          <path class="draw-path stagger-2" d="M 60 65 C 100 70, 150 100, 200 150 C 240 185, 290 210, 360 225" fill="none" stroke="#FFB74D" stroke-width="2.5" stroke-dasharray="500" stroke-dashoffset="500"/>
+          <text x="365" y="220" font-family="JetBrains Mono, monospace" font-size="7" fill="#FFB74D">Model B</text>
+          <!-- Curve 3: Fast decline -->
+          <path class="draw-path stagger-3" d="M 60 68 C 90 85, 130 140, 180 190 C 220 215, 270 230, 360 235" fill="none" stroke="#E57373" stroke-width="2.5" stroke-dasharray="500" stroke-dashoffset="500"/>
+          <text x="365" y="240" font-family="JetBrains Mono, monospace" font-size="7" fill="#E57373">Model C</text>
+          <!-- Axis ticks -->
+          <text x="60" y="254" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#999">500</text>
+          <text x="150" y="254" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#999">10K</text>
+          <text x="250" y="254" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#999">100K</text>
+          <text x="360" y="254" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#999">1M</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8 — The Discipline Matures (Late 2025)               -->
+<!-- ============================================================ -->
+<section class="section s8" id="s8">
+  <div class="section-inner">
+    <div class="section-text">
+      <span class="section-num anim-up">08</span>
+      <div class="era-label anim-up stagger-1">Late 2025</div>
+      <h2 class="anim-up stagger-2">The Discipline Matures</h2>
+      <div class="voice-tag anim-up stagger-3">Philipp Schmid · Anthropic · Gartner · O'Reilly</div>
+      <div class="thesis anim-up stagger-3">
+        Context engineering transitions from practitioner insight to recognized discipline — with academic surveys, industry taxonomies, and formal institutional recognition.
+      </div>
+      <div class="section-body anim-up stagger-4">
+        <p>By late 2025, the field had accumulated enough mass to attract institutional attention. An academic survey cataloged over 1,400 papers touching on aspects of context engineering. Gartner added context engineering to their emerging technology radar. Anthropic published a formal treatment of context engineering principles. O'Reilly published Drew Breunig's work.</p>
+        <p>Jeff Huber reflected on the arc: "Memory is the benefit; context engineering is the tool that gives you that benefit." The field was no longer about whether context engineering mattered — it was about building the frameworks, tools, and practices to do it systematically. As Huber put it: "Context engineering implies the existence of context engineers... and even a context engine."</p>
+      </div>
+
+      <div class="collapsible anim-up stagger-5">
+        <button class="collapsible-header" aria-expanded="false">From Craft to Engineering</button>
+        <div class="collapsible-body">
+          <p>The maturation followed a familiar pattern in software history. First came the practitioners discovering patterns through experience. Then the frameworks that codified those patterns. Then the benchmarks that measured adherence. And finally, the institutional recognition that signaled the field's permanence.</p>
+          <p>Lance Martin's taxonomy (Write, Select, Compress, Isolate) provided the operational vocabulary. Chroma's context rot report provided the empirical foundation. Dex Horthy's 12 Factor Agents provided the operational playbook. And Karpathy's CPU/RAM metaphor provided the conceptual frame that made it all click for a mass audience.</p>
+        </div>
+      </div>
+
+      <div class="takeaway anim-up stagger-5">
+        <div class="takeaway-label">Takeaway</div>
+        <p>Context engineering has graduated from folk knowledge to formal discipline. The question is no longer "what is it?" but "how do we do it well?"</p>
+      </div>
+    </div>
+
+    <div class="section-visual">
+      <div class="diagram-container anim-left stagger-3">
+        <!-- SVG: Taxonomy tree -->
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="20" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#1a1a1a" opacity="0.6">Context Engineering Taxonomy</text>
+          <!-- Root -->
+          <rect class="scale-in" x="140" y="35" width="120" height="28" fill="#7986CB" stroke="#1a1a1a" stroke-width="2"/>
+          <text x="200" y="53" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#fff" font-weight="700">CONTEXT ENG.</text>
+          <!-- Branch lines (level 1) -->
+          <line class="draw-path stagger-1" x1="200" y1="63" x2="200" y2="80" stroke="#1a1a1a" stroke-width="2"/>
+          <line class="draw-path stagger-1" x1="70" y1="80" x2="330" y2="80" stroke="#1a1a1a" stroke-width="2"/>
+          <line class="draw-path stagger-1" x1="70" y1="80" x2="70" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+          <line class="draw-path stagger-1" x1="160" y1="80" x2="160" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+          <line class="draw-path stagger-1" x1="245" y1="80" x2="245" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+          <line class="draw-path stagger-1" x1="330" y1="80" x2="330" y2="95" stroke="#1a1a1a" stroke-width="2"/>
+          <!-- Branch 1: Write -->
+          <rect class="scale-in stagger-2" x="30" y="95" width="80" height="24" fill="#fff" stroke="#7986CB" stroke-width="2"/>
+          <text x="70" y="111" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#7986CB" font-weight="700">WRITE</text>
+          <!-- Branch 2: Select -->
+          <rect class="scale-in stagger-2" x="120" y="95" width="80" height="24" fill="#fff" stroke="#7986CB" stroke-width="2"/>
+          <text x="160" y="111" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#7986CB" font-weight="700">SELECT</text>
+          <!-- Branch 3: Compress -->
+          <rect class="scale-in stagger-2" x="205" y="95" width="80" height="24" fill="#fff" stroke="#7986CB" stroke-width="2"/>
+          <text x="245" y="111" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#7986CB" font-weight="700">COMPRESS</text>
+          <!-- Branch 4: Isolate -->
+          <rect class="scale-in stagger-2" x="290" y="95" width="80" height="24" fill="#fff" stroke="#7986CB" stroke-width="2"/>
+          <text x="330" y="111" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7" fill="#7986CB" font-weight="700">ISOLATE</text>
+          <!-- Leaves for Write -->
+          <line class="draw-path stagger-3" x1="40" y1="119" x2="40" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="70" y1="119" x2="70" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="100" y1="119" x2="100" y2="140" stroke="#999" stroke-width="1"/>
+          <rect class="scale-in stagger-4" x="20" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="40" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Prompts</text>
+          <rect class="scale-in stagger-4" x="50" y="160" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="70" y="172" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Plans</text>
+          <rect class="scale-in stagger-4" x="80" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="100" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">History</text>
+          <!-- Leaves for Select -->
+          <line class="draw-path stagger-3" x1="135" y1="119" x2="135" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="160" y1="119" x2="160" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="185" y1="119" x2="185" y2="140" stroke="#999" stroke-width="1"/>
+          <rect class="scale-in stagger-4" x="115" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="135" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">RAG</text>
+          <rect class="scale-in stagger-4" x="140" y="160" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="160" y="172" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Tools</text>
+          <rect class="scale-in stagger-4" x="165" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="185" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Search</text>
+          <!-- Leaves for Compress -->
+          <line class="draw-path stagger-3" x1="220" y1="119" x2="220" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="245" y1="119" x2="245" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="270" y1="119" x2="270" y2="140" stroke="#999" stroke-width="1"/>
+          <rect class="scale-in stagger-4" x="200" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="220" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Summary</text>
+          <rect class="scale-in stagger-4" x="225" y="160" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="245" y="172" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Compact</text>
+          <rect class="scale-in stagger-4" x="250" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="270" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Rerank</text>
+          <!-- Leaves for Isolate -->
+          <line class="draw-path stagger-3" x1="310" y1="119" x2="310" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="335" y1="119" x2="335" y2="140" stroke="#999" stroke-width="1"/>
+          <line class="draw-path stagger-3" x1="355" y1="119" x2="355" y2="140" stroke="#999" stroke-width="1"/>
+          <rect class="scale-in stagger-4" x="290" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="310" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">SubAgent</text>
+          <rect class="scale-in stagger-4" x="315" y="160" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="335" y="172" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Fork</text>
+          <rect class="scale-in stagger-4" x="335" y="140" width="40" height="18" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+          <text x="355" y="152" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#666">Scope</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SYNTHESIS — The Six Principles                               -->
+<!-- ============================================================ -->
+<section class="dark-section" id="synthesis">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+    <h2 class="anim-up" style="text-align: center; margin-bottom: 0.5rem;">The Six Principles of Context Engineering</h2>
+    <p class="anim-up stagger-1" style="text-align: center; opacity: 0.6; font-family: var(--font-mono); font-size: 0.8rem; margin-bottom: 2rem;">Distilled from 8 moments, 14 transcripts, and dozens of research papers</p>
+
+    <div class="principles-grid">
+      <div class="principle-card anim-up stagger-1">
+        <div class="principle-num">01</div>
+        <h3>Less Is More</h3>
+        <p>Precision over volume. Models degrade with more tokens, not less. Every irrelevant token is noise that displaces signal.</p>
+        <div class="principle-attr">Liu et al. · Kamradt · Breunig</div>
+      </div>
+      <div class="principle-card anim-up stagger-2">
+        <div class="principle-num">02</div>
+        <h3>Gather, Then Glean</h3>
+        <p>First maximize recall — cast a wide net. Then maximize precision — ruthlessly cut everything that doesn't serve the current turn.</p>
+        <div class="principle-attr">Jeff Huber · Chroma</div>
+      </div>
+      <div class="principle-card anim-up stagger-3">
+        <div class="principle-num">03</div>
+        <h3>Own Your Context Window</h3>
+        <p>Never let frameworks, defaults, or conversation history decide what's in your context. You are the architect of every token.</p>
+        <div class="principle-attr">Dex Horthy · HumanLayer</div>
+      </div>
+      <div class="principle-card anim-up stagger-4">
+        <div class="principle-num">04</div>
+        <h3>Engineer, Don't Prompt</h3>
+        <p>Context engineering is systems design, not wordsmithing. Build pipelines, harnesses, and retrieval systems — not clever strings.</p>
+        <div class="principle-attr">Karpathy · Lutke</div>
+      </div>
+      <div class="principle-card anim-up stagger-5">
+        <div class="principle-num">05</div>
+        <h3>Context Is Memory</h3>
+        <p>The context window is volatile RAM, not a static prompt. Memory is the benefit; context engineering is the tool that delivers it.</p>
+        <div class="principle-attr">Karpathy · Jeff Huber</div>
+      </div>
+      <div class="principle-card anim-up stagger-6">
+        <div class="principle-num">06</div>
+        <h3>Test Your Context</h3>
+        <p>Evals, not vibes. Build golden datasets, measure retrieval quality, and treat context curation as a testable engineering practice.</p>
+        <div class="principle-attr">Breunig · Martin · Hammad Bashir</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- QUOTES — In Their Own Words                                  -->
+<!-- ============================================================ -->
+<section class="dark-section" id="quotes" style="padding-top: 2rem;">
+  <div style="max-width: var(--max-w); margin: 0 auto;">
+    <h2 class="anim-up" style="text-align: center; margin-bottom: 2rem;">In Their Own Words</h2>
+
+    <div class="quotes-grid">
+      <div class="quote-card anim-up stagger-1">
+        <blockquote>"The LLM is the CPU. Context is the RAM. Prompt engineering is like writing a single assembly instruction. Context engineering is building the whole memory system."</blockquote>
+        <cite>Andrej Karpathy — YC Talk, June 2025</cite>
+      </div>
+      <div class="quote-card anim-up stagger-2">
+        <blockquote>"I don't think 'prompt engineering' is going to be a thing... the real skill is context engineering — the art of providing all the context, knowledge, and tools the model needs."</blockquote>
+        <cite>Tobi Lutke — CEO, Shopify</cite>
+      </div>
+      <div class="quote-card anim-up stagger-1">
+        <blockquote>"LLMs are pure functions. The only thing that improves the quality of your outputs is the quality of what you put in, which is your context window. Everything that makes agents good is context engineering."</blockquote>
+        <cite>Dex Horthy — HumanLayer</cite>
+      </div>
+      <div class="quote-card anim-up stagger-2">
+        <blockquote>"Context rot implies the need for context engineering. Context engineering implies the existence of context engineers... and even a context engine."</blockquote>
+        <cite>Jeff Huber — CEO, Chroma</cite>
+      </div>
+      <div class="quote-card anim-up stagger-3">
+        <blockquote>"The models are essentially untapped. The gains are in the harness. Expressing what you want ends up being the bulk of the work."</blockquote>
+        <cite>Drew Breunig — Context Engineering researcher</cite>
+      </div>
+      <div class="quote-card anim-up stagger-4">
+        <blockquote>"You need to engineer your context to get reliable performance. This is an optimization problem: maximize relevant information, minimize irrelevant context."</blockquote>
+        <cite>Kelly Hong — Researcher, Chroma</cite>
+      </div>
+      <div class="quote-card anim-up stagger-3">
+        <blockquote>"LLMs are just another unreliable non-deterministic component in your software stack. They're just a function. You call them and they produce output."</blockquote>
+        <cite>Hammad Bashir — CTO, Chroma</cite>
+      </div>
+      <div class="quote-card anim-up stagger-4">
+        <blockquote>"A bad line of research — a misunderstanding of how the system works — can be thousands of bad lines of code. Memory is the benefit; context engineering is the tool."</blockquote>
+        <cite>Dex Horthy &amp; Jeff Huber</cite>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER                                                       -->
+<!-- ============================================================ -->
+<footer>
+  <p><strong>Context Engineering: The Story So Far</strong></p>
+  <p>Research sourced from speaker transcripts, academic papers, and the open work of practitioners who built a discipline in public.</p>
+  <p style="margin-top: 0.5rem;">No frameworks. No libraries. Just HTML, CSS, and JavaScript.</p>
+  <p style="margin-top: 0.5rem;">&copy; 2025 · Built with care and context</p>
+</footer>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT                                                   -->
+<!-- ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ---- Progress Bar ----
+  const progressBar = document.getElementById('progress-bar');
+
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+    progressBar.setAttribute('aria-valuenow', Math.round(progress));
+  }
+
+  // ---- Sidebar Highlighting ----
+  const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+  const sections = [];
+
+  sidebarLinks.forEach(function(link) {
+    const id = link.getAttribute('href').replace('#', '');
+    const el = document.getElementById(id);
+    if (el) sections.push({ id: id, el: el, link: link });
+  });
+
+  function updateSidebar() {
+    const scrollY = window.scrollY + window.innerHeight / 3;
+    let current = null;
+
+    for (let i = sections.length - 1; i >= 0; i--) {
+      if (sections[i].el.offsetTop <= scrollY) {
+        current = sections[i];
+        break;
+      }
+    }
+
+    sidebarLinks.forEach(function(l) { l.classList.remove('active'); });
+    if (current) current.link.classList.add('active');
+  }
+
+  // ---- IntersectionObserver for Animations ----
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('vis');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.anim-up, .anim-left, .anim-right, .diagram-container').forEach(function(el) {
+    observer.observe(el);
+  });
+
+  // ---- Collapsible Accordions ----
+  document.querySelectorAll('.collapsible-header').forEach(function(header) {
+    header.addEventListener('click', function() {
+      var parent = this.parentElement;
+      var isOpen = parent.classList.contains('open');
+      parent.classList.toggle('open');
+      this.setAttribute('aria-expanded', !isOpen);
+    });
+
+    header.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        this.click();
+      }
+    });
+  });
+
+  // ---- Sidebar Smooth Scroll ----
+  sidebarLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.getElementById(this.getAttribute('href').replace('#', ''));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ---- Scroll Listener (throttled) ----
+  var ticking = false;
+
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      window.requestAnimationFrame(function() {
+        updateProgress();
+        updateSidebar();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+
+  // Initial calls
+  updateProgress();
+  updateSidebar();
+
+})();
+</script>
+
+</body>
+</html>

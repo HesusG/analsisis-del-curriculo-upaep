@@ -42,3 +42,10 @@ slides/node_modules/
 # Build output
 dist/
 slides/dist/
+
+# App outputs
+app/output/*.html
+app/.chroma_db/
+docker-deploy/scripts/__pycache__/
+__pycache__/
+*.pyc

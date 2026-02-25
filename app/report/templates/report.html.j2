@@ -1,0 +1,235 @@
+{% extends "base.html.j2" %}
+
+{# ── HERO ── #}
+{% block hero %}
+<div class="hero">
+  <div class="badge">EVALUACIÓN CURRICULAR</div>
+  <h1>Reporte: <span>{{ pdf_name }}</span></h1>
+  <p class="hero-subtitle">Evaluación por {{ agents|length }} expertos con análisis de criterios curriculares</p>
+  <div class="compliance-big" style="color: {% if synthesis.nivel_general.value == 'Satisfactorio' %}var(--c3){% elif synthesis.nivel_general.value == 'En proceso' %}var(--c5){% else %}var(--c1){% endif %};">
+    {{ "%.1f"|format(synthesis.average_compliance) }}%
+  </div>
+  <div class="compliance-bar">
+    <div class="compliance-bar-fill" style="width: {{ synthesis.average_compliance }}%; background: {% if synthesis.average_compliance >= 80 %}var(--c3){% elif synthesis.average_compliance >= 60 %}var(--c5){% else %}var(--c1){% endif %};"></div>
+  </div>
+  <div class="nivel-badge nivel-{{ synthesis.nivel_general.value|lower|replace(' ', '-')|replace('ó', 'o') }}">
+    {{ synthesis.nivel_general.value }}
+  </div>
+</div>
+{% endblock %}
+
+{# ── EXPERT PANEL ── #}
+{% block experts %}
+<div class="section">
+  <h2>Panel de Expertos</h2>
+  <div class="expert-panel">
+    {% for agent in agents %}
+    <div class="expert-card">
+      <div class="expert-avatar" style="background: {{ agent.meta.color }}20; border-color: {{ agent.meta.color }};">
+        {{ agent.meta.emoji }}
+      </div>
+      <h3>{{ agent.meta.name }}</h3>
+      <p>{{ agent.meta.description }}</p>
+      {% set ev = synthesis.per_agent[agent.meta.key] %}
+      <div class="expert-compliance" style="color: {{ agent.meta.color }};">
+        {{ "%.1f"|format(ev.resumen_ejecutivo.porcentaje_cumplimiento) }}%
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{# ── EXPERT DETAILS ── #}
+{% block expert_details %}
+{% for agent in agents %}
+{% set ev = synthesis.per_agent[agent.meta.key] %}
+<div class="section">
+  <div class="section-num" style="background: {{ agent.meta.color }};">{{ agent.meta.emoji }} {{ agent.meta.name|upper }}</div>
+  <h2>Evaluación — {{ agent.meta.name }}</h2>
+
+  {# Criteria tables for each part #}
+  {% set parts = [
+    ("Datos de Presentación", ev.parte_2_datos_presentacion.criterios),
+    ("Propósito / Objetivo", ev.parte_3_proposito_objetivo.criterios),
+    ("Contenidos", ev.parte_5_contenidos.criterios),
+    ("Metodología", ev.parte_7_metodologia.criterios),
+    ("Evaluación", ev.parte_8_evaluacion.criterios),
+  ] %}
+
+  {% for part_name, criterios in parts %}
+  <div class="collapsible">
+    <div class="collapsible-header">{{ part_name }}</div>
+    <div class="collapsible-body">
+      <table class="criteria-table">
+        <thead>
+          <tr><th>Criterio</th><th>Estado</th><th>Observación</th></tr>
+        </thead>
+        <tbody>
+          {% for c in criterios %}
+          <tr>
+            <td>{{ c.criterio }}</td>
+            <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
+            <td>{{ c.observacion if c.observacion else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endfor %}
+
+  {# Competencias sub-blocks #}
+  {% if ev.parte_4_competencias_aprendizajes.competencias.aplica %}
+  <div class="collapsible">
+    <div class="collapsible-header">Competencias</div>
+    <div class="collapsible-body">
+      <table class="criteria-table">
+        <thead><tr><th>Criterio</th><th>Estado</th><th>Observación</th></tr></thead>
+        <tbody>
+          {% for c in ev.parte_4_competencias_aprendizajes.competencias.criterios %}
+          <tr>
+            <td>{{ c.criterio }}</td>
+            <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
+            <td>{{ c.observacion if c.observacion else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if ev.parte_4_competencias_aprendizajes.aprendizajes_esperados.aplica %}
+  <div class="collapsible">
+    <div class="collapsible-header">Aprendizajes Esperados</div>
+    <div class="collapsible-body">
+      <table class="criteria-table">
+        <thead><tr><th>Criterio</th><th>Estado</th><th>Observación</th></tr></thead>
+        <tbody>
+          {% for c in ev.parte_4_competencias_aprendizajes.aprendizajes_esperados.criterios %}
+          <tr>
+            <td>{{ c.criterio }}</td>
+            <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
+            <td>{{ c.observacion if c.observacion else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {# Agent-specific prescriptions #}
+  <h3 style="margin-top: 1.5rem;">Prescripciones</h3>
+  {% for fase in ev.parte_11_propuesta_mejora.fases %}
+  <div class="prescription-card" style="border-left-color: {{ agent.meta.color }};">
+    <strong>{{ fase.nombre }}:</strong> {{ fase.descripcion }}
+    <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+      {% for accion in fase.acciones %}
+      <li>{{ accion }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+{% endblock %}
+
+{# ── SYNTHESIS ── #}
+{% block synthesis %}
+<div class="section">
+  <div class="section-num" style="background: var(--accent); color: var(--fg);">SÍNTESIS</div>
+  <h2>Consensos y Disensos</h2>
+
+  {% if synthesis.consensus %}
+  <div class="takeaway">
+    <div class="takeaway-label">Consensos ({{ synthesis.consensus|length }} criterios)</div>
+    <p>Los {{ agents|length }} expertos coinciden en estos criterios:</p>
+  </div>
+  <div class="tag-list">
+    {% for cr in synthesis.consensus %}
+    {% set passed = cr.votes.values()|list|first %}
+    <span class="tag {{ 'tag-green' if passed else 'tag-red' }}">
+      {{ '✓' if passed else '✗' }} {{ cr.criterio }}
+    </span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if synthesis.dissent %}
+  <div class="takeaway" style="margin-top: 2rem;">
+    <div class="takeaway-label">Disensos ({{ synthesis.dissent|length }} criterios)</div>
+    <p>Los expertos difieren en estos criterios:</p>
+  </div>
+  <table class="criteria-table">
+    <thead>
+      <tr>
+        <th>Criterio</th>
+        {% for agent in agents %}
+        <th style="color: {{ agent.meta.color }};">{{ agent.meta.emoji }} {{ agent.meta.name }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for cr in synthesis.dissent %}
+      <tr>
+        <td>{{ cr.criterio }}</td>
+        {% for agent in agents %}
+        {% set vote = cr.votes.get(agent.meta.key) %}
+        <td class="{{ 'criteria-pass' if vote else 'criteria-fail' }}">
+          {% if vote is none %}—{% elif vote %}✓{% else %}✗{% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {# Unified prescriptions #}
+  <h3 style="margin-top: 2rem;">Prescripciones Unificadas</h3>
+  {% for p in synthesis.prescriptions %}
+  <div class="prescription-card" style="border-left-color: var(--accent);">
+    <p>{{ p }}</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{# ── SUMMARY ── #}
+{% block summary %}
+<div class="section">
+  <div class="section-num" style="background: var(--c7); color: #fff;">RESUMEN EJECUTIVO</div>
+  <h2>Resumen Ejecutivo</h2>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+    <div class="takeaway">
+      <div class="takeaway-label">Fortalezas</div>
+      <ul style="padding-left: 1.5rem;">
+        {% for s in synthesis.strengths %}
+        <li>{{ s }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="takeaway">
+      <div class="takeaway-label">Áreas Críticas</div>
+      <ul style="padding-left: 1.5rem;">
+        {% for a in synthesis.critical_areas %}
+        <li>{{ a }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="takeaway">
+    <div class="takeaway-label">Cumplimiento Promedio</div>
+    <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
+      <div class="compliance-bar" style="flex: 1; background: #ddd; border-color: var(--fg);">
+        <div class="compliance-bar-fill" style="width: {{ synthesis.average_compliance }}%; background: {% if synthesis.average_compliance >= 80 %}var(--c3){% elif synthesis.average_compliance >= 60 %}var(--c5){% else %}var(--c1){% endif %};"></div>
+      </div>
+      <span class="mono" style="font-size: 1.5rem; font-weight: 700;">{{ "%.1f"|format(synthesis.average_compliance) }}%</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
