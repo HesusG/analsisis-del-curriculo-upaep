@@ -97,6 +97,26 @@ async def run_evaluation_ui(pdf_filepath: str, progress=gr.Progress()):
                 f"{ev.resumen_ejecutivo.porcentaje_cumplimiento:.1f}%"
             )
 
+        # Per-section breakdown
+        section_defs = [
+            ("Datos", "parte_2_datos_presentacion"),
+            ("Proposito", "parte_3_proposito_objetivo"),
+            ("Contenidos", "parte_5_contenidos"),
+            ("Metodologia", "parte_7_metodologia"),
+            ("Evaluacion", "parte_8_evaluacion"),
+        ]
+        lines.extend(["", "### Desglose por seccion:"])
+        for key, ev in synthesis.per_agent.items():
+            parts_scores = []
+            for label, attr in section_defs:
+                criterios = getattr(ev, attr).criterios
+                passed = sum(1 for c in criterios if c.cumple)
+                total = len(criterios)
+                parts_scores.append(f"{label}: {passed}/{total}")
+            lines.append(
+                f"- **{ev.metadata.evaluador}**: {' | '.join(parts_scores)}"
+            )
+
         lines.extend(["", "### Fortalezas:"])
         for s in synthesis.strengths[:5]:
             lines.append(f"- {s}")
@@ -128,7 +148,69 @@ async def run_evaluation_ui(pdf_filepath: str, progress=gr.Progress()):
         return f"Error durante la evaluacion: {e}", None
 
 
-# ── Tab 2: RAG Chat ───────────────────────────────────────────────────
+# ── Tab 2: Panel de Expertos IA (Delphi Live) ────────────────────────
+
+async def run_delphi_ui(pdf_filepath: str, progress=gr.Progress()):
+    """Run 5-expert Delphi evaluation on uploaded PDF."""
+    if pdf_filepath is None:
+        return "Sube un archivo PDF para evaluar.", None, ""
+
+    try:
+        progress(0.05, desc="Extrayendo texto del PDF...")
+
+        from delphi.live_pipeline import run_delphi_evaluation
+        from delphi.live_agents import DELPHI_EXPERTS
+
+        progress(0.10, desc="Dr. Critico evaluando...")
+
+        result = await run_delphi_evaluation(pdf_filepath)
+
+        progress(0.90, desc="Generando reporte...")
+
+        # Build markdown summary
+        lines = [
+            "## Panel de Expertos IA completado",
+            "",
+            f"**Modelo:** {LLM_MODEL}",
+            f"**Expertos:** {len(result.expert_evaluations)}",
+            "",
+            "### Scores por experto:",
+        ]
+        for key, ev in result.expert_evaluations.items():
+            meta = result.expert_metas[key]
+            scores = [p.score for p in ev.puntuaciones]
+            avg = sum(scores) / len(scores) if scores else 0
+            lines.append(f"- **{meta.name}**: {avg:.1f}/10")
+
+        if result.synthesis:
+            # Consolidated scores
+            lines.extend(["", "### Scores consolidados:"])
+            for p in result.synthesis.puntuaciones_consolidadas:
+                lines.append(f"- **{p.dimension}**: {p.score}/10")
+
+            # Top recommendations
+            alta = [r for r in result.synthesis.recomendaciones_priorizadas if r.prioridad == "Alta"]
+            if alta:
+                lines.extend(["", "### Recomendaciones de alta prioridad:"])
+                for r in alta[:5]:
+                    lines.append(f"- {r.texto}")
+
+        progress(1.0, desc="Listo.")
+
+        # Read HTML for inline display
+        html_content = ""
+        if result.html_path:
+            from pathlib import Path as P
+            html_content = P(result.html_path).read_text(encoding="utf-8")
+
+        return "\n".join(lines), result.html_path, html_content
+
+    except Exception as e:
+        import traceback
+        return f"Error durante la evaluacion Delphi: {e}\n\n```\n{traceback.format_exc()}\n```", None, ""
+
+
+# ── Tab 3: RAG Chat ───────────────────────────────────────────────────
 
 def chat_respond(user_message: str, chatbot_history: list, chain_history: list):
     """Invoke RAG chain and return updated chatbot + state."""
@@ -202,7 +284,7 @@ with gr.Blocks(theme=theme, title="Evaluador Curricular UPAEP") as demo:
                 file_types=[".pdf"],
                 type="filepath",
             )
-            eval_btn = gr.Button("Evaluar con 3 expertos", variant="primary")
+            eval_btn = gr.Button("Evaluar", variant="primary")
             eval_output = gr.Markdown(label="Resultado")
             report_file = gr.File(
                 label="Reporte HTML descargable",
@@ -213,6 +295,30 @@ with gr.Blocks(theme=theme, title="Evaluador Curricular UPAEP") as demo:
                 fn=run_evaluation_ui,
                 inputs=[pdf_input],
                 outputs=[eval_output, report_file],
+            )
+
+        with gr.Tab("Panel de Expertos IA"):
+            gr.Markdown(
+                "Evaluacion Delphi con 5 expertos IA. "
+                "Cada experto evalua desde su marco teorico en 6 dimensiones (1-10)."
+            )
+            delphi_pdf_input = gr.File(
+                label="Sube la planeacion en PDF",
+                file_types=[".pdf"],
+                type="filepath",
+            )
+            delphi_btn = gr.Button("Evaluar con 5 expertos", variant="primary")
+            delphi_output = gr.Markdown(label="Resultado")
+            delphi_report_file = gr.File(
+                label="Reporte HTML descargable",
+                interactive=False,
+            )
+            delphi_html_display = gr.HTML(label="Reporte")
+
+            delphi_btn.click(
+                fn=run_delphi_ui,
+                inputs=[delphi_pdf_input],
+                outputs=[delphi_output, delphi_report_file, delphi_html_display],
             )
 
         with gr.Tab("Consultar Documentos"):

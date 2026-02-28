@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Expertos IA — {{ pdf_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F0E8;
+  --fg: #1a1a1a;
+  --accent: #FFD54F;
+  --border: 3px solid #1a1a1a;
+  --shadow: 6px 6px 0 #1a1a1a;
+  --shadow-sm: 3px 3px 0 #1a1a1a;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --c1: #E57373; --c2: #64B5F6; --c3: #81C784; --c4: #BA68C8;
+  --c5: #FFB74D; --c6: #FF8A65; --c7: #4DB6AC; --c8: #7986CB;
+  --max-w: 1100px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 18px; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--fg); line-height: 1.7; }
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.2; font-weight: 800; }
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); }
+h2 { font-size: clamp(1.5rem, 3.5vw, 2.2rem); margin-bottom: 1rem; }
+h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
+.container { max-width: var(--max-w); margin: 0 auto; padding: 2rem; }
+.mono { font-family: var(--font-mono); }
+.badge {
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
+  display: inline-block; padding: 0.25rem 0.75rem;
+  border: var(--border); background: var(--accent);
+}
+
+/* ── Hero ── */
+.hero { background: var(--fg); color: var(--bg); padding: 4rem 2rem; text-align: center; }
+.hero h1 span {
+  background: linear-gradient(90deg, var(--accent), #FFE082);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-subtitle { font-size: 1.1rem; opacity: 0.85; margin: 0.5rem 0 1.5rem; }
+.score-big {
+  font-family: var(--font-display); font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 800; margin: 0.5rem 0;
+}
+.score-label { font-family: var(--font-mono); font-size: 0.85rem; opacity: 0.7; }
+
+/* ── Dimension bars (hero) ── */
+.dim-bars { max-width: 500px; margin: 1.5rem auto 0; text-align: left; }
+.dim-bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.4rem 0; }
+.dim-bar-label { font-family: var(--font-mono); font-size: 0.7rem; width: 180px; text-align: right; opacity: 0.8; }
+.dim-bar-track { flex: 1; height: 14px; background: #333; border: 1px solid #555; position: relative; }
+.dim-bar-fill { height: 100%; transition: width 0.5s; }
+.dim-bar-val { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; width: 35px; }
+
+/* ── Expert panel ── */
+.section { padding: 3rem 0; border-top: var(--border); }
+.section-num {
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
+  display: inline-block; padding: 0.2rem 0.6rem; border: var(--border);
+  margin-bottom: 0.75rem; color: #fff;
+}
+.expert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1.25rem; margin: 2rem 0; }
+.expert-card {
+  border: var(--border); box-shadow: var(--shadow-sm);
+  padding: 1.25rem; text-align: center; background: var(--bg);
+}
+.expert-avatar {
+  width: 70px; height: 70px; border-radius: 50%; border: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; margin: 0 auto 0.6rem;
+}
+.expert-card h3 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+.expert-card .marco { font-size: 0.75rem; opacity: 0.6; margin-bottom: 0.3rem; }
+.expert-card .model-tag { font-family: var(--font-mono); font-size: 0.65rem; opacity: 0.5; }
+.expert-score { font-family: var(--font-mono); font-size: 1.3rem; font-weight: 700; margin-top: 0.4rem; }
+
+/* ── Collapsible ── */
+.collapsible { border: var(--border); margin: 1rem 0; }
+.collapsible-header {
+  padding: 0.75rem 1rem; font-family: var(--font-display); font-weight: 700;
+  font-size: 0.95rem; cursor: pointer; display: flex; justify-content: space-between;
+  align-items: center; user-select: none; background: var(--bg);
+}
+.collapsible-header::after { content: '+'; font-family: var(--font-mono); font-size: 1.2rem; transition: transform 0.3s; }
+.collapsible.open .collapsible-header::after { transform: rotate(45deg); }
+.collapsible-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; padding: 0 1rem; }
+.collapsible.open .collapsible-body { max-height: 5000px; padding: 1rem; }
+
+/* ── Tables ── */
+.score-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.score-table th, .score-table td {
+  text-align: left; padding: 0.6rem 0.8rem; border-bottom: 1px solid #ccc; font-size: 0.9rem;
+}
+.score-table th { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; }
+.score-cell { font-family: var(--font-mono); font-weight: 700; text-align: center; }
+.score-high { color: var(--c3); }
+.score-mid { color: var(--c5); }
+.score-low { color: var(--c1); }
+
+/* ── Lists ── */
+.bullet-list { padding-left: 1.5rem; margin: 0.5rem 0; }
+.bullet-list li { margin: 0.3rem 0; font-size: 0.9rem; }
+.strength-item { border-left: 4px solid var(--c3); padding-left: 0.75rem; margin: 0.4rem 0; font-size: 0.9rem; }
+.weakness-item { border-left: 4px solid var(--c1); padding-left: 0.75rem; margin: 0.4rem 0; font-size: 0.9rem; }
+
+/* ── Prescription cards ── */
+.rx-card {
+  border: var(--border); border-left-width: 6px; padding: 1rem 1.25rem;
+  margin: 0.75rem 0; background: var(--bg);
+}
+.rx-card p { font-size: 0.9rem; }
+.rx-alta { border-left-color: var(--c1); }
+.rx-media { border-left-color: var(--c5); }
+.rx-baja { border-left-color: var(--c2); }
+
+/* ── Takeaway ── */
+.takeaway {
+  border: var(--border); box-shadow: var(--shadow); padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0; background: var(--bg);
+}
+.takeaway-label {
+  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.15em; margin-bottom: 0.5rem;
+}
+
+/* ── Disenso table ── */
+.disenso-card {
+  border: var(--border); margin: 0.75rem 0; padding: 1rem;
+  background: #fff9f0;
+}
+.disenso-card h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+.disenso-position { font-size: 0.85rem; margin: 0.3rem 0; padding-left: 1rem; border-left: 3px solid #ddd; }
+.disenso-position strong { font-family: var(--font-mono); font-size: 0.75rem; }
+
+/* ── Footer ── */
+footer {
+  text-align: center; padding: 2rem; font-family: var(--font-mono);
+  font-size: 0.72rem; opacity: 0.5; border-top: var(--border);
+}
+
+@media (max-width: 768px) {
+  .expert-grid { grid-template-columns: 1fr 1fr; }
+  .dim-bar-label { width: 120px; font-size: 0.6rem; }
+  html { font-size: 16px; }
+}
+@media print {
+  .collapsible-body { max-height: none !important; padding: 1rem !important; }
+  .collapsible-header::after { display: none; }
+  body { font-size: 12pt; }
+}
+</style>
+</head>
+<body>
+
+{# ── HERO ── #}
+<div class="hero">
+  <div class="badge">PANEL DE EXPERTOS IA</div>
+  <h1>Evaluacion: <span>{{ pdf_name }}</span></h1>
+  <p class="hero-subtitle">Evaluacion Delphi con {{ expert_evaluations|length }} expertos ({{ llm_model }})</p>
+  <div class="score-big" style="color: {% if avg_score >= 7 %}var(--c3){% elif avg_score >= 5 %}var(--c5){% else %}var(--c1){% endif %};">
+    {{ "%.1f"|format(avg_score) }}/10
+  </div>
+  <div class="score-label">Promedio general de las 6 dimensiones</div>
+
+  {# Dimension bars #}
+  {% if synthesis.puntuaciones_consolidadas %}
+  <div class="dim-bars">
+    {% for p in synthesis.puntuaciones_consolidadas %}
+    <div class="dim-bar-row">
+      <span class="dim-bar-label">{{ p.dimension }}</span>
+      <div class="dim-bar-track">
+        <div class="dim-bar-fill" style="width: {{ p.score * 10 }}%; background: {% if p.score >= 7 %}var(--c3){% elif p.score >= 5 %}var(--c5){% else %}var(--c1){% endif %};"></div>
+      </div>
+      <span class="dim-bar-val" style="color: {% if p.score >= 7 %}var(--c3){% elif p.score >= 5 %}var(--c5){% else %}var(--c1){% endif %};">{{ p.score }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<div class="container">
+
+{# ── EXPERT PANEL ── #}
+<div class="section">
+  <div class="section-num" style="background: var(--c8);">01</div>
+  <h2>Panel de Expertos</h2>
+  <div class="expert-grid">
+    {% for key, meta in expert_metas.items() %}
+    <div class="expert-card">
+      <div class="expert-avatar" style="background: {{ meta.color }}20; border-color: {{ meta.color }};">
+        {{ meta.emoji }}
+      </div>
+      <h3>{{ meta.name }}</h3>
+      <div class="marco">{{ meta.marco }}</div>
+      <div class="model-tag">{{ llm_model }}</div>
+      <div class="expert-score" style="color: {{ meta.color }};">
+        {{ "%.1f"|format(expert_averages[key]) }}/10
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{# ── INDIVIDUAL EVALUATIONS ── #}
+<div class="section">
+  <div class="section-num" style="background: var(--c4);">02</div>
+  <h2>Evaluaciones Individuales</h2>
+
+  {% for key, ev in expert_evaluations.items() %}
+  {% set meta = expert_metas[key] %}
+  <div class="collapsible">
+    <div class="collapsible-header" style="border-left: 5px solid {{ meta.color }};">
+      {{ meta.emoji }} {{ meta.name }}
+      <span class="mono" style="font-size: 0.8rem; color: {{ meta.color }};">{{ "%.1f"|format(expert_averages[key]) }}/10</span>
+    </div>
+    <div class="collapsible-body">
+
+      {# Fortalezas #}
+      <h4 style="margin-top: 0.5rem; color: var(--c3);">Fortalezas</h4>
+      {% for f in ev.fortalezas %}
+      <div class="strength-item">{{ f }}</div>
+      {% endfor %}
+
+      {# Debilidades #}
+      <h4 style="margin-top: 1rem; color: var(--c1);">Debilidades</h4>
+      {% for d in ev.debilidades %}
+      <div class="weakness-item">{{ d }}</div>
+      {% endfor %}
+
+      {# Puntuaciones #}
+      <h4 style="margin-top: 1rem;">Puntuaciones</h4>
+      <table class="score-table">
+        <thead><tr><th>Dimension</th><th>Score</th><th>Justificacion</th></tr></thead>
+        <tbody>
+          {% for p in ev.puntuaciones %}
+          <tr>
+            <td>{{ p.dimension }}</td>
+            <td class="score-cell {{ 'score-high' if p.score >= 7 else ('score-mid' if p.score >= 5 else 'score-low') }}">{{ p.score }}/10</td>
+            <td style="font-size: 0.85rem;">{{ p.justificacion }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {# Recomendaciones #}
+      <h4 style="margin-top: 1rem;">Recomendaciones</h4>
+      <ul class="bullet-list">
+        {% for r in ev.recomendaciones %}
+        <li>{{ r }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{# ── MODERATOR SYNTHESIS ── #}
+<div class="section">
+  <div class="section-num" style="background: var(--c7);">03</div>
+  <h2>Sintesis del Moderador</h2>
+
+  {# Consensos #}
+  {% if synthesis.consensos %}
+  <div class="takeaway">
+    <div class="takeaway-label">Consensos ({{ synthesis.consensos|length }})</div>
+    <ul class="bullet-list">
+      {% for c in synthesis.consensos %}
+      <li>{{ c }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {# Disensos #}
+  {% if synthesis.disensos %}
+  <h3 style="margin-top: 1.5rem;">Disensos</h3>
+  {% for d in synthesis.disensos %}
+  <div class="disenso-card">
+    <h4>{{ d.tema }}</h4>
+    {% for expert_key, position in d.posiciones.items() %}
+    <div class="disenso-position">
+      <strong>{{ expert_key }}:</strong> {{ position }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {# Puntuaciones consolidadas #}
+  <h3 style="margin-top: 1.5rem;">Puntuaciones Consolidadas</h3>
+  <table class="score-table">
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        {% for key, meta in expert_metas.items() %}
+        <th style="color: {{ meta.color }}; text-align: center;">{{ meta.emoji }}</th>
+        {% endfor %}
+        <th style="text-align: center;">Prom.</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for dim_score in synthesis.puntuaciones_consolidadas %}
+      <tr>
+        <td>{{ dim_score.dimension }}</td>
+        {% for key, ev in expert_evaluations.items() %}
+        {% set expert_dim = ev.puntuaciones|selectattr("dimension", "equalto", dim_score.dimension)|first %}
+        <td class="score-cell {{ 'score-high' if expert_dim.score >= 7 else ('score-mid' if expert_dim.score >= 5 else 'score-low') }}">
+          {{ expert_dim.score if expert_dim else '-' }}
+        </td>
+        {% endfor %}
+        <td class="score-cell" style="font-size: 1rem; {{ 'color: var(--c3);' if dim_score.score >= 7 else ('color: var(--c5);' if dim_score.score >= 5 else 'color: var(--c1);') }}">
+          {{ dim_score.score }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {# Recomendaciones priorizadas #}
+  <h3 style="margin-top: 2rem;">Recomendaciones Priorizadas</h3>
+
+  {% set alta = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Alta")|list %}
+  {% set media = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Media")|list %}
+  {% set baja = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Para considerar")|list %}
+
+  {% if alta %}
+  <div style="margin: 1rem 0;">
+    <div class="badge" style="background: var(--c1); color: #fff;">ALTA PRIORIDAD ({{ alta|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Unanimidad o mayoria fuerte</p>
+  </div>
+  {% for r in alta %}
+  <div class="rx-card rx-alta">
+    <p>{{ r.texto }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} expertos: {{ r.expertos|join(', ') }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if media %}
+  <div style="margin: 1.5rem 0 1rem;">
+    <div class="badge" style="background: var(--c5); color: var(--fg);">MEDIA PRIORIDAD ({{ media|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Mayoria de expertos</p>
+  </div>
+  {% for r in media %}
+  <div class="rx-card rx-media">
+    <p>{{ r.texto }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} expertos: {{ r.expertos|join(', ') }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if baja %}
+  <div style="margin: 1.5rem 0 1rem;">
+    <div class="badge" style="background: var(--c2); color: #fff;">PARA CONSIDERAR ({{ baja|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Propuestas individuales</p>
+  </div>
+  {% for r in baja %}
+  <div class="rx-card rx-baja">
+    <p>{{ r.texto }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} experto: {{ r.expertos|join(', ') }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+
+{# ── EXECUTIVE SUMMARY ── #}
+<div class="section">
+  <div class="section-num" style="background: var(--c6);">04</div>
+  <h2>Resumen Ejecutivo</h2>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+    <div class="takeaway">
+      <div class="takeaway-label">Fortalezas Principales</div>
+      <ul class="bullet-list">
+        {% for f in synthesis.fortalezas %}
+        <li>{{ f }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="takeaway">
+      <div class="takeaway-label">Areas Criticas</div>
+      <ul class="bullet-list">
+        {% for a in synthesis.areas_criticas %}
+        <li>{{ a }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  {# Score bars by dimension #}
+  <div class="takeaway">
+    <div class="takeaway-label">Scores por Dimension</div>
+    <div style="margin-top: 0.75rem;">
+      {% for p in synthesis.puntuaciones_consolidadas %}
+      <div class="dim-bar-row" style="margin: 0.5rem 0;">
+        <span style="font-family: var(--font-mono); font-size: 0.75rem; width: 200px;">{{ p.dimension }}</span>
+        <div style="flex: 1; height: 18px; background: #e0ddd5; border: 2px solid var(--fg); position: relative;">
+          <div style="height: 100%; width: {{ p.score * 10 }}%; background: {% if p.score >= 7 %}var(--c3){% elif p.score >= 5 %}var(--c5){% else %}var(--c1){% endif %};"></div>
+        </div>
+        <span class="mono" style="font-size: 1rem; font-weight: 700; width: 50px; text-align: right; color: {% if p.score >= 7 %}var(--c3){% elif p.score >= 5 %}var(--c5){% else %}var(--c1){% endif %};">{{ p.score }}/10</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  Evaluacion Delphi generada el {{ date }} &middot; Evaluador Curricular UPAEP
+</footer>
+
+<script>
+document.querySelectorAll('.collapsible-header').forEach(h => {
+  h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
+});
+</script>
+</body>
+</html>

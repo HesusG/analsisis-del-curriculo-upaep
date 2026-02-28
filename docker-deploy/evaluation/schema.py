@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 # ── Enums ──────────────────────────────────────────────────────────────
@@ -74,9 +74,14 @@ class Parte3PropositoObjetivo(BaseModel):
 
 
 class Parte4CompetenciasAprendizajes(BaseModel):
-    rubros_encontrados: list[str] = Field(default_factory=list)
+    rubros_encontrados: Optional[list[str]] = Field(default_factory=list)
     competencias: SubBloque
     aprendizajes_esperados: SubBloque
+
+    @field_validator("rubros_encontrados", mode="before")
+    @classmethod
+    def _coerce_rubros(cls, v):
+        return v if v is not None else []
 
 
 class Parte5Contenidos(BaseModel):
