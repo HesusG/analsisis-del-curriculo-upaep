@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transformando Workshops: De Ejercicios de Libro a Proyectos con Datos Reales e IA</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --accent: #e94560;
+            --accent-light: #ff6b81;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --border: #dfe6e9;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --code-bg: #2d3436;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.85;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Sections */
+        section {
+            padding: 3rem 0;
+        }
+
+        section + section {
+            border-top: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--primary);
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .card.highlight {
+            border-left: 4px solid var(--accent);
+        }
+
+        .card.success {
+            border-left: 4px solid var(--success);
+        }
+
+        /* Before/After */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 700px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .comparison .before {
+            border-left: 4px solid var(--warning);
+        }
+
+        .comparison .after {
+            border-left: 4px solid var(--success);
+        }
+
+        .comparison .card h3 {
+            margin-top: 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 0.5rem 0 1rem 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* Code */
+        code {
+            background: #edf2f7;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: #dfe6e9;
+            padding: 1.2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+        }
+
+        .code-block .comment { color: #636e72; }
+        .code-block .keyword { color: #e94560; }
+        .code-block .string { color: #00b894; }
+        .code-block .function { color: #fdcb6e; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* Pipeline diagram */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .pipeline .step {
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .pipeline .arrow {
+            color: var(--accent);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Review example */
+        .review-box {
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            margin: 0.75rem 0;
+            font-size: 0.95rem;
+        }
+
+        .review-box.pass {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .review-box.warn {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+
+        .review-box.fail {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .review-box strong {
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        /* Links */
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-light);
+        }
+
+        /* Blockquote */
+        blockquote {
+            border-left: 3px solid var(--accent);
+            padding: 0.5rem 1rem;
+            margin: 1rem 0;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+    <div class="container">
+        <div class="badge">CD2001B &mdash; Tecnol&oacute;gico de Monterrey</div>
+        <h1>Transformando Workshops:<br>De Ejercicios de Libro a Proyectos con Datos Reales e IA</h1>
+        <p class="subtitle">
+            C&oacute;mo redise&ntilde;amos las actividades evaluativas de un curso de diagn&oacute;stico
+            estad&iacute;stico para que los alumnos trabajen con datos del mundo real, programen
+            sus propios an&aacute;lisis y reciban retroalimentaci&oacute;n autom&aacute;tica asistida por IA.
+        </p>
+    </div>
+</div>
+
+<div class="container">
+
+<!-- 1. El Problema -->
+<section>
+    <h2>El punto de partida</h2>
+    <p>
+        El curso <strong>CD2001B &mdash; Diagn&oacute;stico para L&iacute;neas de Acci&oacute;n</strong> forma parte del
+        M&oacute;dulo 1 de An&aacute;lisis Estad&iacute;stico en el Tecnol&oacute;gico de Monterrey. Originalmente, las actividades
+        evaluativas consist&iacute;an en workshops basados en ejercicios de un libro de texto: los alumnos
+        respond&iacute;an preguntas te&oacute;ricas, resolv&iacute;an problemas con datos ficticios y entregaban un
+        documento escrito.
+    </p>
+    <p>
+        Funcionaba, pero ten&iacute;a limitaciones claras:
+    </p>
+
+    <div class="comparison">
+        <div class="card before">
+            <h3>Antes: Ejercicios de libro</h3>
+            <ul>
+                <li>Datos ficticios o pre-procesados</li>
+                <li>Resoluci&oacute;n a mano o en calculadora</li>
+                <li>Entrega en Word/PDF</li>
+                <li>Retroalimentaci&oacute;n manual (2-3 semanas)</li>
+                <li>Evaluaci&oacute;n subjetiva entre secciones</li>
+                <li>El alumno no aprende a programar</li>
+            </ul>
+        </div>
+        <div class="card after">
+            <h3>Ahora: Proyectos con datos reales + IA</h3>
+            <ul>
+                <li>Datasets reales (ej. consumo de alcohol en estudiantes portugueses)</li>
+                <li>An&aacute;lisis en Python (pandas, scipy, seaborn)</li>
+                <li>Entrega en Google Colab/Jupyter</li>
+                <li>Retroalimentaci&oacute;n autom&aacute;tica en horas</li>
+                <li>R&uacute;brica consistente aplicada por IA</li>
+                <li>El alumno programa, visualiza e interpreta</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- 2. El Nuevo Workshop -->
+<section>
+    <h2>Anatom&iacute;a del nuevo Workshop</h2>
+    <p>
+        Cada workshop es un <strong>notebook de Jupyter</strong> (Google Colab) donde el alumno
+        recibe la estructura completa: instrucciones, dataset precargado, celdas con
+        <code># TU C&Oacute;DIGO AQU&Iacute;</code> y preguntas de interpretaci&oacute;n. El alumno debe completar
+        el c&oacute;digo, ejecutar las celdas y redactar sus conclusiones en espa&ntilde;ol.
+    </p>
+
+    <h3>Workshop 1: An&aacute;lisis Estad&iacute;stico B&aacute;sico</h3>
+    <p>
+        El primer workshop utiliza el dataset <code>student-alcohol-consumption.csv</code> (649 estudiantes
+        portugueses, 33 variables) y eval&uacute;a tres competencias fundamentales:
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Parte</th>
+                <th>Competencia evaluada</th>
+                <th>Puntos</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Parte 1: An&aacute;lisis Descriptivo</td>
+                <td>Explorar datos, calcular medidas de tendencia central y dispersi&oacute;n, crear visualizaciones, interpretar resultados</td>
+                <td>40</td>
+            </tr>
+            <tr>
+                <td>Parte 2: Prueba t (1 muestra)</td>
+                <td>Formular hip&oacute;tesis, ejecutar prueba estad&iacute;stica, interpretar p-value en contexto</td>
+                <td>30</td>
+            </tr>
+            <tr>
+                <td>Parte 3: Prueba t (2 muestras)</td>
+                <td>Segmentar datos, comparar grupos, elaborar conclusiones con evidencia estad&iacute;stica</td>
+                <td>30</td>
+            </tr>
+            <tr>
+                <td>BONUS: Reflexi&oacute;n Final</td>
+                <td>An&aacute;lisis cr&iacute;tico del fen&oacute;meno estudiado y propuestas educativas</td>
+                <td>+10</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        El notebook incluye un checklist de autoverificaci&oacute;n antes de entregar:
+        celdas ejecutadas sin errores, todos los bloques <code># TU C&Oacute;DIGO AQU&Iacute;</code> completados,
+        gr&aacute;ficos con t&iacute;tulos y etiquetas, interpretaciones claras en espa&ntilde;ol.
+    </p>
+
+    <div class="card highlight">
+        <h3>Lo que el alumno realmente hace</h3>
+        <p>No es solo &ldquo;correr c&oacute;digo&rdquo;. En cada secci&oacute;n el alumno debe:</p>
+        <ol>
+            <li><strong>Programar</strong> el an&aacute;lisis (cargar datos, calcular estad&iacute;sticos, crear gr&aacute;ficos)</li>
+            <li><strong>Interpretar</strong> los resultados en contexto (&#191;qu&eacute; significa este p-value para la salud estudiantil?)</li>
+            <li><strong>Argumentar</strong> sus conclusiones con evidencia num&eacute;rica</li>
+            <li><strong>Reflexionar</strong> cr&iacute;ticamente sobre las implicaciones del fen&oacute;meno</li>
+        </ol>
+    </div>
+</section>
+
+<!-- 3. El Pipeline de Evaluaci&oacute;n -->
+<section>
+    <h2>Evaluaci&oacute;n automatizada con IA</h2>
+    <p>
+        La complejidad de estos workshops hace inviable la evaluaci&oacute;n manual tradicional:
+        cada notebook tiene c&oacute;digo, gr&aacute;ficos y texto libre. Para mantener la calidad y consistencia
+        sin sacrificar la profundidad, dise&ntilde;amos un pipeline de evaluaci&oacute;n asistido por IA.
+    </p>
+
+    <div class="pipeline">
+        <div class="step">Alumno entrega<br>.ipynb en Canvas</div>
+        <span class="arrow">&rarr;</span>
+        <div class="step">Script descarga<br>y convierte a HTML</div>
+        <span class="arrow">&rarr;</span>
+        <div class="step">IA revisa c&oacute;digo,<br>outputs y texto</div>
+        <span class="arrow">&rarr;</span>
+        <div class="step">Genera reporte<br>HTML con feedback</div>
+        <span class="arrow">&rarr;</span>
+        <div class="step">Profesor supervisa<br>y publica notas</div>
+    </div>
+
+    <h3>&#191;Qu&eacute; revisa la IA?</h3>
+    <p>El revisor autom&aacute;tico eval&uacute;a cada secci&oacute;n del notebook y genera comentarios inline
+       con tres niveles de retroalimentaci&oacute;n:</p>
+
+    <div class="review-box pass">
+        <strong>Comentario del revisor &mdash; &Eacute;xito &#10004;</strong>
+        &iexcl;Excelente trabajo! Ejecutaste correctamente <code>df.info()</code> y <code>df.isnull().sum()</code>
+        para explorar el dataset. Identificaste que no existen valores faltantes y mencionaste
+        la imputaci&oacute;n como estrategia v&aacute;lida.
+    </div>
+
+    <div class="review-box warn">
+        <strong>Comentario del revisor &mdash; Atenci&oacute;n &#9888;</strong>
+        Tu histograma es correcto pero le faltan t&iacute;tulos y etiquetas en los ejes.
+        A&ntilde;ade <code>plt.xlabel()</code>, <code>plt.ylabel()</code> y <code>plt.title()</code>
+        para que la visualizaci&oacute;n sea autoexplicativa.
+    </div>
+
+    <div class="review-box fail">
+        <strong>Comentario del revisor &mdash; A Resolver &#10071;</strong>
+        La prueba t requiere que formules expl&iacute;citamente H&#8320; y H&#8321; antes de ejecutar
+        <code>stats.ttest_1samp()</code>. Sin hip&oacute;tesis, el resultado carece de contexto estad&iacute;stico.
+    </div>
+
+    <h3>Principios del revisor</h3>
+    <ul>
+        <li>Reconoce el <strong>esfuerzo y razonamiento</strong>, no solo resultados perfectos</li>
+        <li>Distingue entre <strong>errores conceptuales graves</strong> y detalles menores de formato</li>
+        <li>Proporciona feedback <strong>espec&iacute;fico y accionable</strong> (qu&eacute; corregir, c&oacute;mo hacerlo)</li>
+        <li>Aplica los <strong>mismos criterios a todos los alumnos</strong> para garantizar equidad</li>
+        <li>Todos los comentarios son <strong>supervisados y validados por el profesor</strong></li>
+    </ul>
+</section>
+
+<!-- 4. Resultados -->
+<section>
+    <h2>Resultados del primer piloto</h2>
+    <p>
+        El Workshop 1 se aplic&oacute; en el semestre actual del curso CD2001B. Los resultados
+        muestran que los alumnos no solo pueden realizar an&aacute;lisis estad&iacute;sticos programando
+        en Python, sino que producen interpretaciones contextualizadas de calidad.
+    </p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="number">649</div>
+            <div class="label">registros en el dataset real</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">33</div>
+            <div class="label">variables analizadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">3</div>
+            <div class="label">competencias evaluadas por workshop</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">~2h</div>
+            <div class="label">tiempo de retroalimentaci&oacute;n (antes: 2-3 semanas)</div>
+        </div>
+    </div>
+
+    <h3>Ejemplo real: Workshop de un alumno</h3>
+    <p>
+        A continuaci&oacute;n se muestra un ejemplo del reporte de evaluaci&oacute;n generado para un alumno real.
+        El notebook revisado incluye c&oacute;digo ejecutado, gr&aacute;ficos generados y comentarios del revisor
+        inline en cada secci&oacute;n:
+    </p>
+
+    <div class="card success">
+        <p>
+            <strong>Ver ejemplo completo:</strong>
+            <a href="https://hesusg.github.io/diagnostico-lineas-accion-m1-grader/almaguergonz%C3%A1lezpatricio_LATE_385997_253484915_workshop1_Patricio%20AlmaguerA01286908-1_REVIEWED.html" target="_blank">
+                Workshop 1 &mdash; Patricio Almaguer (revisado)
+            </a>
+        </p>
+        <p style="color: var(--text-light); font-size: 0.9rem;">
+            Notebook completo con c&oacute;digo Python, visualizaciones, interpretaciones del alumno
+            y comentarios del revisor autom&aacute;tico en tres niveles (&Eacute;xito/Atenci&oacute;n/A Resolver).
+        </p>
+    </div>
+
+    <h3>&#191;Qu&eacute; observamos en los resultados?</h3>
+    <ul>
+        <li><strong>Los alumnos s&iacute; pueden programar an&aacute;lisis estad&iacute;sticos</strong>, incluso si nunca hab&iacute;an
+            programado en Python. La IA funciona como tutor en tiempo real durante el desarrollo.</li>
+        <li><strong>Las interpretaciones son m&aacute;s ricas</strong> cuando trabajan con datos reales.
+            Un alumno que calcula que la media de consumo de alcohol es 1.48/5 y reflexiona sobre
+            lo que eso implica para pol&iacute;ticas educativas produce aprendizaje m&aacute;s significativo que
+            uno que resuelve un ejercicio abstracto del libro.</li>
+        <li><strong>La retroalimentaci&oacute;n inmediata cambia la din&aacute;mica</strong>: los alumnos pueden
+            corregir y reenviar, convirtiendo la evaluaci&oacute;n en un ciclo formativo, no solo sumativo.</li>
+        <li><strong>La consistencia mejora</strong>: el mismo criterio se aplica a los 40+ alumnos,
+            eliminando la variabilidad que ocurre cuando un profesor eval&uacute;a el notebook 35
+            con menos atenci&oacute;n que el notebook 1.</li>
+    </ul>
+</section>
+
+<!-- 5. Por qu&eacute; funciona -->
+<section>
+    <h2>&#191;Por qu&eacute; funciona este enfoque?</h2>
+
+    <div class="card highlight">
+        <h3>1. Datos reales = motivaci&oacute;n real</h3>
+        <p>
+            Cuando un alumno analiza el consumo de alcohol en estudiantes portugueses reales,
+            no est&aacute; resolviendo un problema abstracto: est&aacute; investigando un fen&oacute;meno social
+            que le es cercano. Esto transforma el ejercicio t&eacute;cnico en una experiencia de
+            aprendizaje situada, donde la estad&iacute;stica es una herramienta para entender la realidad.
+        </p>
+    </div>
+
+    <div class="card highlight">
+        <h3>2. La IA como soporte, no como reemplazo</h3>
+        <p>
+            La IA cumple dos roles complementarios: durante el desarrollo del workshop, funciona
+            como <strong>tutor</strong> que ayuda al alumno a escribir c&oacute;digo y entender errores;
+            durante la evaluaci&oacute;n, funciona como <strong>primer revisor</strong> que aplica la r&uacute;brica
+            de forma consistente. En ambos casos, el profesor mantiene el control: dise&ntilde;a el
+            workshop, define la r&uacute;brica, supervisa los comentarios y asigna la nota final.
+        </p>
+    </div>
+
+    <div class="card highlight">
+        <h3>3. Programar eleva el nivel cognitivo</h3>
+        <p>
+            Resolver un ejercicio del libro requiere <em>aplicar</em> una f&oacute;rmula. Programar un
+            an&aacute;lisis estad&iacute;stico requiere <em>comprender</em> qu&eacute; hace cada funci&oacute;n, <em>evaluar</em>
+            si el resultado tiene sentido y <em>crear</em> visualizaciones que comuniquen los hallazgos.
+            Es un salto de los niveles bajos de la taxonom&iacute;a de Bloom (recordar, aplicar) a los
+            niveles altos (analizar, evaluar, crear).
+        </p>
+    </div>
+
+    <div class="card highlight">
+        <h3>4. Escalabilidad sin perder calidad</h3>
+        <p>
+            Un profesor puede tener 3 grupos de 40 alumnos. Evaluar 120 notebooks con c&oacute;digo,
+            gr&aacute;ficos y texto libre tomar&iacute;a semanas. El pipeline autom&aacute;tico genera la
+            retroalimentaci&oacute;n en horas, y el profesor invierte su tiempo en supervisar los
+            casos que lo necesitan, no en repetir los mismos comentarios 120 veces.
+        </p>
+    </div>
+</section>
+
+<!-- 6. Herramientas -->
+<section>
+    <h2>Stack tecnol&oacute;gico</h2>
+    <p>Todo el sistema se construye con herramientas accesibles y gratuitas:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Componente</th>
+                <th>Herramienta</th>
+                <th>Rol</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Entorno del alumno</td>
+                <td>Google Colab</td>
+                <td>Ejecutar notebooks sin instalar nada</td>
+            </tr>
+            <tr>
+                <td>Datos</td>
+                <td>GitHub (CSV p&uacute;blico)</td>
+                <td>Dataset accesible desde cualquier notebook</td>
+            </tr>
+            <tr>
+                <td>An&aacute;lisis</td>
+                <td>Python (pandas, scipy, seaborn)</td>
+                <td>C&aacute;lculos estad&iacute;sticos y visualizaci&oacute;n</td>
+            </tr>
+            <tr>
+                <td>Soporte al alumno</td>
+                <td>IA generativa (ChatGPT, Claude, etc.)</td>
+                <td>Tutor&iacute;a en tiempo real para c&oacute;digo y conceptos</td>
+            </tr>
+            <tr>
+                <td>Evaluaci&oacute;n</td>
+                <td>Pipeline Python + LLM</td>
+                <td>Revisi&oacute;n autom&aacute;tica del notebook completo</td>
+            </tr>
+            <tr>
+                <td>Publicaci&oacute;n de resultados</td>
+                <td>GitHub Pages</td>
+                <td>Reportes HTML accesibles para alumnos y profesores</td>
+            </tr>
+            <tr>
+                <td>Entrega</td>
+                <td>Canvas LMS</td>
+                <td>Subir link de Colab con permisos de lectura</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- 7. C&oacute;mo replicarlo -->
+<section>
+    <h2>&#191;C&oacute;mo replicar esto en tu curso?</h2>
+    <p>
+        Este modelo no es exclusivo de estad&iacute;stica. Cualquier curso que eval&uacute;e mediante
+        ejercicios escritos puede beneficiarse del mismo enfoque:
+    </p>
+    <ol>
+        <li><strong>Elige un dataset real</strong> relevante para tu disciplina
+            (Kaggle, datos.gob.mx, repositorios acad&eacute;micos).</li>
+        <li><strong>Dise&ntilde;a el notebook-plantilla</strong> con instrucciones claras, celdas de c&oacute;digo
+            por completar y preguntas de interpretaci&oacute;n.</li>
+        <li><strong>Define una r&uacute;brica expl&iacute;cita</strong> con criterios observables y puntajes.</li>
+        <li><strong>Permite el uso de IA como herramienta de aprendizaje</strong>, no lo proh&iacute;bas:
+            el alumno debe demostrar que <em>entiende</em> lo que la IA produce.</li>
+        <li><strong>Automatiza la evaluaci&oacute;n</strong> con un pipeline que aplique tu r&uacute;brica
+            de forma consistente.</li>
+        <li><strong>Supervisa y ajusta</strong>: la IA es el primer filtro, t&uacute; eres la autoridad final.</li>
+    </ol>
+
+    <blockquote>
+        La meta no es que la IA reemplace al profesor, sino que le devuelva el tiempo
+        para hacer lo que la IA no puede: conectar con los alumnos, inspirar curiosidad
+        y tomar decisiones pedag&oacute;gicas informadas.
+    </blockquote>
+</section>
+
+<!-- 8. Recursos -->
+<section>
+    <h2>Recursos</h2>
+    <ul>
+        <li>
+            <a href="https://github.com/HesusG/diagnostico-lineas-accion/blob/main/Semana1/ejercicios/workshop1_plantilla.ipynb" target="_blank">
+                Workshop 1: Notebook plantilla (GitHub)
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/HesusG/diagnostico-lineas-accion/blob/main/Semana1/datos/student-alcohol-consumption.csv" target="_blank">
+                Dataset: Student Alcohol Consumption (CSV)
+            </a>
+        </li>
+        <li>
+            <a href="https://hesusg.github.io/diagnostico-lineas-accion-m1-grader/almaguergonz%C3%A1lezpatricio_LATE_385997_253484915_workshop1_Patricio%20AlmaguerA01286908-1_REVIEWED.html" target="_blank">
+                Ejemplo: Notebook revisado por IA (HTML)
+            </a>
+        </li>
+    </ul>
+</section>
+
+</div>
+
+<footer>
+    <p>
+        Hesus Garc&iacute;a Cobos &mdash; Tecnol&oacute;gico de Monterrey
+    </p>
+    <p style="margin-top: 0.5rem;">
+        <a href="https://github.com/HesusG">GitHub</a>
+    </p>
+</footer>
+
+</body>
+</html>
