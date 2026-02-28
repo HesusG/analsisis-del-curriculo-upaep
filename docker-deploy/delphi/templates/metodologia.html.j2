@@ -1,0 +1,104 @@
+<style>
+.met-wrap { font-family: 'DM Sans', 'Segoe UI', sans-serif; color: #1a1a1a; line-height: 1.7; max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+.met-wrap h1, .met-wrap h2, .met-wrap h3 { font-family: 'Syne', 'Segoe UI', sans-serif; font-weight: 800; line-height: 1.2; }
+.met-wrap h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+.met-wrap h2 { font-size: 1.5rem; margin: 2rem 0 1rem; border-bottom: 3px solid #1a1a1a; padding-bottom: 0.5rem; }
+.met-badge { font-family: monospace; font-size: 0.75rem; font-weight: 700; display: inline-block; padding: 0.25rem 0.75rem; border: 3px solid #1a1a1a; background: #FFD54F; margin-bottom: 1rem; }
+.met-subtitle { font-size: 0.9rem; opacity: 0.7; margin-bottom: 1.5rem; }
+.met-collapse { border: 3px solid #1a1a1a; margin: 0.75rem 0; }
+.met-collapse-header { padding: 0.75rem 1rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; background: #F5F0E8; }
+.met-collapse-header::after { content: '+'; font-family: monospace; font-size: 1.2rem; transition: transform 0.3s; }
+.met-collapse.open .met-collapse-header::after { transform: rotate(45deg); }
+.met-collapse-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; padding: 0 1rem; }
+.met-collapse.open .met-collapse-body { max-height: 50000px; padding: 1rem; }
+.met-content { font-size: 0.9rem; }
+.met-content pre { background: #1a1a1a; color: #FFD54F; padding: 1rem; overflow-x: auto; font-family: monospace; font-size: 0.8rem; margin: 1rem 0; }
+.met-content code { font-family: monospace; font-size: 0.8rem; }
+.met-content table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.met-content th, .met-content td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid #ccc; font-size: 0.85rem; }
+.met-content th { font-family: monospace; font-size: 0.72rem; text-transform: uppercase; background: #1a1a1a; color: #F5F0E8; }
+.met-content ul, .met-content ol { padding-left: 1.5rem; }
+.met-content li { margin-bottom: 0.3rem; }
+.met-flow { border: 3px solid #1a1a1a; box-shadow: 6px 6px 0 #1a1a1a; padding: 1.5rem; margin: 1.5rem 0; background: #F5F0E8; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; line-height: 1.8; }
+.met-card { border: 3px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; padding: 1.25rem; margin: 1rem 0; background: #F5F0E8; }
+.met-card p { margin: 0.3rem 0; font-size: 0.9rem; }
+.met-label { font-family: monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.3rem; opacity: 0.7; }
+</style>
+
+<div class="met-wrap">
+  <div class="met-badge">METODOLOGIA</div>
+  <h1>Como Funciona el Evaluador</h1>
+  <p class="met-subtitle">
+    Transparencia total: los prompts, el modelo y el flujo de evaluacion.
+  </p>
+
+  <h2>Flujo de Evaluacion</h2>
+  <div class="met-flow">
+PDF subido por el usuario
+    |
+    v
+Extraccion de texto (pypdf)
+    |
+    v
++-------+-------+-------+
+|       |       |       |
+v       v       v       |
+Pedagogo  Profesor  Tecnico
+(GPT-4o)  (GPT-4o)  (GPT-4o)
+temp=0.2  temp=0.2  temp=0.2
+|       |       |       |
+v       v       v       |
+JSON    JSON    JSON    |
++-------+-------+-------+
+    |
+    v
+Sintesis programatica (Python)
+    - Consensos / Disensos
+    - Recalculo de % cumplimiento
+    - Prescripciones priorizadas
+    |
+    v
+Reporte HTML neobrutalista (Jinja2)
+  </div>
+
+  <h2>Modelo y Parametros</h2>
+  <div class="met-card">
+    <div class="met-label">Configuracion del LLM</div>
+    <p><strong>Modelo:</strong> GPT-4o (OpenAI)</p>
+    <p><strong>Temperatura:</strong> 0.2 (alta consistencia, baja creatividad)</p>
+    <p><strong>Formato de respuesta:</strong> JSON Object (structured output)</p>
+    <p><strong>3 agentes en paralelo</strong>, cada uno con su prompt de sistema + el esquema de evaluacion</p>
+  </div>
+
+  <div class="met-card">
+    <div class="met-label">Post-procesamiento</div>
+    <p>El porcentaje de cumplimiento se <strong>recalcula programaticamente</strong> (no se confia en el calculo del LLM).</p>
+    <p>La identidad del evaluador se sobreescribe con <code>GPT-4o (Rol)</code> para transparencia.</p>
+    <p>Las prescripciones se agrupan por <strong>nivel de consenso</strong> entre los 3 expertos.</p>
+  </div>
+
+  <h2>Prompts de los Evaluadores</h2>
+
+  {% for agent_name, prompt_html in evaluator_prompts %}
+  <div class="met-collapse">
+    <div class="met-collapse-header">{{ agent_name }}</div>
+    <div class="met-collapse-body met-content">
+      {{ prompt_html | safe }}
+    </div>
+  </div>
+  {% endfor %}
+
+  <h2>Esquema de Evaluacion (rules.md)</h2>
+  <div class="met-collapse">
+    <div class="met-collapse-header">Esquema JSON y Reglas de Llenado</div>
+    <div class="met-collapse-body met-content">
+      {{ rules_html | safe }}
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.met-collapse-header').forEach(h => {
+  h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
+});
+</script>

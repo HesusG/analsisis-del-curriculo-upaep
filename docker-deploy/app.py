@@ -1,4 +1,4 @@
-"""Gradio entry point — Evaluador Curricular + RAG Chatbot."""
+"""Gradio entry point — Evaluador Curricular + RAG Chatbot + Delphi tabs."""
 
 from __future__ import annotations
 
@@ -7,7 +7,8 @@ from pathlib import Path
 
 import gradio as gr
 
-from evaluation.pipeline import run_evaluation
+from config import LLM_MODEL
+from evaluation.pipeline import run_evaluation_with_ingestion
 
 # ── Lazy RAG chain (only built on first use) ──────────────────────────
 _rag_chain = None
@@ -20,6 +21,31 @@ def _get_rag_chain():
         from rag.chain import build_rag_chain
         _rag_chain = build_rag_chain()
     return _rag_chain
+
+
+def _invalidate_rag_chain():
+    """Force RAG chain rebuild on next query so new docs are picked up."""
+    global _rag_chain
+    _rag_chain = None
+
+
+# ── Pre-render Delphi tabs at startup (zero runtime cost) ────────────
+def _build_delphi_html() -> tuple[str, str, str]:
+    """Load Delphi data and render all 3 static tabs."""
+    try:
+        from delphi import load_delphi_data, render_delphi_summary, render_delphi_detail, render_metodologia
+        data = load_delphi_data()
+        return (
+            render_delphi_summary(data),
+            render_delphi_detail(data),
+            render_metodologia(data),
+        )
+    except Exception as e:
+        error_html = f"<p style='color:red;'>Error cargando datos Delphi: {e}</p>"
+        return error_html, error_html, error_html
+
+
+_delphi_summary_html, _delphi_detail_html, _metodologia_html = _build_delphi_html()
 
 
 # ── Password gate ─────────────────────────────────────────────────────
@@ -48,8 +74,10 @@ async def run_evaluation_ui(pdf_filepath: str, progress=gr.Progress()):
     progress(0.1, desc="Extrayendo texto del PDF...")
 
     try:
-        progress(0.2, desc="Evaluando con 3 expertos en paralelo...")
-        synthesis, html_path = await run_evaluation(pdf_filepath)
+        progress(0.2, desc="Evaluando con 3 expertos e indexando documento...")
+        synthesis, html_path, ingest_result = await run_evaluation_with_ingestion(
+            pdf_filepath
+        )
 
         progress(0.9, desc="Generando reporte...")
 
@@ -57,6 +85,7 @@ async def run_evaluation_ui(pdf_filepath: str, progress=gr.Progress()):
         lines = [
             "## Evaluacion completada",
             "",
+            f"**Modelo:** {LLM_MODEL}",
             f"**Cumplimiento promedio:** {synthesis.average_compliance:.1f}%",
             f"**Nivel:** {synthesis.nivel_general.value}",
             "",
@@ -75,6 +104,22 @@ async def run_evaluation_ui(pdf_filepath: str, progress=gr.Progress()):
         lines.extend(["", "### Areas criticas:"])
         for a in synthesis.critical_areas[:5]:
             lines.append(f"- {a}")
+
+        # Ingestion status
+        lines.append("")
+        if ingest_result.error:
+            lines.append(
+                f"*La indexacion fallo ({ingest_result.error}). "
+                "La evaluacion se completo correctamente.*"
+            )
+        elif ingest_result.skipped_duplicate:
+            lines.append("*Documento ya indexado previamente.*")
+        elif ingest_result.success:
+            _invalidate_rag_chain()
+            lines.append(
+                f"*Documento indexado ({ingest_result.chunks_added} fragmentos). "
+                "Ya puedes consultarlo en 'Consultar Documentos'.*"
+            )
 
         progress(1.0, desc="Listo.")
         return "\n".join(lines), html_path
@@ -146,7 +191,7 @@ with gr.Blocks(theme=theme, title="Evaluador Curricular UPAEP") as demo:
     with gr.Column(visible=False) as main_col:
         gr.Markdown("# Evaluador Curricular UPAEP")
         gr.Markdown(
-            "Evalua planeaciones didacticas con 3 expertos IA "
+            f"Evalua planeaciones didacticas con 3 expertos IA ({LLM_MODEL}) "
             "o consulta los documentos curriculares."
         )
 
@@ -190,6 +235,15 @@ with gr.Blocks(theme=theme, title="Evaluador Curricular UPAEP") as demo:
                 inputs=[user_input, chatbot, chain_state],
                 outputs=[chatbot, chain_state, user_input],
             )
+
+        with gr.Tab("Delphi: Resumen"):
+            gr.HTML(_delphi_summary_html)
+
+        with gr.Tab("Delphi: Detalle"):
+            gr.HTML(_delphi_detail_html)
+
+        with gr.Tab("Metodologia"):
+            gr.HTML(_metodologia_html)
 
     # ── Wire login ──
     login_btn.click(

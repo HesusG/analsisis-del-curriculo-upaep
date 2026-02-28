@@ -16,16 +16,43 @@ class CriterionResult:
 
 
 @dataclass
+class Prescription:
+    """A structured recommendation with source tracking."""
+    text: str
+    source_agents: list[str] = field(default_factory=list)
+    source_part: str = ""
+
+    @property
+    def consensus_count(self) -> int:
+        return len(self.source_agents)
+
+    @property
+    def priority(self) -> str:
+        n = self.consensus_count
+        if n >= 3:
+            return "Alta"
+        elif n >= 2:
+            return "Media"
+        return "Individual"
+
+
+@dataclass
 class SynthesisResult:
     """Output of the synthesis: consensus, dissent, and averages."""
     average_compliance: float
     nivel_general: NivelGeneral
     consensus: list[CriterionResult]  # all agree
     dissent: list[CriterionResult]    # disagree
-    prescriptions: list[str]          # deduplicated
+    prescriptions: list[str]          # deduplicated (kept for backward compat)
     strengths: list[str]              # deduplicated
     critical_areas: list[str]         # deduplicated
     per_agent: dict[str, FullEvaluation]
+    structured_prescriptions: list[Prescription] = field(default_factory=list)
+
+
+def _normalize(text: str) -> str:
+    """Normalize text for fuzzy deduplication."""
+    return " ".join(text.lower().strip().split())
 
 
 def synthesize(evaluations: dict[str, FullEvaluation]) -> SynthesisResult:
@@ -90,16 +117,39 @@ def synthesize(evaluations: dict[str, FullEvaluation]) -> SynthesisResult:
     else:
         nivel = NivelGeneral.REQUIERE_ATENCION
 
-    # ── Deduplicate prescriptions ──
-    all_prescriptions: list[str] = []
-    for ev in evaluations.values():
-        for part_attr in ["parte_3_proposito_objetivo", "parte_6_secuencia", "parte_9_recursos"]:
+    # ── Build structured prescriptions with source tracking ──
+    prescription_map: dict[str, Prescription] = {}
+
+    for agent_key, ev in evaluations.items():
+        # Recommendations from parts 3, 6, 9
+        for part_attr, part_label in [
+            ("parte_3_proposito_objetivo", "Propósito/Objetivo"),
+            ("parte_6_secuencia", "Secuencia Didáctica"),
+            ("parte_9_recursos", "Recursos"),
+        ]:
             rec = getattr(ev, part_attr).recomendaciones
-            if rec:
-                all_prescriptions.append(rec)
+            if rec and rec.strip():
+                norm = _normalize(rec)
+                if norm not in prescription_map:
+                    prescription_map[norm] = Prescription(text=rec, source_part=part_label)
+                if agent_key not in prescription_map[norm].source_agents:
+                    prescription_map[norm].source_agents.append(agent_key)
+
+        # Actions from improvement proposal
         for fase in ev.parte_11_propuesta_mejora.fases:
-            all_prescriptions.extend(fase.acciones)
-    prescriptions = list(dict.fromkeys(all_prescriptions))  # preserve order, deduplicate
+            for accion in fase.acciones:
+                if accion and accion.strip():
+                    norm = _normalize(accion)
+                    if norm not in prescription_map:
+                        prescription_map[norm] = Prescription(text=accion, source_part=fase.nombre)
+                    if agent_key not in prescription_map[norm].source_agents:
+                        prescription_map[norm].source_agents.append(agent_key)
+
+    # Sort by consensus count (highest first)
+    structured = sorted(prescription_map.values(), key=lambda p: (-p.consensus_count, p.text))
+
+    # Flat prescriptions for backward compatibility
+    prescriptions = [p.text for p in structured]
 
     # ── Deduplicate strengths and critical areas ──
     all_strengths: list[str] = []
@@ -119,4 +169,5 @@ def synthesize(evaluations: dict[str, FullEvaluation]) -> SynthesisResult:
         strengths=strengths,
         critical_areas=critical_areas,
         per_agent=evaluations,
+        structured_prescriptions=structured,
     )

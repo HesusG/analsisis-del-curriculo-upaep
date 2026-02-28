@@ -190,44 +190,44 @@ _[Indicar si se adjunta en este documento o por separado]_
 ```json
 {
   "metadata": {
-    "evaluador": "string",
-    "institucion": "string",
-    "responsable_planeacion": "string",
+    "evaluador": "[Tu nombre de rol, ej. Pedagogo, Profesor, Técnico]",
+    "institucion": "[Nombre de la institución encontrado en la planeación]",
+    "responsable_planeacion": "[Nombre del docente o autor de la planeación]",
     "fecha_evaluacion": "YYYY-MM-DD"
   },
 
   "parte_1_contexto": {
     "diagnostico_institucion": {
-      "necesidades": "string",
-      "modelo_ensenanza": "string",
-      "filosofia": "string"
+      "necesidades": "[Descripción de las necesidades identificadas en la planeación]",
+      "modelo_ensenanza": "[Modelo de enseñanza declarado o inferido]",
+      "filosofia": "[Filosofía institucional declarada o inferida]"
     },
     "diagnostico_estudiantes": {
-      "numero_estudiantes": "string",
-      "grupos": "string",
-      "niveles_modalidades": "string"
+      "numero_estudiantes": "[Cantidad o rango mencionado]",
+      "grupos": "[Grupos identificados]",
+      "niveles_modalidades": "[Niveles y modalidades detectados]"
     },
-    "descripcion_general": "string"
+    "descripcion_general": "[Párrafo de síntesis del contexto institucional y estudiantil]"
   },
 
   "parte_2_datos_presentacion": {
     "criterios": [
-      { "criterio": "Nombre de la institución", "cumple": true, "observacion": "string" },
-      { "criterio": "Año lectivo", "cumple": false, "observacion": "string" },
-      { "criterio": "Responsable de la asignatura", "cumple": true, "observacion": "string" },
-      { "criterio": "Nombre de asignatura, grado, grupo y clave", "cumple": true, "observacion": "string" },
-      { "criterio": "Otros datos de presentación", "cumple": false, "observacion": "string" }
+      { "criterio": "Nombre de la institución", "cumple": true, "observacion": "[Qué institución se menciona y dónde]", "evidencia": "[Fragmento textual del documento]" },
+      { "criterio": "Año lectivo", "cumple": false, "observacion": "[Indicar si falta o es incompleto]", "evidencia": "[Fragmento textual o vacío si no existe]" },
+      { "criterio": "Responsable de la asignatura", "cumple": true, "observacion": "[Nombre encontrado y ubicación]", "evidencia": "[Fragmento textual del documento]" },
+      { "criterio": "Nombre de asignatura, grado, grupo y clave", "cumple": true, "observacion": "[Datos encontrados]", "evidencia": "[Fragmento textual del documento]" },
+      { "criterio": "Otros datos de presentación", "cumple": false, "observacion": "[Qué datos adicionales hay o faltan]", "evidencia": "[Fragmento textual o vacío si no existe]" }
     ]
   },
 
   "parte_3_proposito_objetivo": {
     "criterios": [
-      { "criterio": "Redacción: qué, cómo y para qué", "cumple": true, "observacion": "string" },
-      { "criterio": "Claro y preciso en lo que pretende lograr", "cumple": true, "observacion": "string" },
-      { "criterio": "Alcanzable en el tiempo del curso", "cumple": false, "observacion": "string" },
-      { "criterio": "Observable y evaluable", "cumple": true, "observacion": "string" }
+      { "criterio": "Redacción: qué, cómo y para qué", "cumple": true, "observacion": "[Análisis de la estructura del propósito]", "evidencia": "[Cita textual del propósito]" },
+      { "criterio": "Claro y preciso en lo que pretende lograr", "cumple": true, "observacion": "[Valoración de claridad]", "evidencia": "[Fragmento relevante]" },
+      { "criterio": "Alcanzable en el tiempo del curso", "cumple": false, "observacion": "[Por qué sí o no es alcanzable]", "evidencia": "[Fragmento sobre temporalidad]" },
+      { "criterio": "Observable y evaluable", "cumple": true, "observacion": "[Análisis de observabilidad]", "evidencia": "[Fragmento con verbos/indicadores]" }
     ],
-    "recomendaciones": "string"
+    "recomendaciones": "[Recomendaciones concretas para mejorar el propósito]"
   },
 
   "parte_4_competencias_aprendizajes": {
@@ -235,89 +235,89 @@ _[Indicar si se adjunta en este documento o por separado]_
     "competencias": {
       "aplica": true,
       "criterios": [
-        { "criterio": "Estructura: verbo de desempeño + contenido + finalidad + condición", "cumple": true, "observacion": "string" },
-        { "criterio": "Clara y concisa", "cumple": false, "observacion": "string" },
-        { "criterio": "Observable y evaluable", "cumple": true, "observacion": "string" }
+        { "criterio": "Estructura: verbo de desempeño + contenido + finalidad + condición", "cumple": true, "observacion": "[Análisis de la estructura]", "evidencia": "[Cita textual de la competencia]" },
+        { "criterio": "Clara y concisa", "cumple": false, "observacion": "[Qué le falta a la redacción]", "evidencia": "[Fragmento problemático]" },
+        { "criterio": "Observable y evaluable", "cumple": true, "observacion": "[Análisis de observabilidad]", "evidencia": "[Fragmento con verbos usados]" }
       ]
     },
     "aprendizajes_esperados": {
       "aplica": true,
       "criterios": [
-        { "criterio": "Claridad sobre lo que se espera del estudiante", "cumple": true, "observacion": "string" },
-        { "criterio": "Favorece la autonomía", "cumple": false, "observacion": "string" },
-        { "criterio": "Expresa conocimientos, habilidades y/o actitudes", "cumple": true, "observacion": "string" },
-        { "criterio": "Precisión en el verbo", "cumple": true, "observacion": "string" },
-        { "criterio": "Relevante, claro y evaluable", "cumple": true, "observacion": "string" }
+        { "criterio": "Claridad sobre lo que se espera del estudiante", "cumple": true, "observacion": "[Valoración de claridad]", "evidencia": "[Cita textual del aprendizaje]" },
+        { "criterio": "Favorece la autonomía", "cumple": false, "observacion": "[Por qué sí o no favorece la autonomía]", "evidencia": "[Fragmento relevante]" },
+        { "criterio": "Expresa conocimientos, habilidades y/o actitudes", "cumple": true, "observacion": "[Qué tipo de saberes expresa]", "evidencia": "[Fragmento textual]" },
+        { "criterio": "Precisión en el verbo", "cumple": true, "observacion": "[Análisis del verbo usado]", "evidencia": "[Verbo y contexto citados]" },
+        { "criterio": "Relevante, claro y evaluable", "cumple": true, "observacion": "[Valoración integral]", "evidencia": "[Fragmento del aprendizaje esperado]" }
       ]
     }
   },
 
   "parte_5_contenidos": {
-    "descripcion_general": "string",
+    "descripcion_general": "[Descripción del equilibrio temático, tipo de contenido predominante y orden lógico]",
     "tipo_contenido_predominante": "Conceptual",
     "criterios": [
-      { "criterio": "Relación con la asignatura", "cumple": true, "observacion": "string" },
-      { "criterio": "Aportan al logro del propósito", "cumple": true, "observacion": "string" },
-      { "criterio": "Favorecen teoría y práctica", "cumple": false, "observacion": "string" },
-      { "criterio": "Adecuados al nivel de los estudiantes", "cumple": true, "observacion": "string" }
+      { "criterio": "Relación con la asignatura", "cumple": true, "observacion": "[Análisis de pertinencia]", "evidencia": "[Fragmento de contenidos y su relación]" },
+      { "criterio": "Aportan al logro del propósito", "cumple": true, "observacion": "[Conexión contenido-propósito]", "evidencia": "[Fragmento relevante]" },
+      { "criterio": "Favorecen teoría y práctica", "cumple": false, "observacion": "[Análisis del balance teórico-práctico]", "evidencia": "[Fragmento que muestre el desequilibrio]" },
+      { "criterio": "Adecuados al nivel de los estudiantes", "cumple": true, "observacion": "[Valoración de adecuación]", "evidencia": "[Fragmento de contenido analizado]" }
     ]
   },
 
   "parte_6_secuencia": {
-    "descripcion_general": "string",
+    "descripcion_general": "[Descripción de la secuencia didáctica, claridad de instrucciones y retroalimentación]",
     "fases_didacticas": {
       "inicio": true,
       "procesamiento": true,
       "reforzamiento": false,
       "sistematizacion_cierre": true
     },
-    "recomendaciones": "string"
+    "recomendaciones": "[Recomendaciones para mejorar la secuencia didáctica]"
   },
 
   "parte_7_metodologia": {
-    "descripcion_general": "string",
+    "descripcion_general": "[Descripción de las estrategias de enseñanza-aprendizaje y su coherencia]",
     "criterios": [
-      { "criterio": "Estrategias de enseñanza especifican rol del docente", "cumple": true, "observacion": "string" },
-      { "criterio": "Estrategias de aprendizaje especifican rol del estudiante", "cumple": true, "observacion": "string" },
-      { "criterio": "Estrategias claras", "cumple": false, "observacion": "string" },
-      { "criterio": "Adecuadas a necesidades, ritmos y estilos de aprendizaje", "cumple": true, "observacion": "string" },
-      { "criterio": "Innovadoras y no repetitivas", "cumple": false, "observacion": "string" },
-      { "criterio": "Seleccionadas en función del estudiante, contenido y aprendizaje esperado", "cumple": true, "observacion": "string" }
+      { "criterio": "Estrategias de enseñanza especifican rol del docente", "cumple": true, "observacion": "[Qué hace el docente según la planeación]", "evidencia": "[Fragmento sobre rol docente]" },
+      { "criterio": "Estrategias de aprendizaje especifican rol del estudiante", "cumple": true, "observacion": "[Qué hace el estudiante según la planeación]", "evidencia": "[Fragmento sobre rol estudiantil]" },
+      { "criterio": "Estrategias claras", "cumple": false, "observacion": "[Qué falta para que sean claras]", "evidencia": "[Fragmento ambiguo o confuso]" },
+      { "criterio": "Adecuadas a necesidades, ritmos y estilos de aprendizaje", "cumple": true, "observacion": "[Análisis de adecuación]", "evidencia": "[Fragmento sobre diferenciación]" },
+      { "criterio": "Innovadoras y no repetitivas", "cumple": false, "observacion": "[Qué estrategias se repiten o son convencionales]", "evidencia": "[Fragmento que muestre repetición]" },
+      { "criterio": "Seleccionadas en función del estudiante, contenido y aprendizaje esperado", "cumple": true, "observacion": "[Análisis de coherencia]", "evidencia": "[Fragmento de la estrategia alineada]" }
     ]
   },
 
   "parte_8_evaluacion": {
-    "descripcion_general": "string",
+    "descripcion_general": "[Descripción de los tipos de evaluación presentes y su coherencia]",
     "tipos_evaluacion": {
       "diagnostica": true,
       "formativa": false,
       "sumativa": true
     },
     "criterios": [
-      { "criterio": "Coherente con las estrategias de enseñanza-aprendizaje", "cumple": true, "observacion": "string" },
-      { "criterio": "Ponderación equilibrada (no solo memorística, también procedimental)", "cumple": false, "observacion": "string" }
+      { "criterio": "Coherente con las estrategias de enseñanza-aprendizaje", "cumple": true, "observacion": "[Análisis de coherencia evaluación-estrategia]", "evidencia": "[Fragmento sobre evaluación]" },
+      { "criterio": "Ponderación equilibrada (no solo memorística, también procedimental)", "cumple": false, "observacion": "[Análisis del balance de ponderaciones]", "evidencia": "[Fragmento con porcentajes o ponderaciones]" }
     ]
   },
 
   "parte_9_recursos": {
-    "descripcion_general": "string",
+    "descripcion_general": "[Descripción de los recursos contemplados y su adecuación]",
     "tipo_recursos": "Aula + digitales",
-    "recomendaciones": "string"
+    "recomendaciones": "[Recomendaciones sobre recursos faltantes o mejorables]"
   },
 
   "parte_10_conclusiones": {
-    "areas_oportunidad": ["string", "string"],
-    "recomendaciones_redaccion": "string",
-    "recomendaciones_innovacion": "string",
-    "herramientas_digitales_sugeridas": ["string", "string"]
+    "areas_oportunidad": ["[Área de oportunidad específica 1]", "[Área de oportunidad específica 2]"],
+    "recomendaciones_redaccion": "[Recomendaciones concretas sobre redacción del documento]",
+    "recomendaciones_innovacion": "[Recomendaciones sobre innovación pedagógica y tecnológica]",
+    "herramientas_digitales_sugeridas": ["[Herramienta 1 con justificación breve]", "[Herramienta 2 con justificación breve]"]
   },
 
   "parte_11_propuesta_mejora": {
     "fases": [
       {
-        "nombre": "string",
-        "descripcion": "string",
-        "acciones": ["string", "string"]
+        "nombre": "[Nombre de la fase de mejora]",
+        "descripcion": "[Descripción detallada de qué se busca mejorar y por qué]",
+        "acciones": ["[Acción concreta 1]", "[Acción concreta 2]"]
       }
     ]
   },
@@ -327,13 +327,17 @@ _[Indicar si se adjunta en este documento o por separado]_
     "criterios_no_cumplidos": 0,
     "porcentaje_cumplimiento": 0.0,
     "nivel_general": "Satisfactorio",
-    "fortalezas_principales": ["string", "string"],
-    "areas_criticas": ["string", "string"]
+    "fortalezas_principales": ["[Fortaleza específica 1]", "[Fortaleza específica 2]"],
+    "areas_criticas": ["[Área crítica específica 1]", "[Área crítica específica 2]"]
   }
 }
 ```
 
 ### Reglas de llenado
+
+**REGLA FUNDAMENTAL:** Los valores entre corchetes `[...]` en el esquema anterior son INSTRUCCIONES para ti. Debes reemplazarlos con tu análisis real basado en el documento evaluado. **NUNCA** uses la palabra literal `"string"` como valor de ningún campo.
+
+**Evidencia:** Cada criterio incluye un campo `"evidencia"` donde DEBES colocar un fragmento TEXTUAL del documento fuente entre comillas. Si el criterio no se cumple porque el elemento no existe en el documento, usa `""` (cadena vacía).
 
 **Booleanos:** `cumple` siempre es `true` o `false`, nunca texto como `"Sí"` o `"No"`.
 

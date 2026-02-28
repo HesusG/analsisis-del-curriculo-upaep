@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from agents import ALL_AGENTS
 from agents.synthesizer import SynthesisResult
-from config import OUTPUT_DIR
+from config import LLM_MODEL, OUTPUT_DIR
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
@@ -26,6 +26,7 @@ def generate_report(synthesis: SynthesisResult, pdf_name: str = "planeacion") ->
         pdf_name=pdf_name,
         synthesis=synthesis,
         agents=ALL_AGENTS,
+        llm_model=LLM_MODEL,
         date=date.today().isoformat(),
     )
 

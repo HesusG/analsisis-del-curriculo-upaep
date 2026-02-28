@@ -22,6 +22,7 @@ class Criterio(BaseModel):
     criterio: str
     cumple: bool
     observacion: str = ""
+    evidencia: str = ""  # fragmento citado del documento fuente
 
 
 class SubBloque(BaseModel):
@@ -73,7 +74,7 @@ class Parte3PropositoObjetivo(BaseModel):
 
 
 class Parte4CompetenciasAprendizajes(BaseModel):
-    rubros_encontrados: list[str]
+    rubros_encontrados: list[str] = Field(default_factory=list)
     competencias: SubBloque
     aprendizajes_esperados: SubBloque
 
@@ -116,7 +117,7 @@ class Parte8Evaluacion(BaseModel):
 
 class Parte9Recursos(BaseModel):
     descripcion_general: str
-    tipo_recursos: str
+    tipo_recursos: str = ""
     recomendaciones: str = ""
 
 

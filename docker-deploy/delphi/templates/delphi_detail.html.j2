@@ -1,0 +1,98 @@
+<style>
+.dd-wrap { font-family: 'DM Sans', 'Segoe UI', sans-serif; color: #1a1a1a; line-height: 1.7; max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+.dd-wrap h1, .dd-wrap h2, .dd-wrap h3 { font-family: 'Syne', 'Segoe UI', sans-serif; font-weight: 800; line-height: 1.2; }
+.dd-wrap h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+.dd-wrap h2 { font-size: 1.5rem; margin: 2rem 0 1rem; border-bottom: 3px solid #1a1a1a; padding-bottom: 0.5rem; }
+.dd-badge { font-family: monospace; font-size: 0.75rem; font-weight: 700; display: inline-block; padding: 0.25rem 0.75rem; border: 3px solid #1a1a1a; background: #FFD54F; margin-bottom: 1rem; }
+.dd-collapse { border: 3px solid #1a1a1a; margin: 0.75rem 0; }
+.dd-collapse-header { padding: 0.75rem 1rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; background: #F5F0E8; }
+.dd-collapse-header::after { content: '+'; font-family: monospace; font-size: 1.2rem; transition: transform 0.3s; }
+.dd-collapse.open .dd-collapse-header::after { transform: rotate(45deg); }
+.dd-collapse-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; padding: 0 1rem; }
+.dd-collapse.open .dd-collapse-body { max-height: 50000px; padding: 1rem; }
+.dd-content table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.dd-content th, .dd-content td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid #ccc; font-size: 0.85rem; }
+.dd-content th { font-family: monospace; font-size: 0.72rem; text-transform: uppercase; background: #1a1a1a; color: #F5F0E8; }
+.dd-content ul, .dd-content ol { padding-left: 1.5rem; }
+.dd-content li { margin-bottom: 0.3rem; font-size: 0.9rem; }
+.dd-content p { font-size: 0.9rem; margin-bottom: 0.75rem; }
+.dd-content h1, .dd-content h2, .dd-content h3, .dd-content h4 { font-size: 1rem; margin: 1rem 0 0.5rem; }
+</style>
+
+<div class="dd-wrap">
+  <div class="dd-badge">DETALLE COMPLETO</div>
+  <h1>Proceso Wideband Delphi — Todas las Rondas</h1>
+
+  {# ── Prompts del Panel ── #}
+  <h2>Prompts del Panel Delphi</h2>
+  {% for expert in data.experts %}
+  <div class="dd-collapse">
+    <div class="dd-collapse-header">{{ expert.name }} — Prompt del Sistema</div>
+    <div class="dd-collapse-body dd-content">
+      {{ expert.prompt_html | safe }}
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="dd-collapse">
+    <div class="dd-collapse-header">Moderador — Prompt del Sistema</div>
+    <div class="dd-collapse-body dd-content">
+      {{ data.moderador_prompt | safe }}
+    </div>
+  </div>
+
+  {# ── Ronda 1 ── #}
+  <h2>Ronda 1 — Evaluacion Individual</h2>
+  {% for expert in data.experts %}
+  {% if expert.name in data.ronda1_experts %}
+  <div class="dd-collapse">
+    <div class="dd-collapse-header">{{ expert.name }} — Ronda 1</div>
+    <div class="dd-collapse-body dd-content">
+      {{ data.ronda1_experts[expert.name] | safe }}
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+
+  <div class="dd-collapse">
+    <div class="dd-collapse-header">Moderador — Resumen Ronda 1</div>
+    <div class="dd-collapse-body dd-content">
+      {{ data.ronda1_summary | safe }}
+    </div>
+  </div>
+
+  {# ── Ronda 2 ── #}
+  <h2>Ronda 2 — Debate y Ajuste de Posiciones</h2>
+  {% for expert in data.experts %}
+  {% if expert.name in data.ronda2_experts %}
+  <div class="dd-collapse">
+    <div class="dd-collapse-header">{{ expert.name }} — Ronda 2</div>
+    <div class="dd-collapse-body dd-content">
+      {{ data.ronda2_experts[expert.name] | safe }}
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+
+  <div class="dd-collapse">
+    <div class="dd-collapse-header">Moderador — Resumen Ronda 2</div>
+    <div class="dd-collapse-body dd-content">
+      {{ data.ronda2_summary | safe }}
+    </div>
+  </div>
+
+  {# ── Reporte Final ── #}
+  <h2>Reporte Final del Panel</h2>
+  <div class="dd-collapse open">
+    <div class="dd-collapse-header">Reporte Final Consolidado</div>
+    <div class="dd-collapse-body dd-content">
+      {{ data.reporte_final | safe }}
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.dd-collapse-header').forEach(h => {
+  h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
+});
+</script>

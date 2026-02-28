@@ -28,7 +28,7 @@
       <div class="expert-avatar" style="background: {{ agent.meta.color }}20; border-color: {{ agent.meta.color }};">
         {{ agent.meta.emoji }}
       </div>
-      <h3>{{ agent.meta.name }}</h3>
+      <h3>{{ llm_model }} ({{ agent.meta.name }})</h3>
       <p>{{ agent.meta.description }}</p>
       {% set ev = synthesis.per_agent[agent.meta.key] %}
       <div class="expert-compliance" style="color: {{ agent.meta.color }};">
@@ -63,7 +63,7 @@
     <div class="collapsible-body">
       <table class="criteria-table">
         <thead>
-          <tr><th>Criterio</th><th>Estado</th><th>Observación</th></tr>
+          <tr><th>Criterio</th><th>Estado</th><th>Observación</th><th>Evidencia</th></tr>
         </thead>
         <tbody>
           {% for c in criterios %}
@@ -71,6 +71,7 @@
             <td>{{ c.criterio }}</td>
             <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
             <td>{{ c.observacion if c.observacion else '—' }}</td>
+            <td class="evidence-cell">{{ c.evidencia if c.evidencia else '—' }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -85,13 +86,14 @@
     <div class="collapsible-header">Competencias</div>
     <div class="collapsible-body">
       <table class="criteria-table">
-        <thead><tr><th>Criterio</th><th>Estado</th><th>Observación</th></tr></thead>
+        <thead><tr><th>Criterio</th><th>Estado</th><th>Observación</th><th>Evidencia</th></tr></thead>
         <tbody>
           {% for c in ev.parte_4_competencias_aprendizajes.competencias.criterios %}
           <tr>
             <td>{{ c.criterio }}</td>
             <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
             <td>{{ c.observacion if c.observacion else '—' }}</td>
+            <td class="evidence-cell">{{ c.evidencia if c.evidencia else '—' }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -105,13 +107,14 @@
     <div class="collapsible-header">Aprendizajes Esperados</div>
     <div class="collapsible-body">
       <table class="criteria-table">
-        <thead><tr><th>Criterio</th><th>Estado</th><th>Observación</th></tr></thead>
+        <thead><tr><th>Criterio</th><th>Estado</th><th>Observación</th><th>Evidencia</th></tr></thead>
         <tbody>
           {% for c in ev.parte_4_competencias_aprendizajes.aprendizajes_esperados.criterios %}
           <tr>
             <td>{{ c.criterio }}</td>
             <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
             <td>{{ c.observacion if c.observacion else '—' }}</td>
+            <td class="evidence-cell">{{ c.evidencia if c.evidencia else '—' }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -187,13 +190,51 @@
   </table>
   {% endif %}
 
-  {# Unified prescriptions #}
-  <h3 style="margin-top: 2rem;">Prescripciones Unificadas</h3>
-  {% for p in synthesis.prescriptions %}
-  <div class="prescription-card" style="border-left-color: var(--accent);">
-    <p>{{ p }}</p>
+  {# Structured prescriptions by priority #}
+  <h3 style="margin-top: 2rem;">Prescripciones Priorizadas</h3>
+
+  {% set alta = synthesis.structured_prescriptions|selectattr("priority", "equalto", "Alta")|list %}
+  {% set media = synthesis.structured_prescriptions|selectattr("priority", "equalto", "Media")|list %}
+  {% set individual = synthesis.structured_prescriptions|selectattr("priority", "equalto", "Individual")|list %}
+
+  {% if alta %}
+  <div style="margin: 1rem 0;">
+    <div class="badge" style="background: var(--c1); color: #fff; margin-bottom: 0.5rem;">ALTA PRIORIDAD ({{ alta|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem;">Unanimidad: los {{ agents|length }} expertos coinciden</p>
+  </div>
+  {% for p in alta %}
+  <div class="prescription-card" style="border-left-color: var(--c1);">
+    <p>{{ p.text }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ p.consensus_count }}/{{ agents|length }} expertos &middot; {{ p.source_part }}</p>
   </div>
   {% endfor %}
+  {% endif %}
+
+  {% if media %}
+  <div style="margin: 1.5rem 0 1rem;">
+    <div class="badge" style="background: var(--c5); color: var(--fg); margin-bottom: 0.5rem;">MEDIA PRIORIDAD ({{ media|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem;">Mayoría: al menos 2 expertos coinciden</p>
+  </div>
+  {% for p in media %}
+  <div class="prescription-card" style="border-left-color: var(--c5);">
+    <p>{{ p.text }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ p.consensus_count }}/{{ agents|length }} expertos &middot; {{ p.source_part }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if individual %}
+  <div style="margin: 1.5rem 0 1rem;">
+    <div class="badge" style="background: var(--c2); color: #fff; margin-bottom: 0.5rem;">INDIVIDUAL ({{ individual|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem;">Propuestas de un solo experto</p>
+  </div>
+  {% for p in individual %}
+  <div class="prescription-card" style="border-left-color: var(--c2);">
+    <p>{{ p.text }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ p.consensus_count }}/{{ agents|length }} experto &middot; {{ p.source_part }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
 </div>
 {% endblock %}
 

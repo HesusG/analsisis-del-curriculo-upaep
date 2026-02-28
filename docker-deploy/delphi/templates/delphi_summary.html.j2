@@ -1,0 +1,46 @@
+<style>
+.delphi-wrap { font-family: 'DM Sans', 'Segoe UI', sans-serif; color: #1a1a1a; line-height: 1.7; max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+.delphi-wrap h1, .delphi-wrap h2, .delphi-wrap h3 { font-family: 'Syne', 'Segoe UI', sans-serif; font-weight: 800; line-height: 1.2; }
+.delphi-wrap h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+.delphi-wrap h2 { font-size: 1.5rem; margin: 2rem 0 1rem; border-bottom: 3px solid #1a1a1a; padding-bottom: 0.5rem; }
+.delphi-badge { font-family: monospace; font-size: 0.75rem; font-weight: 700; display: inline-block; padding: 0.25rem 0.75rem; border: 3px solid #1a1a1a; background: #FFD54F; margin-bottom: 1rem; }
+.delphi-subtitle { font-size: 0.9rem; opacity: 0.7; margin-bottom: 1.5rem; }
+.expert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.expert-chip { border: 3px solid #1a1a1a; box-shadow: 3px 3px 0 #1a1a1a; padding: 1rem; text-align: center; background: #F5F0E8; }
+.expert-chip h4 { margin: 0 0 0.3rem; font-size: 1rem; }
+.expert-chip .framework { font-size: 0.75rem; opacity: 0.6; }
+.expert-chip .model-tag { font-family: monospace; font-size: 0.7rem; background: #1a1a1a; color: #FFD54F; padding: 0.15rem 0.5rem; display: inline-block; margin-top: 0.5rem; }
+.delphi-content { border: 3px solid #1a1a1a; box-shadow: 6px 6px 0 #1a1a1a; padding: 1.5rem; margin: 1.5rem 0; background: #F5F0E8; }
+.delphi-content table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.delphi-content th, .delphi-content td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid #ccc; font-size: 0.85rem; }
+.delphi-content th { font-family: monospace; font-size: 0.72rem; text-transform: uppercase; background: #1a1a1a; color: #F5F0E8; }
+.delphi-content ul, .delphi-content ol { padding-left: 1.5rem; }
+.delphi-content li { margin-bottom: 0.3rem; font-size: 0.9rem; }
+.delphi-content p { font-size: 0.9rem; margin-bottom: 0.75rem; }
+.delphi-content h1, .delphi-content h2, .delphi-content h3, .delphi-content h4 { font-size: 1.1rem; margin: 1rem 0 0.5rem; }
+</style>
+
+<div class="delphi-wrap">
+  <div class="delphi-badge">WIDEBAND DELPHI</div>
+  <h1>Validacion con Panel de Expertos IA</h1>
+  <p class="delphi-subtitle">
+    Simulacion del metodo Wideband Delphi con 5 agentes IA especializados
+    usando Llama 3.3 70B, Qwen 2.5 72B y GPT-4o
+  </p>
+
+  <h2>Panel de Expertos</h2>
+  <div class="expert-grid">
+    {% for expert in data.experts %}
+    <div class="expert-chip">
+      <h4>{{ expert.name }}</h4>
+      <div class="framework">{{ expert.framework }}</div>
+      <span class="model-tag">{{ expert.model }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2>Reporte Final del Panel</h2>
+  <div class="delphi-content">
+    {{ data.reporte_final | safe }}
+  </div>
+</div>

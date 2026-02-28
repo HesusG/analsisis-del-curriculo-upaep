@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from openai import AsyncOpenAI
 
 from config import AGENT_PROMPTS_DIR, LLM_MODEL, LLM_TEMPERATURE, RULES_PATH
-from evaluation.schema import FullEvaluation
+from evaluation.schema import FullEvaluation, NivelGeneral
 
 
 @dataclass
@@ -50,7 +50,27 @@ class EvaluatorAgent:
         )
 
         raw = response.choices[0].message.content or ""
-        return self._parse(raw)
+        evaluation = self._parse(raw)
+
+        # Override evaluator identity with actual model + agent role
+        evaluation.metadata.evaluador = f"{LLM_MODEL} ({self.meta.name})"
+
+        # Recalculate compliance programmatically (don't trust the LLM)
+        passed, failed = evaluation.count_criteria()
+        total = passed + failed
+        pct = round((passed / total) * 100, 1) if total > 0 else 0.0
+        evaluation.resumen_ejecutivo.criterios_cumplidos = passed
+        evaluation.resumen_ejecutivo.criterios_no_cumplidos = failed
+        evaluation.resumen_ejecutivo.porcentaje_cumplimiento = pct
+
+        if pct >= 80:
+            evaluation.resumen_ejecutivo.nivel_general = NivelGeneral.SATISFACTORIO
+        elif pct >= 60:
+            evaluation.resumen_ejecutivo.nivel_general = NivelGeneral.EN_PROCESO
+        else:
+            evaluation.resumen_ejecutivo.nivel_general = NivelGeneral.REQUIERE_ATENCION
+
+        return evaluation
 
     @staticmethod
     def _parse(raw: str) -> FullEvaluation:
