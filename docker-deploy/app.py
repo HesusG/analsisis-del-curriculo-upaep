@@ -74,7 +74,7 @@ async def run_evaluation_ui(pdf_filepath: str, progress=gr.Progress()):
     progress(0.1, desc="Extrayendo texto del PDF...")
 
     try:
-        progress(0.2, desc="Evaluando con 3 expertos e indexando documento...")
+        progress(0.2, desc="Evaluando e indexando documento...")
         synthesis, html_path, ingest_result = await run_evaluation_with_ingestion(
             pdf_filepath
         )
@@ -273,7 +273,7 @@ with gr.Blocks(theme=theme, title="Evaluador Curricular UPAEP") as demo:
     with gr.Column(visible=False) as main_col:
         gr.Markdown("# Evaluador Curricular UPAEP")
         gr.Markdown(
-            f"Evalua planeaciones didacticas con 3 expertos IA ({LLM_MODEL}) "
+            f"Evalua planeaciones didacticas con IA ({LLM_MODEL}) "
             "o consulta los documentos curriculares."
         )
 

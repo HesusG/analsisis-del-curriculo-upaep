@@ -5,7 +5,19 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
+
+
+# ── Helpers ────────────────────────────────────────────────────────────
+
+def _coerce_null_lists(cls, values):
+    """Model validator: coerce None → [] for all list fields with defaults."""
+    for name, field_info in cls.model_fields.items():
+        if name in values and values[name] is None:
+            origin = getattr(field_info.annotation, "__origin__", None)
+            if origin is list:
+                values[name] = []
+    return values
 
 
 # ── Enums ──────────────────────────────────────────────────────────────
@@ -30,11 +42,21 @@ class SubBloque(BaseModel):
     aplica: bool
     criterios: list[Criterio] = Field(default_factory=list)
 
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
+
 
 class FaseMejora(BaseModel):
     nombre: str
     descripcion: str
-    acciones: list[str] = Field(min_length=1)
+    acciones: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 # ── Part models ────────────────────────────────────────────────────────
@@ -127,10 +149,15 @@ class Parte9Recursos(BaseModel):
 
 
 class Parte10Conclusiones(BaseModel):
-    areas_oportunidad: list[str] = Field(min_length=1)
+    areas_oportunidad: list[str] = Field(default_factory=list)
     recomendaciones_redaccion: str
     recomendaciones_innovacion: str
-    herramientas_digitales_sugeridas: list[str] = Field(min_length=1)
+    herramientas_digitales_sugeridas: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 class Parte11PropuestaMejora(BaseModel):
@@ -142,8 +169,13 @@ class ResumenEjecutivo(BaseModel):
     criterios_no_cumplidos: int
     porcentaje_cumplimiento: float
     nivel_general: NivelGeneral
-    fortalezas_principales: list[str] = Field(min_length=1)
-    areas_criticas: list[str] = Field(min_length=1)
+    fortalezas_principales: list[str] = Field(default_factory=list)
+    areas_criticas: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 # ── Full evaluation ───────────────────────────────────────────────────
