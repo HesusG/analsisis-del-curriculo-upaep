@@ -155,8 +155,13 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 .criteria-table th { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; }
 .criteria-pass { color: var(--c3); font-weight: 700; }
 .criteria-fail { color: var(--c1); font-weight: 700; }
-.evidence-cell { font-size: 0.8rem; font-style: italic; color: #555; max-width: 300px; background: #f9f6f0; border-left: 3px solid #ddd; padding-left: 0.6rem; }
+.evidence-cell { font-size: 0.8rem; font-style: italic; color: #555; max-width: 450px; word-break: break-word; background: #f9f6f0; border-left: 3px solid #ddd; padding-left: 0.6rem; }
 .evidence-cell:empty { background: none; border-left: none; }
+.evidence-cell details { cursor: pointer; }
+.evidence-cell details summary { display: inline; }
+.evidence-cell details[open] summary { display: block; margin-bottom: 0.3rem; color: #888; font-size: 0.75rem; }
+.evidence-cell details[open] summary::after { content: ' (ver menos)'; }
+.evidence-cell details > p { margin: 0; }
 
 /* ── Section score badges ── */
 .section-score {

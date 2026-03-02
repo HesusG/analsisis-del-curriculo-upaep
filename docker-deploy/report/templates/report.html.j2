@@ -77,7 +77,7 @@
             <td>{{ c.criterio }}</td>
             <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
             <td>{{ c.observacion if c.observacion else '—' }}</td>
-            <td class="evidence-cell">{{ c.evidencia if c.evidencia else '' }}</td>
+            <td class="evidence-cell">{% if c.evidencia and c.evidencia|length > 120 %}<details><summary>{{ c.evidencia[:80] }}...</summary><p>{{ c.evidencia }}</p></details>{% elif c.evidencia %}{{ c.evidencia }}{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -106,7 +106,7 @@
             <td>{{ c.criterio }}</td>
             <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
             <td>{{ c.observacion if c.observacion else '—' }}</td>
-            <td class="evidence-cell">{{ c.evidencia if c.evidencia else '' }}</td>
+            <td class="evidence-cell">{% if c.evidencia and c.evidencia|length > 120 %}<details><summary>{{ c.evidencia[:80] }}...</summary><p>{{ c.evidencia }}</p></details>{% elif c.evidencia %}{{ c.evidencia }}{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -134,7 +134,7 @@
             <td>{{ c.criterio }}</td>
             <td class="{{ 'criteria-pass' if c.cumple else 'criteria-fail' }}">{{ '✓' if c.cumple else '✗' }}</td>
             <td>{{ c.observacion if c.observacion else '—' }}</td>
-            <td class="evidence-cell">{{ c.evidencia if c.evidencia else '' }}</td>
+            <td class="evidence-cell">{% if c.evidencia and c.evidencia|length > 120 %}<details><summary>{{ c.evidencia[:80] }}...</summary><p>{{ c.evidencia }}</p></details>{% elif c.evidencia %}{{ c.evidencia }}{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>
