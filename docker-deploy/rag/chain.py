@@ -5,7 +5,7 @@ from __future__ import annotations
 from langchain_classic.chains import ConversationalRetrievalChain
 from langchain_openai import ChatOpenAI
 
-from config import LLM_MODEL, RAG_TEMPERATURE
+from config import LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, RAG_TEMPERATURE
 from rag.retriever import get_retriever
 
 SYSTEM_MESSAGE = (
@@ -21,6 +21,8 @@ def build_rag_chain() -> ConversationalRetrievalChain:
     llm = ChatOpenAI(
         model=LLM_MODEL,
         temperature=RAG_TEMPERATURE,
+        api_key=LLM_API_KEY,
+        base_url=LLM_BASE_URL,
     )
     retriever = get_retriever()
 

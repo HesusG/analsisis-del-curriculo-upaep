@@ -1,4 +1,4 @@
-"""Base evaluator agent that calls GPT-4o and returns structured JSON."""
+"""Base evaluator agent that calls the configured LLM and returns structured JSON."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 from openai import AsyncOpenAI
 
-from config import AGENT_PROMPTS_DIR, LLM_MODEL, LLM_TEMPERATURE, RULES_PATH
+from config import AGENT_PROMPTS_DIR, LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_MODEL_DISPLAY, LLM_TEMPERATURE, RULES_PATH
 from evaluation.schema import FullEvaluation, NivelGeneral
 
 
@@ -29,7 +29,7 @@ class EvaluatorAgent:
         self.meta = meta
         self._prompt_path = AGENT_PROMPTS_DIR / prompt_filename
         self._rules_path = RULES_PATH
-        self._client = AsyncOpenAI()
+        self._client = AsyncOpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
 
     @property
     def system_prompt(self) -> str:
@@ -53,7 +53,7 @@ class EvaluatorAgent:
         evaluation = self._parse(raw)
 
         # Override evaluator identity with actual model + agent role
-        evaluation.metadata.evaluador = f"{LLM_MODEL} ({self.meta.name})"
+        evaluation.metadata.evaluador = f"{LLM_MODEL_DISPLAY} ({self.meta.name})"
 
         # Recalculate compliance programmatically (don't trust the LLM)
         passed, failed = evaluation.count_criteria()

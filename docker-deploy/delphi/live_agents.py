@@ -1,4 +1,4 @@
-"""Live Delphi agents: 5 experts + moderator, all calling GPT-4o with JSON output."""
+"""Live Delphi agents: 5 experts + moderator, calling the configured LLM with JSON output."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from openai import AsyncOpenAI
 
-from config import LLM_MODEL, LLM_TEMPERATURE
+from config import LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_TEMPERATURE
 from delphi.live_schema import (
     DelphiExpertEvaluation,
     DelphiSynthesis,
@@ -145,11 +145,11 @@ def _parse_json(raw: str):
 
 
 class DelphiExpertAgent:
-    """Calls GPT-4o with an expert prompt and returns structured evaluation."""
+    """Calls the configured LLM with an expert prompt and returns structured evaluation."""
 
     def __init__(self, meta: DelphiExpertMeta) -> None:
         self.meta = meta
-        self._client = AsyncOpenAI()
+        self._client = AsyncOpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
 
     @property
     def system_prompt(self) -> str:
@@ -175,7 +175,7 @@ class DelphiModeratorAgent:
     """Synthesizes 5 expert evaluations into a consolidated report."""
 
     def __init__(self) -> None:
-        self._client = AsyncOpenAI()
+        self._client = AsyncOpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
 
     @property
     def system_prompt(self) -> str:

@@ -9,7 +9,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from config import LLM_MODEL, OUTPUT_DIR
+from config import LLM_MODEL_DISPLAY, OUTPUT_DIR
 from delphi.live_agents import (
     DELPHI_EXPERTS,
     DelphiExpertAgent,
@@ -98,7 +98,7 @@ def _generate_delphi_report(
         synthesis=synthesis,
         avg_score=avg_score,
         expert_averages=expert_averages,
-        llm_model=LLM_MODEL,
+        llm_model=LLM_MODEL_DISPLAY,
         date=date.today().isoformat(),
     )
 
