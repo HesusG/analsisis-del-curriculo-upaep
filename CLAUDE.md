@@ -36,6 +36,7 @@ project/
 ## Git
 - NO incluir "Co-Authored-By: Claude" en commits
 - NO incluir "Generated with Claude Code" en footers
+- **Sync a HF obligatorio**: Después de cada `git push` que incluya cambios en `docker-deploy/`, ejecutar `git subtree push --prefix=docker-deploy hf main` para sincronizar con HF Spaces. No esperar a que el usuario lo pida.
 
 ## Estado del Documento
 - **Págs 1-5**: Correcciones menores de estilo y claridad
