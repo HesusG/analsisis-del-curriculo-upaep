@@ -11,6 +11,9 @@ from openai import AsyncOpenAI
 from config import AGENT_PROMPTS_DIR, LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_MODEL_DISPLAY, LLM_TEMPERATURE, RULES_PATH
 from evaluation.schema import FullEvaluation, NivelGeneral
 
+MAX_RETRIES = 2
+REQUIRED_TOP_KEYS = {"metadata", "parte_2_datos_presentacion", "resumen_ejecutivo"}
+
 
 @dataclass
 class AgentMeta:
@@ -37,20 +40,50 @@ class EvaluatorAgent:
         rules = self._rules_path.read_text(encoding="utf-8")
         return f"{persona}\n\n---\n\n{rules}"
 
-    async def evaluate(self, plan_text: str) -> FullEvaluation:
-        """Send the plan text to GPT-4o and return a parsed FullEvaluation."""
+    async def _call_llm(self, plan_text: str) -> str:
+        """Single LLM call, returns raw content string."""
+        user_msg = (
+            "Analiza la siguiente planeacion didactica y responde UNICAMENTE con el "
+            "JSON completo del schema (metadata, parte_1_contexto, parte_2_datos_presentacion, "
+            "... hasta resumen_ejecutivo). Sin texto adicional, solo el JSON.\n\n"
+            "---\n\n" + plan_text
+        )
         response = await self._client.chat.completions.create(
             model=LLM_MODEL,
             temperature=LLM_TEMPERATURE,
             messages=[
                 {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": plan_text},
+                {"role": "user", "content": user_msg},
             ],
             response_format={"type": "json_object"},
         )
+        return response.choices[0].message.content or ""
 
-        raw = response.choices[0].message.content or ""
-        evaluation = self._parse(raw)
+    async def evaluate(self, plan_text: str) -> FullEvaluation:
+        """Send the plan text to the LLM and return a parsed FullEvaluation.
+
+        Retries up to MAX_RETRIES times if the LLM returns malformed JSON.
+        """
+        last_error = None
+        for attempt in range(1, MAX_RETRIES + 1):
+            raw = await self._call_llm(plan_text)
+            try:
+                evaluation = self._parse(raw)
+                break
+            except Exception as e:
+                last_error = e
+                print(
+                    f"[{self.meta.key}] Attempt {attempt}/{MAX_RETRIES} failed: {e}"
+                )
+                if attempt < MAX_RETRIES:
+                    print(f"[{self.meta.key}] Retrying...")
+                    continue
+                # Show what the LLM actually returned for debugging
+                preview = raw[:300] if raw else "(empty)"
+                raise ValueError(
+                    f"Agent '{self.meta.key}' failed after {MAX_RETRIES} attempts. "
+                    f"Last error: {last_error}. LLM returned: {preview}"
+                ) from last_error
 
         # Override evaluator identity with actual model + agent role
         evaluation.metadata.evaluador = f"{LLM_MODEL_DISPLAY} ({self.meta.name})"
@@ -79,13 +112,26 @@ class EvaluatorAgent:
         text = re.sub(r"^```(?:json)?\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
         data = json.loads(text)
+
         # LLM sometimes wraps the object in a list — unwrap it
         if isinstance(data, list):
             data = data[0]
-        # LLM sometimes wraps in a function-call envelope — unwrap it
-        if isinstance(data, dict) and "metadata" not in data:
-            for key in ("parameters", "arguments", "function"):
-                if key in data and isinstance(data[key], dict):
-                    data = data[key]
+
+        # LLM sometimes wraps in a function-call or nested envelope — dig for payload
+        if isinstance(data, dict) and not REQUIRED_TOP_KEYS.issubset(data.keys()):
+            # Search one level deep for the real evaluation dict
+            for val in data.values():
+                if isinstance(val, dict) and REQUIRED_TOP_KEYS.issubset(val.keys()):
+                    data = val
                     break
+
+        # Final validation: if still missing required keys, raise clear error
+        if isinstance(data, dict) and not REQUIRED_TOP_KEYS.issubset(data.keys()):
+            got_keys = list(data.keys())[:5]
+            raise ValueError(
+                f"LLM returned JSON with wrong structure. "
+                f"Expected keys like 'metadata', 'parte_2_datos_presentacion', etc. "
+                f"Got keys: {got_keys}"
+            )
+
         return FullEvaluation(**data)
