@@ -183,6 +183,20 @@ class ResumenEjecutivo(BaseModel):
     fortalezas_principales: list[str] = Field(default_factory=list)
     areas_criticas: list[str] = Field(default_factory=list)
 
+    @field_validator("nivel_general", mode="before")
+    @classmethod
+    def _coerce_nivel(cls, v):
+        """LLM sometimes returns free-text like 'Regular' — coerce to valid enum.
+
+        The value is recalculated from compliance % in base.py anyway.
+        """
+        if isinstance(v, NivelGeneral):
+            return v
+        try:
+            return NivelGeneral(v)
+        except ValueError:
+            return NivelGeneral.EN_PROCESO
+
     @model_validator(mode="before")
     @classmethod
     def _coerce_nulls(cls, values):
