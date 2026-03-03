@@ -5,10 +5,10 @@ from .base import AgentMeta, EvaluatorAgent
 profesor_agent = EvaluatorAgent(
     meta=AgentMeta(
         key="profesor",
-        name="Profesor",
+        name="Dr. Marco Fuentes",
         color="#64B5F6",
-        emoji="\U0001F9D1\u200D\U0001F3EB",
-        description="Simula la evaluación con la rúbrica de la Dra. Mendoza",
+        emoji="\U0001F3AF",
+        description="Evalúa la calidad pedagógica y el diseño didáctico de cada elemento",
     ),
     prompt_filename="evaluador-profesor.md",
 )

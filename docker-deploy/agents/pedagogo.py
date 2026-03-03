@@ -5,10 +5,10 @@ from .base import AgentMeta, EvaluatorAgent
 pedagogo_agent = EvaluatorAgent(
     meta=AgentMeta(
         key="pedagogo",
-        name="Pedagogo",
-        color="#BA68C8",
-        emoji="\U0001F4DA",
-        description="Experto en teoría curricular y pedagogía crítica",
+        name="Dra. Lina Campos",
+        color="#E57373",
+        emoji="\U0001F50D",
+        description="Verifica la presencia y completitud de cada elemento requerido",
     ),
     prompt_filename="evaluador-pedagogo.md",
 )

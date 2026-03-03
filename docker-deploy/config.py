@@ -31,8 +31,8 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 DAILY_EVAL_LIMIT = int(os.environ.get("DAILY_EVAL_LIMIT", "20"))
 
 # ── ChromaDB Cloud ─────────────────────────────────────────────────────
-CHROMA_API_KEY = os.environ.get("CHROMA_API_KEY", "")
-CHROMA_TENANT = os.environ.get("CHROMA_TENANT", "")
+CHROMA_API_KEY  = os.environ.get("CHROMA_API_KEY", os.environ.get("CHROMA_CLOUD_API_KEY", ""))
+CHROMA_TENANT   = os.environ.get("CHROMA_TENANT", os.environ.get("CHROMA_CLOUD_TENANT", ""))
 CHROMA_DATABASE = os.environ.get("CHROMA_DATABASE", os.environ.get("CHROMA_CLOUD_DATABASE", ""))
 CHROMA_COLLECTION = os.getenv("CHROMA_COLLECTION", "curriculo-upaep")
 
@@ -66,24 +66,24 @@ RAG_TEMPERATURE = 0.3
 # ── Agent Metadata ─────────────────────────────────────────────────────
 AGENT_META = {
     "pedagogo": {
-        "name": "Pedagogo",
-        "color": "#BA68C8",
-        "emoji": "\U0001F4DA",
-        "description": "Experto en teoría curricular y pedagogía crítica",
+        "name": "Dra. Lina Campos",
+        "color": "#E57373",
+        "emoji": "\U0001F50D",
+        "description": "Verifica la presencia y completitud de cada elemento requerido",
         "prompt_file": "evaluador-pedagogo.md",
     },
     "profesor": {
-        "name": "Profesor",
+        "name": "Dr. Marco Fuentes",
         "color": "#64B5F6",
-        "emoji": "\U0001F9D1\u200D\U0001F3EB",
-        "description": "Simula la evaluación con la rúbrica de la Dra. Mendoza",
+        "emoji": "\U0001F3AF",
+        "description": "Evalúa la calidad pedagógica y el diseño didáctico de cada elemento",
         "prompt_file": "evaluador-profesor.md",
     },
     "tecnico": {
-        "name": "Técnico",
+        "name": "Dra. Isabel Montes",
         "color": "#81C784",
-        "emoji": "\U0001F4CB",
-        "description": "Especialista en formato APA 7 y estructura documental",
+        "emoji": "\U0001F517",
+        "description": "Verifica la alineación y coherencia entre todas las secciones",
         "prompt_file": "evaluador-tecnico.md",
     },
 }

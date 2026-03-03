@@ -126,15 +126,132 @@ def check_password(password: str):
 
 # ── Unified evaluation callback ──────────────────────────────────────
 
-async def _run_unified_eval(pdf_filepath: str, mode: str, progress=gr.Progress()):
-    """Dispatch to 3-expert or 5-expert evaluation based on mode radio."""
-    if mode == "5 Expertos (Delphi)":
+async def _run_unified_eval(pdf_filepath: str, modes: list[str], progress=gr.Progress()):
+    """Dispatch to 3-expert, 5-expert, or both based on checkbox selection."""
+    if not modes:
+        return "Selecciona al menos un modo de evaluacion.", None, "", _get_usage_display()
+
+    run_3 = "3 Expertos (Rubrica)" in modes
+    run_5 = "5 Expertos (Delphi)" in modes
+
+    if run_3 and run_5:
+        return await _run_both(pdf_filepath, progress)
+    if run_5:
         return await _run_delphi(pdf_filepath, progress)
     return await _run_3expert(pdf_filepath, progress)
 
 
+# ── Inner helpers (no guards, for reuse by _run_both) ────────────────
+
+async def _run_3expert_inner(pdf_filepath: str):
+    """Core 3-expert logic. Returns (summary_md, html_path)."""
+    synthesis, html_path, ingest_result = await run_evaluation_with_ingestion(
+        pdf_filepath
+    )
+
+    # Save to history
+    try:
+        _history_db.save_evaluation(
+            pdf_name=Path(pdf_filepath).stem,
+            eval_type="evaluacion",
+            score=synthesis.average_compliance,
+            nivel_general=synthesis.nivel_general.value,
+            per_agent_summary=summarize_3expert(synthesis),
+            html_report_path=html_path or "",
+        )
+    except Exception:
+        pass
+
+    # ── Lean markdown summary ──
+    lines = [
+        f"# {synthesis.average_compliance:.1f}% Cumplimiento — {synthesis.nivel_general.value}",
+        "",
+        "| Experto | Score |",
+        "|---------|-------|",
+    ]
+    for key, ev in synthesis.per_agent.items():
+        lines.append(
+            f"| {ev.metadata.evaluador} | {ev.resumen_ejecutivo.porcentaje_cumplimiento:.1f}% |"
+        )
+
+    if synthesis.consensus:
+        n_consensus = len(synthesis.consensus)
+        lines.extend(["", f"### Consensos clave ({n_consensus} criterios)"])
+        for cr in synthesis.consensus:
+            passed = list(cr.votes.values())[0]
+            icon = "+" if passed else "-"
+            lines.append(f"- [{icon}] {cr.criterio}")
+
+    if synthesis.critical_areas:
+        lines.extend(["", "### Areas criticas"])
+        for a in synthesis.critical_areas[:5]:
+            lines.append(f"- {a}")
+
+    # Handle RAG indexation silently
+    if ingest_result.success and not ingest_result.skipped_duplicate:
+        _invalidate_rag_chain()
+
+    return "\n".join(lines), html_path
+
+
+async def _run_delphi_inner(pdf_filepath: str):
+    """Core Delphi logic. Returns (summary_md, html_path)."""
+    from delphi.live_pipeline import run_delphi_evaluation
+
+    result = await run_delphi_evaluation(pdf_filepath)
+
+    # Save to history
+    try:
+        all_scores = []
+        for ev in result.expert_evaluations.values():
+            for p in ev.puntuaciones:
+                all_scores.append(p.score)
+        avg_score = sum(all_scores) / len(all_scores) if all_scores else 0.0
+
+        _history_db.save_evaluation(
+            pdf_name=result.pdf_name or Path(pdf_filepath).stem,
+            eval_type="delphi",
+            score=avg_score,
+            nivel_general="",
+            per_agent_summary=summarize_delphi(result),
+            html_report_path=result.html_path or "",
+        )
+    except Exception:
+        pass
+
+    # ── Lean markdown summary ──
+    expert_scores = []
+    for key, ev in result.expert_evaluations.items():
+        meta = result.expert_metas[key]
+        scores = [p.score for p in ev.puntuaciones]
+        avg = sum(scores) / len(scores) if scores else 0
+        expert_scores.append((meta.name, avg))
+
+    overall_avg = sum(s for _, s in expert_scores) / len(expert_scores) if expert_scores else 0
+
+    lines = [
+        f"# {overall_avg:.1f}/10 Score Promedio",
+        "",
+        "| Experto | Score |",
+        "|---------|-------|",
+    ]
+    for name, score in expert_scores:
+        lines.append(f"| {name} | {score:.1f}/10 |")
+
+    if result.synthesis:
+        alta = [r for r in result.synthesis.recomendaciones_priorizadas if r.prioridad == "Alta"]
+        if alta:
+            lines.extend(["", "### Recomendaciones de alta prioridad"])
+            for r in alta[:5]:
+                lines.append(f"- {r.texto}")
+
+    return "\n".join(lines), result.html_path
+
+
+# ── Public evaluation runners (with guards + progress) ───────────────
+
 async def _run_3expert(pdf_filepath: str, progress=gr.Progress()):
-    """Run 3-expert evaluation, return (summary_md, html_path, html_inline, usage_html)."""
+    """Run 3-expert evaluation, return (summary_md, html_paths, html_inline, usage_html)."""
     if pdf_filepath is None:
         return "Sube un archivo PDF para evaluar.", None, "", _get_usage_display()
 
@@ -145,72 +262,25 @@ async def _run_3expert(pdf_filepath: str, progress=gr.Progress()):
 
     try:
         progress(0.2, desc="Evaluando e indexando documento...")
-        synthesis, html_path, ingest_result = await run_evaluation_with_ingestion(
-            pdf_filepath
-        )
+        summary_md, html_path = await _run_3expert_inner(pdf_filepath)
 
         progress(0.9, desc="Generando reporte...")
 
-        # Save to history
-        try:
-            _history_db.save_evaluation(
-                pdf_name=Path(pdf_filepath).stem,
-                eval_type="evaluacion",
-                score=synthesis.average_compliance,
-                nivel_general=synthesis.nivel_general.value,
-                per_agent_summary=summarize_3expert(synthesis),
-                html_report_path=html_path or "",
-            )
-        except Exception:
-            pass
+        summary_md += "\n\n*Descarga el reporte HTML para ver el detalle completo.*"
 
-        # ── Lean markdown summary ──
-        lines = [
-            f"# {synthesis.average_compliance:.1f}% Cumplimiento — {synthesis.nivel_general.value}",
-            "",
-            "| Experto | Score |",
-            "|---------|-------|",
-        ]
-        for key, ev in synthesis.per_agent.items():
-            lines.append(
-                f"| {ev.metadata.evaluador} | {ev.resumen_ejecutivo.porcentaje_cumplimiento:.1f}% |"
-            )
-
-        # Consensus
-        if synthesis.consensus:
-            n_consensus = len(synthesis.consensus)
-            lines.extend(["", f"### Consensos clave ({n_consensus} criterios)"])
-            for cr in synthesis.consensus:
-                passed = list(cr.votes.values())[0]
-                icon = "+" if passed else "-"
-                lines.append(f"- [{icon}] {cr.criterio}")
-
-        # Critical areas
-        if synthesis.critical_areas:
-            lines.extend(["", "### Areas criticas"])
-            for a in synthesis.critical_areas[:5]:
-                lines.append(f"- {a}")
-
-        lines.extend(["", "*Descarga el reporte HTML para ver el detalle completo.*"])
-
-        # Handle RAG indexation silently
-        if ingest_result.success and not ingest_result.skipped_duplicate:
-            _invalidate_rag_chain()
-
-        # Read HTML for inline display
         html_content = ""
         if html_path:
             html_content = Path(html_path).read_text(encoding="utf-8")
 
         progress(1.0, desc="Listo.")
-        return "\n".join(lines), html_path, html_content, _get_usage_display()
+        return summary_md, [html_path] if html_path else None, html_content, _get_usage_display()
 
     except Exception as e:
         return f"Error durante la evaluacion: {e}", None, "", _get_usage_display()
 
 
 async def _run_delphi(pdf_filepath: str, progress=gr.Progress()):
-    """Run 5-expert Delphi evaluation, return (summary_md, html_path, html_inline, usage_html)."""
+    """Run 5-expert Delphi evaluation, return (summary_md, html_paths, html_inline, usage_html)."""
     if pdf_filepath is None:
         return "Sube un archivo PDF para evaluar.", None, "", _get_usage_display()
 
@@ -219,74 +289,83 @@ async def _run_delphi(pdf_filepath: str, progress=gr.Progress()):
 
     try:
         progress(0.05, desc="Extrayendo texto del PDF...")
-
-        from delphi.live_pipeline import run_delphi_evaluation
-
         progress(0.10, desc="Expertos evaluando...")
 
-        result = await run_delphi_evaluation(pdf_filepath)
+        summary_md, html_path = await _run_delphi_inner(pdf_filepath)
 
         progress(0.90, desc="Generando reporte...")
 
-        # Save to history
-        try:
-            all_scores = []
-            for ev in result.expert_evaluations.values():
-                for p in ev.puntuaciones:
-                    all_scores.append(p.score)
-            avg_score = sum(all_scores) / len(all_scores) if all_scores else 0.0
+        summary_md += "\n\n*Descarga el reporte HTML para ver el detalle completo.*"
 
-            _history_db.save_evaluation(
-                pdf_name=result.pdf_name or Path(pdf_filepath).stem,
-                eval_type="delphi",
-                score=avg_score,
-                nivel_general="",
-                per_agent_summary=summarize_delphi(result),
-                html_report_path=result.html_path or "",
-            )
-        except Exception:
-            pass
-
-        # ── Lean markdown summary ──
-        expert_scores = []
-        for key, ev in result.expert_evaluations.items():
-            meta = result.expert_metas[key]
-            scores = [p.score for p in ev.puntuaciones]
-            avg = sum(scores) / len(scores) if scores else 0
-            expert_scores.append((meta.name, avg))
-
-        overall_avg = sum(s for _, s in expert_scores) / len(expert_scores) if expert_scores else 0
-
-        lines = [
-            f"# {overall_avg:.1f}/10 Score Promedio",
-            "",
-            "| Experto | Score |",
-            "|---------|-------|",
-        ]
-        for name, score in expert_scores:
-            lines.append(f"| {name} | {score:.1f}/10 |")
-
-        if result.synthesis:
-            alta = [r for r in result.synthesis.recomendaciones_priorizadas if r.prioridad == "Alta"]
-            if alta:
-                lines.extend(["", "### Recomendaciones de alta prioridad"])
-                for r in alta[:5]:
-                    lines.append(f"- {r.texto}")
-
-        lines.extend(["", "*Descarga el reporte HTML para ver el detalle completo.*"])
+        html_content = ""
+        if html_path:
+            html_content = Path(html_path).read_text(encoding="utf-8")
 
         progress(1.0, desc="Listo.")
-
-        # Read HTML for inline display
-        html_content = ""
-        if result.html_path:
-            html_content = Path(result.html_path).read_text(encoding="utf-8")
-
-        return "\n".join(lines), result.html_path, html_content, _get_usage_display()
+        return summary_md, [html_path] if html_path else None, html_content, _get_usage_display()
 
     except Exception as e:
         import traceback
         return f"Error durante la evaluacion Delphi: {e}\n\n```\n{traceback.format_exc()}\n```", None, "", _get_usage_display()
+
+
+async def _run_both(pdf_filepath: str, progress=gr.Progress()):
+    """Run both evaluations in parallel, return combined results."""
+    import asyncio
+
+    if pdf_filepath is None:
+        return "Sube un archivo PDF para evaluar.", None, "", _get_usage_display()
+
+    # "Ambas" costs 2 evaluation slots
+    if _history_db.count_today() + 2 > DAILY_EVAL_LIMIT:
+        return "**Limite diario alcanzado.** Necesitas 2 slots disponibles. Vuelve manana.", None, "", _get_usage_display()
+
+    try:
+        progress(0.05, desc="Lanzando ambas evaluaciones en paralelo...")
+
+        results = await asyncio.gather(
+            _run_3expert_inner(pdf_filepath),
+            _run_delphi_inner(pdf_filepath),
+            return_exceptions=True,
+        )
+
+        progress(0.90, desc="Combinando resultados...")
+
+        md_parts = []
+        html_parts = []
+        file_paths = []
+
+        # 3-expert result
+        if isinstance(results[0], Exception):
+            md_parts.append(f"## Evaluacion 3 Expertos\n\nError: {results[0]}")
+        else:
+            summary_3, path_3 = results[0]
+            md_parts.append(f"## Evaluacion 3 Expertos (Rubrica)\n\n{summary_3}")
+            if path_3:
+                file_paths.append(path_3)
+                html_parts.append(Path(path_3).read_text(encoding="utf-8"))
+
+        # Delphi result
+        if isinstance(results[1], Exception):
+            md_parts.append(f"## Evaluacion 5 Expertos (Delphi)\n\nError: {results[1]}")
+        else:
+            summary_5, path_5 = results[1]
+            md_parts.append(f"## Evaluacion 5 Expertos (Delphi)\n\n{summary_5}")
+            if path_5:
+                file_paths.append(path_5)
+                html_parts.append(Path(path_5).read_text(encoding="utf-8"))
+
+        combined_md = "\n\n---\n\n".join(md_parts)
+        combined_md += "\n\n*Descarga los reportes HTML para ver el detalle completo.*"
+
+        combined_html = "<hr style='margin:2em 0;border:2px solid #DC2626'>".join(html_parts)
+
+        progress(1.0, desc="Listo.")
+        return combined_md, file_paths or None, combined_html, _get_usage_display()
+
+    except Exception as e:
+        import traceback
+        return f"Error durante la evaluacion combinada: {e}\n\n```\n{traceback.format_exc()}\n```", None, "", _get_usage_display()
 
 
 # ── RAG Chat ─────────────────────────────────────────────────────────
@@ -404,21 +483,25 @@ with gr.Blocks(theme=theme, title="Evaluador Curricular UPAEP") as demo:
                 file_types=[".pdf"],
                 type="filepath",
             )
-            eval_mode = gr.Radio(
+            eval_mode = gr.CheckboxGroup(
                 choices=["3 Expertos (Rubrica)", "5 Expertos (Delphi)"],
-                value="3 Expertos (Rubrica)",
-                label="Modo de evaluacion",
+                value=["3 Expertos (Rubrica)"],
+                label="Modo de evaluacion (puedes marcar ambos)",
             )
             gr.Markdown(
-                "- **3 Expertos (Rubrica):** Pedagogo, Profesor y Tecnico evaluan con rubrica "
-                "de criterios. Resultado: % de cumplimiento.\n"
+                "- **3 Expertos (Rubrica):** Analista Estructural, Evaluador Didactico y "
+                "Revisora de Coherencia evaluan con rubrica de criterios. "
+                "Resultado: % de cumplimiento.\n"
                 "- **5 Expertos (Delphi):** 5 expertos IA (Dr. Critico, Dra. Multiliteracidades, "
-                "etc.) debaten desde marcos teoricos. Resultado: puntuacion 1-10 en 6 dimensiones."
+                "etc.) debaten desde marcos teoricos. Resultado: puntuacion 1-10 en 6 dimensiones.\n"
+                "- **Ambos marcados:** Ejecuta las dos evaluaciones en paralelo. "
+                "Consume 2 evaluaciones del limite diario."
             )
             eval_btn = gr.Button("Evaluar", variant="primary")
             eval_output = gr.Markdown(label="Resultado")
             report_file = gr.File(
                 label="Reporte HTML descargable",
+                file_count="multiple",
                 interactive=False,
             )
             eval_html_display = gr.HTML(label="Reporte")
