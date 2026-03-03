@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #F5F0E8;
@@ -38,25 +39,43 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 }
 
 /* ── Hero ── */
-.hero { background: var(--fg); color: var(--bg); padding: 4rem 2rem; text-align: center; }
-.hero h1 span {
-  background: linear-gradient(90deg, var(--accent), #FFE082);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+.hero {
+  background: var(--bg); color: var(--fg); padding: 4rem 2rem; text-align: center;
+  border-bottom: 6px solid var(--fg); position: relative;
 }
-.hero-subtitle { font-size: 1.1rem; opacity: 0.85; margin: 0.5rem 0 1.5rem; }
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+  background: linear-gradient(90deg, var(--c1), var(--c5), var(--accent), var(--c3), var(--c2), var(--c4));
+}
+.hero h1 span { color: var(--c1); }
+.hero-subtitle { font-size: 1.1rem; opacity: 0.7; margin: 0.5rem 0 1.5rem; }
 .score-big {
   font-family: var(--font-display); font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 800; margin: 0.5rem 0;
 }
-.score-label { font-family: var(--font-mono); font-size: 0.85rem; opacity: 0.7; }
+.score-label { font-family: var(--font-mono); font-size: 0.85rem; opacity: 0.6; }
 
 /* ── Dimension bars (hero) ── */
 .dim-bars { max-width: 500px; margin: 1.5rem auto 0; text-align: left; }
 .dim-bar-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.4rem 0; }
-.dim-bar-label { font-family: var(--font-mono); font-size: 0.7rem; width: 180px; text-align: right; opacity: 0.8; }
-.dim-bar-track { flex: 1; height: 14px; background: #333; border: 1px solid #555; position: relative; }
+.dim-bar-label { font-family: var(--font-mono); font-size: 0.7rem; width: 180px; text-align: right; opacity: 0.7; }
+.dim-bar-track { flex: 1; height: 14px; background: #e0ddd5; border: 2px solid var(--fg); position: relative; }
 .dim-bar-fill { height: 100%; transition: width 0.5s; }
 .dim-bar-val { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; width: 35px; }
+
+/* ── Radar chart ── */
+.radar-wrap {
+  border: var(--border); box-shadow: var(--shadow); background: #fff;
+  padding: 1.5rem; margin: 1.5rem 0; text-align: center;
+}
+.radar-toggles { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
+.radar-toggle {
+  font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
+  padding: 0.3rem 0.8rem; border: 2px solid var(--fg); cursor: pointer;
+  transition: all 0.2s; user-select: none; background: var(--bg);
+}
+.radar-toggle:hover { transform: translateY(-1px); }
+.radar-toggle.active { color: #fff; }
 
 /* ── Expert panel ── */
 .section { padding: 3rem 0; border-top: var(--border); }
@@ -237,6 +256,18 @@ footer {
       </div>
       {% endfor %}
     </div>
+  </div>
+
+  {# Radar chart with expert selector #}
+  <div class="radar-wrap">
+    <div class="takeaway-label">Mapa Radar de Dimensiones</div>
+    <div class="radar-toggles">
+      <span class="radar-toggle active" data-key="promedio" style="background: var(--fg); color: #fff; border-color: var(--fg);">Promedio</span>
+      {% for key, meta in expert_metas.items() %}
+      <span class="radar-toggle" data-key="{{ key }}" data-color="{{ meta.color }}">{{ meta.emoji }} {{ meta.name.split(' ')[-1] }}</span>
+      {% endfor %}
+    </div>
+    <canvas id="radarChart" style="max-width: 520px; max-height: 520px; margin: 0 auto;"></canvas>
   </div>
 </div>
 
@@ -436,9 +467,108 @@ footer {
 </footer>
 
 <script>
+/* ── Collapsibles ── */
 document.querySelectorAll('.collapsible-header').forEach(h => {
   h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
 });
+
+/* ── Radar Chart ── */
+(function() {
+  const dimensions = [{% for p in synthesis.puntuaciones_consolidadas %}"{{ p.dimension }}"{{ "," if not loop.last }}{% endfor %}];
+  const avgScores = [{% for p in synthesis.puntuaciones_consolidadas %}{{ p.score }}{{ "," if not loop.last }}{% endfor %}];
+
+  const expertData = {
+    {% for key, ev in expert_evaluations.items() %}
+    "{{ key }}": {
+      color: "{{ expert_metas[key].color }}",
+      scores: [{% for dim in synthesis.puntuaciones_consolidadas %}{% set match = ev.puntuaciones|selectattr("dimension", "equalto", dim.dimension)|first %}{{ match.score if match else 0 }}{{ "," if not loop.last }}{% endfor %}]
+    }{{ "," if not loop.last }}
+    {% endfor %}
+  };
+
+  const ctx = document.getElementById('radarChart').getContext('2d');
+
+  const avgDataset = {
+    label: 'Promedio',
+    data: avgScores,
+    borderColor: '#1a1a1a',
+    backgroundColor: 'rgba(26,26,26,0.1)',
+    borderWidth: 3,
+    pointRadius: 5,
+    pointBackgroundColor: '#1a1a1a',
+    pointBorderColor: '#fff',
+    pointBorderWidth: 2,
+  };
+
+  const chart = new Chart(ctx, {
+    type: 'radar',
+    data: { labels: dimensions, datasets: [avgDataset] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        r: {
+          min: 0, max: 10,
+          ticks: { stepSize: 2, font: { family: "'JetBrains Mono', monospace", size: 11 }, backdropColor: 'transparent' },
+          grid: { color: '#d4d0c8' },
+          angleLines: { color: '#d4d0c8' },
+          pointLabels: { font: { family: "'DM Sans', sans-serif", size: 12, weight: '600' }, color: '#1a1a1a' }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          titleFont: { family: "'Syne', sans-serif" },
+          bodyFont: { family: "'JetBrains Mono', monospace" },
+          callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.raw + '/10'; } }
+        }
+      }
+    }
+  });
+
+  /* Toggle logic */
+  const activeExperts = new Set();
+
+  function rebuildDatasets() {
+    const ds = [avgDataset];
+    activeExperts.forEach(key => {
+      const e = expertData[key];
+      ds.push({
+        label: key,
+        data: e.scores,
+        borderColor: e.color,
+        backgroundColor: e.color + '20',
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: e.color,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 1,
+        borderDash: [5, 3],
+      });
+    });
+    chart.data.datasets = ds;
+    chart.update();
+  }
+
+  document.querySelectorAll('.radar-toggle').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const key = this.dataset.key;
+      if (key === 'promedio') return;
+      if (activeExperts.has(key)) {
+        activeExperts.delete(key);
+        this.classList.remove('active');
+        this.style.background = '';
+        this.style.color = '';
+      } else {
+        activeExperts.add(key);
+        this.classList.add('active');
+        this.style.background = this.dataset.color;
+        this.style.color = '#fff';
+      }
+      rebuildDatasets();
+    });
+  });
+})();
 </script>
 </body>
 </html>
