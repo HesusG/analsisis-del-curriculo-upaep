@@ -8,11 +8,28 @@ from dataclasses import dataclass
 
 from openai import AsyncOpenAI
 
-from config import AGENT_PROMPTS_DIR, LLM_API_KEY, LLM_BASE_URL, LLM_MODEL, LLM_MODEL_DISPLAY, LLM_TEMPERATURE, RULES_PATH
+from config import AGENT_PROMPTS_DIR, LLM_API_KEY, LLM_BASE_URL, LLM_MAX_TOKENS, LLM_MODEL, LLM_MODEL_DISPLAY, LLM_TEMPERATURE, RULES_PATH
 from evaluation.schema import FullEvaluation, NivelGeneral
 
-MAX_RETRIES = 2
+# ── Token estimation ──────────────────────────────────────────────────
+try:
+    import tiktoken
+    _enc = tiktoken.get_encoding("o200k_base")  # GPT-4o family; close enough for budget estimation
+    def _estimate_tokens(text: str) -> int:
+        return len(_enc.encode(text))
+except ImportError:
+    def _estimate_tokens(text: str) -> int:
+        return len(text) // 3  # conservative heuristic for Spanish
+
+# Minimum output tokens needed for a full evaluation JSON
+_MIN_OUTPUT_TOKENS = 4000
+
+MAX_RETRIES = 3
 REQUIRED_TOP_KEYS = {"metadata", "parte_2_datos_presentacion", "resumen_ejecutivo"}
+
+
+class _TruncatedResponseError(Exception):
+    """Raised when the LLM response was cut short (finish_reason == 'length')."""
 
 
 @dataclass
@@ -40,49 +57,120 @@ class EvaluatorAgent:
         rules = self._rules_path.read_text(encoding="utf-8")
         return f"{persona}\n\n---\n\n{rules}"
 
-    async def _call_llm(self, plan_text: str) -> str:
-        """Single LLM call, returns raw content string."""
+    async def _call_llm(self, plan_text: str, *, retry_tier: int = 0) -> str:
+        """Single LLM call. retry_tier escalates conciseness constraints."""
         user_msg = (
             "Analiza la siguiente planeacion didactica y responde UNICAMENTE con el "
             "JSON completo del schema (metadata, parte_1_contexto, parte_2_datos_presentacion, "
             "... hasta resumen_ejecutivo). Sin texto adicional, solo el JSON.\n\n"
             "---\n\n" + plan_text
         )
+
+        # Tier 1: moderate conciseness
+        if retry_tier >= 1:
+            user_msg += (
+                "\n\n⚠️ IMPORTANTE: Tu respuesta anterior fue cortada por exceder el "
+                "limite de tokens. Sé CONCISO: observaciones de 1 oración, evidencia "
+                "máximo 1 cita corta. NO omitas secciones ni criterios."
+            )
+
+        # Tier 2: aggressive word limits
+        if retry_tier >= 2:
+            user_msg += (
+                "\n\n🔴 CRITICO: Segunda vez cortada. Máximo 15 palabras por observacion. "
+                "Evidencia: solo número de página o 'No se encontró'. "
+                "Fortalezas y areas_mejora: máximo 3 items de 10 palabras cada uno."
+            )
+
+        # Temperature: reduce on retries for tighter output
+        temperature = LLM_TEMPERATURE if retry_tier == 0 else max(LLM_TEMPERATURE - 0.1, 0.0)
+
         response = await self._client.chat.completions.create(
             model=LLM_MODEL,
-            temperature=LLM_TEMPERATURE,
+            temperature=temperature,
+            max_tokens=LLM_MAX_TOKENS,
             messages=[
                 {"role": "system", "content": self.system_prompt},
                 {"role": "user", "content": user_msg},
             ],
             response_format={"type": "json_object"},
         )
-        return response.choices[0].message.content or ""
+        choice = response.choices[0]
+        content = choice.message.content or ""
+
+        # Log token usage for diagnostics
+        if response.usage:
+            print(
+                f"[{self.meta.key}] tokens: "
+                f"prompt={response.usage.prompt_tokens} "
+                f"completion={response.usage.completion_tokens} "
+                f"finish={choice.finish_reason}"
+            )
+
+        # Detect truncation BEFORE attempting to parse
+        if choice.finish_reason == "length":
+            raise _TruncatedResponseError(
+                f"Response truncated (finish_reason='length', "
+                f"{len(content)} chars). Last 80 chars: ...{content[-80:]}"
+            )
+
+        return content
 
     async def evaluate(self, plan_text: str) -> FullEvaluation:
         """Send the plan text to the LLM and return a parsed FullEvaluation.
 
-        Retries up to MAX_RETRIES times if the LLM returns malformed JSON.
+        Retries up to MAX_RETRIES times with escalating conciseness tiers.
+        Pre-flight token estimation detects tight budgets and starts concise.
         """
+        # Pre-flight: estimate if output budget is dangerously tight
+        input_estimate = (
+            _estimate_tokens(self.system_prompt)
+            + _estimate_tokens(plan_text)
+            + 200  # message overhead
+        )
+        start_tier = 0
+        if LLM_MAX_TOKENS < _MIN_OUTPUT_TOKENS:
+            print(
+                f"[{self.meta.key}] ⚠ LLM_MAX_TOKENS={LLM_MAX_TOKENS} "
+                f"may be insufficient for full eval"
+            )
+        if input_estimate > 10_000:
+            print(
+                f"[{self.meta.key}] ⚠ Large input (~{input_estimate} tokens), "
+                f"starting with concise mode"
+            )
+            start_tier = 1
+
         last_error = None
+        tier = start_tier
         for attempt in range(1, MAX_RETRIES + 1):
-            raw = await self._call_llm(plan_text)
+            try:
+                raw = await self._call_llm(plan_text, retry_tier=tier)
+            except _TruncatedResponseError as e:
+                last_error = e
+                tier = min(tier + 1, 2)  # escalate tier for next retry
+                print(f"[{self.meta.key}] Attempt {attempt}/{MAX_RETRIES} truncated: {e}")
+                if attempt < MAX_RETRIES:
+                    print(f"[{self.meta.key}] Retrying with tier={tier}...")
+                    continue
+                raise ValueError(
+                    f"Agent '{self.meta.key}' failed after {MAX_RETRIES} attempts. "
+                    f"Response was truncated every time — the document may be too large."
+                ) from last_error
+
             try:
                 evaluation = self._parse(raw)
                 break
             except Exception as e:
                 last_error = e
-                print(
-                    f"[{self.meta.key}] Attempt {attempt}/{MAX_RETRIES} failed: {e}"
-                )
+                print(f"[{self.meta.key}] Attempt {attempt}/{MAX_RETRIES} parse failed: {e}")
                 if attempt < MAX_RETRIES:
                     print(f"[{self.meta.key}] Retrying...")
                     continue
-                # Show what the LLM actually returned for debugging
-                preview = raw[:300] if raw else "(empty)"
+                preview = raw[:500] if raw else "(empty)"
                 raise ValueError(
                     f"Agent '{self.meta.key}' failed after {MAX_RETRIES} attempts. "
-                    f"Last error: {last_error}. LLM returned: {preview}"
+                    f"Last error: {last_error}. Response preview: {preview}"
                 ) from last_error
 
         # Override evaluator identity with actual model + agent role

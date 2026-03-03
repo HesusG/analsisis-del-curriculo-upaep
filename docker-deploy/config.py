@@ -42,6 +42,7 @@ LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.together.xyz/v1")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", os.environ.get("TOGETHER_API_KEY", ""))
 LLM_MODEL = os.environ.get("LLM_MODEL", "meta-llama/Llama-3.3-70B-Instruct-Turbo")
 LLM_TEMPERATURE = float(os.environ.get("LLM_TEMPERATURE", "0.2"))
+LLM_MAX_TOKENS = int(os.environ.get("LLM_MAX_TOKENS", "16384"))
 
 # Backward compat: if only OPENAI_API_KEY is set, fall back to OpenAI
 if not LLM_API_KEY:
