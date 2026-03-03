@@ -31,15 +31,15 @@ class NivelGeneral(str, Enum):
 # ── Reusable blocks ───────────────────────────────────────────────────
 
 class Criterio(BaseModel):
-    criterio: str
-    cumple: bool
+    criterio: str = ""
+    cumple: bool = False
     observacion: str = ""
     evidencia: str = ""  # fragmento citado del documento fuente
 
 
 class SubBloque(BaseModel):
     """Block that may or may not apply (e.g. competencias)."""
-    aplica: bool
+    aplica: bool = False
     criterios: list[Criterio] = Field(default_factory=list)
 
     @model_validator(mode="before")
@@ -49,8 +49,8 @@ class SubBloque(BaseModel):
 
 
 class FaseMejora(BaseModel):
-    nombre: str
-    descripcion: str
+    nombre: str = ""
+    descripcion: str = ""
     acciones: list[str] = Field(default_factory=list)
 
     @model_validator(mode="before")
@@ -62,37 +62,57 @@ class FaseMejora(BaseModel):
 # ── Part models ────────────────────────────────────────────────────────
 
 class Metadata(BaseModel):
-    evaluador: str
-    institucion: str
-    responsable_planeacion: str
-    fecha_evaluacion: str
+    evaluador: str = ""
+    institucion: str = ""
+    responsable_planeacion: str = ""
+    fecha_evaluacion: str = ""
 
 
 class DiagnosticoInstitucion(BaseModel):
-    necesidades: str
-    modelo_ensenanza: str
-    filosofia: str
+    necesidades: str = ""
+    modelo_ensenanza: str = ""
+    filosofia: str = ""
 
 
 class DiagnosticoEstudiantes(BaseModel):
-    numero_estudiantes: str
-    grupos: str
-    niveles_modalidades: str
+    numero_estudiantes: str = ""
+    grupos: str = ""
+    niveles_modalidades: str = ""
 
 
 class Parte1Contexto(BaseModel):
-    diagnostico_institucion: DiagnosticoInstitucion
-    diagnostico_estudiantes: DiagnosticoEstudiantes
-    descripcion_general: str
+    diagnostico_institucion: DiagnosticoInstitucion = None
+    diagnostico_estudiantes: DiagnosticoEstudiantes = None
+    descripcion_general: str = ""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _fill_nested(cls, values):
+        if isinstance(values, dict):
+            if "diagnostico_institucion" not in values or values["diagnostico_institucion"] is None:
+                values["diagnostico_institucion"] = {}
+            if "diagnostico_estudiantes" not in values or values["diagnostico_estudiantes"] is None:
+                values["diagnostico_estudiantes"] = {}
+        return values
 
 
 class Parte2DatosPresentacion(BaseModel):
-    criterios: list[Criterio]
+    criterios: list[Criterio] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 class Parte3PropositoObjetivo(BaseModel):
-    criterios: list[Criterio]
+    criterios: list[Criterio] = Field(default_factory=list)
     recomendaciones: str = ""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 class Parte4CompetenciasAprendizajes(BaseModel):
@@ -107,7 +127,7 @@ class Parte4CompetenciasAprendizajes(BaseModel):
         default_block = {"aplica": False, "criterios": []}
         if isinstance(values, dict):
             for key in ("competencias", "aprendizajes_esperados"):
-                if key not in values:
+                if key not in values or values[key] is None:
                     values[key] = default_block.copy()
         return values
 
@@ -118,51 +138,77 @@ class Parte4CompetenciasAprendizajes(BaseModel):
 
 
 class Parte5Contenidos(BaseModel):
-    descripcion_general: str
-    tipo_contenido_predominante: str
-    criterios: list[Criterio]
+    descripcion_general: str = ""
+    tipo_contenido_predominante: str = ""
+    criterios: list[Criterio] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 class FasesDidacticas(BaseModel):
-    inicio: bool
-    procesamiento: bool
-    reforzamiento: bool
-    sistematizacion_cierre: bool
+    inicio: bool = False
+    procesamiento: bool = False
+    reforzamiento: bool = False
+    sistematizacion_cierre: bool = False
 
 
 class Parte6Secuencia(BaseModel):
-    descripcion_general: str
-    fases_didacticas: FasesDidacticas
+    descripcion_general: str = ""
+    fases_didacticas: FasesDidacticas = None
     recomendaciones: str = ""
+
+    @model_validator(mode="before")
+    @classmethod
+    def _fill_nested(cls, values):
+        if isinstance(values, dict):
+            if "fases_didacticas" not in values or values["fases_didacticas"] is None:
+                values["fases_didacticas"] = {}
+        return values
 
 
 class Parte7Metodologia(BaseModel):
-    descripcion_general: str
-    criterios: list[Criterio]
+    descripcion_general: str = ""
+    criterios: list[Criterio] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 class TiposEvaluacion(BaseModel):
-    diagnostica: bool
-    formativa: bool
-    sumativa: bool
+    diagnostica: bool = False
+    formativa: bool = False
+    sumativa: bool = False
 
 
 class Parte8Evaluacion(BaseModel):
-    descripcion_general: str
-    tipos_evaluacion: TiposEvaluacion
-    criterios: list[Criterio]
+    descripcion_general: str = ""
+    tipos_evaluacion: TiposEvaluacion = None
+    criterios: list[Criterio] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        if isinstance(values, dict):
+            if "tipos_evaluacion" not in values or values["tipos_evaluacion"] is None:
+                values["tipos_evaluacion"] = {"diagnostica": False, "formativa": False, "sumativa": False}
+        return _coerce_null_lists(cls, values)
 
 
 class Parte9Recursos(BaseModel):
-    descripcion_general: str
+    descripcion_general: str = ""
     tipo_recursos: str = ""
     recomendaciones: str = ""
 
 
 class Parte10Conclusiones(BaseModel):
     areas_oportunidad: list[str] = Field(default_factory=list)
-    recomendaciones_redaccion: str
-    recomendaciones_innovacion: str
+    recomendaciones_redaccion: str = ""
+    recomendaciones_innovacion: str = ""
     herramientas_digitales_sugeridas: list[str] = Field(default_factory=list)
 
     @model_validator(mode="before")
@@ -172,14 +218,19 @@ class Parte10Conclusiones(BaseModel):
 
 
 class Parte11PropuestaMejora(BaseModel):
-    fases: list[FaseMejora]
+    fases: list[FaseMejora] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_nulls(cls, values):
+        return _coerce_null_lists(cls, values)
 
 
 class ResumenEjecutivo(BaseModel):
-    criterios_cumplidos: int
-    criterios_no_cumplidos: int
-    porcentaje_cumplimiento: float
-    nivel_general: NivelGeneral
+    criterios_cumplidos: int = 0
+    criterios_no_cumplidos: int = 0
+    porcentaje_cumplimiento: float = 0.0
+    nivel_general: NivelGeneral = NivelGeneral.EN_PROCESO
     fortalezas_principales: list[str] = Field(default_factory=list)
     areas_criticas: list[str] = Field(default_factory=list)
 
@@ -205,21 +256,52 @@ class ResumenEjecutivo(BaseModel):
 
 # ── Full evaluation ───────────────────────────────────────────────────
 
+_PART_DEFAULTS: dict[str, dict] = {
+    "metadata": {},
+    "parte_1_contexto": {},
+    "parte_2_datos_presentacion": {},
+    "parte_3_proposito_objetivo": {},
+    "parte_4_competencias_aprendizajes": {
+        "rubros_encontrados": [],
+        "competencias": {"aplica": False, "criterios": []},
+        "aprendizajes_esperados": {"aplica": False, "criterios": []},
+    },
+    "parte_5_contenidos": {},
+    "parte_6_secuencia": {},
+    "parte_7_metodologia": {},
+    "parte_8_evaluacion": {},
+    "parte_9_recursos": {},
+    "parte_10_conclusiones": {},
+    "parte_11_propuesta_mejora": {},
+    "resumen_ejecutivo": {},
+}
+
+
 class FullEvaluation(BaseModel):
     """Complete evaluation output matching rules.md JSON schema."""
-    metadata: Metadata
-    parte_1_contexto: Parte1Contexto
-    parte_2_datos_presentacion: Parte2DatosPresentacion
-    parte_3_proposito_objetivo: Parte3PropositoObjetivo
-    parte_4_competencias_aprendizajes: Parte4CompetenciasAprendizajes
-    parte_5_contenidos: Parte5Contenidos
-    parte_6_secuencia: Parte6Secuencia
-    parte_7_metodologia: Parte7Metodologia
-    parte_8_evaluacion: Parte8Evaluacion
-    parte_9_recursos: Parte9Recursos
-    parte_10_conclusiones: Parte10Conclusiones
-    parte_11_propuesta_mejora: Parte11PropuestaMejora
-    resumen_ejecutivo: ResumenEjecutivo
+    metadata: Metadata = None
+    parte_1_contexto: Parte1Contexto = None
+    parte_2_datos_presentacion: Parte2DatosPresentacion = None
+    parte_3_proposito_objetivo: Parte3PropositoObjetivo = None
+    parte_4_competencias_aprendizajes: Parte4CompetenciasAprendizajes = None
+    parte_5_contenidos: Parte5Contenidos = None
+    parte_6_secuencia: Parte6Secuencia = None
+    parte_7_metodologia: Parte7Metodologia = None
+    parte_8_evaluacion: Parte8Evaluacion = None
+    parte_9_recursos: Parte9Recursos = None
+    parte_10_conclusiones: Parte10Conclusiones = None
+    parte_11_propuesta_mejora: Parte11PropuestaMejora = None
+    resumen_ejecutivo: ResumenEjecutivo = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _fill_missing_parts(cls, values):
+        """Fill any missing/null top-level parts with minimal valid defaults."""
+        if isinstance(values, dict):
+            for key, default in _PART_DEFAULTS.items():
+                if key not in values or values[key] is None:
+                    values[key] = default.copy()
+        return values
 
     def count_criteria(self) -> tuple[int, int]:
         """Count (passed, failed) criteria across parts 2-8."""
