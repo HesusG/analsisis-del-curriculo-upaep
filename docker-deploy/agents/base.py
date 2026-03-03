@@ -79,4 +79,7 @@ class EvaluatorAgent:
         text = re.sub(r"^```(?:json)?\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
         data = json.loads(text)
+        # LLM sometimes wraps the object in a list — unwrap it
+        if isinstance(data, list):
+            data = data[0]
         return FullEvaluation(**data)
