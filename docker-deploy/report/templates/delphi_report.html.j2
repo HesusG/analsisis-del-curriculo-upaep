@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #F5F0E8;
@@ -63,18 +62,19 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 .dim-bar-fill { height: 100%; transition: width 0.5s; }
 .dim-bar-val { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; width: 35px; }
 
-/* ── Radar chart ── */
+/* ── Radar chart (pure SVG) ── */
 .radar-wrap {
   border: var(--border); box-shadow: var(--shadow); background: #fff;
-  padding: 1.5rem; margin: 1.5rem 0; text-align: center;
+  padding: 2rem; margin: 2rem 0; text-align: center;
 }
-.radar-toggles { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
+.radar-svg { max-width: 520px; margin: 0 auto; display: block; }
+.radar-toggles { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
 .radar-toggle {
   font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700;
-  padding: 0.3rem 0.8rem; border: 2px solid var(--fg); cursor: pointer;
+  padding: 0.35rem 0.9rem; border: 2px solid var(--fg); cursor: pointer;
   transition: all 0.2s; user-select: none; background: var(--bg);
 }
-.radar-toggle:hover { transform: translateY(-1px); }
+.radar-toggle:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
 .radar-toggle.active { color: #fff; }
 
 /* ── Expert panel ── */
@@ -258,7 +258,55 @@ footer {
     </div>
   </div>
 
-  {# Radar chart with expert selector #}
+  {# Recomendaciones priorizadas (moved here from Sintesis) #}
+  {% set alta = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Alta")|list %}
+  {% set media = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Media")|list %}
+  {% set baja = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Para considerar")|list %}
+
+  {% if alta or media or baja %}
+  <h3 style="margin-top: 2rem;">Recomendaciones Priorizadas</h3>
+
+  {% if alta %}
+  <div style="margin: 1rem 0;">
+    <div class="badge" style="background: var(--c1); color: #fff;">ALTA PRIORIDAD ({{ alta|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Unanimidad o mayoria fuerte</p>
+  </div>
+  {% for r in alta %}
+  <div class="rx-card rx-alta">
+    <p>{{ r.texto }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} expertos: {{ r.expertos|join(', ') }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if media %}
+  <div style="margin: 1.5rem 0 1rem;">
+    <div class="badge" style="background: var(--c5); color: var(--fg);">MEDIA PRIORIDAD ({{ media|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Mayoria de expertos</p>
+  </div>
+  {% for r in media %}
+  <div class="rx-card rx-media">
+    <p>{{ r.texto }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} expertos: {{ r.expertos|join(', ') }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if baja %}
+  <div style="margin: 1.5rem 0 1rem;">
+    <div class="badge" style="background: var(--c2); color: #fff;">PARA CONSIDERAR ({{ baja|length }})</div>
+    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Propuestas individuales</p>
+  </div>
+  {% for r in baja %}
+  <div class="rx-card rx-baja">
+    <p>{{ r.texto }}</p>
+    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} experto: {{ r.expertos|join(', ') }}</p>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endif %}
+
+  {# Radar chart (pure SVG, no external deps) #}
   <div class="radar-wrap">
     <div class="takeaway-label">Mapa Radar de Dimensiones</div>
     <div class="radar-toggles">
@@ -267,7 +315,7 @@ footer {
       <span class="radar-toggle" data-key="{{ key }}" data-color="{{ meta.color }}">{{ meta.emoji }} {{ meta.name.split(' ')[-1] }}</span>
       {% endfor %}
     </div>
-    <canvas id="radarChart" style="max-width: 520px; max-height: 520px; margin: 0 auto;"></canvas>
+    <div id="radarContainer" style="max-width: 560px; margin: 0 auto;"></div>
   </div>
 </div>
 
@@ -413,51 +461,6 @@ footer {
   </table>
   </div>
 
-  {# Recomendaciones priorizadas #}
-  <h3 style="margin-top: 2rem;">Recomendaciones Priorizadas</h3>
-
-  {% set alta = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Alta")|list %}
-  {% set media = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Media")|list %}
-  {% set baja = synthesis.recomendaciones_priorizadas|selectattr("prioridad", "equalto", "Para considerar")|list %}
-
-  {% if alta %}
-  <div style="margin: 1rem 0;">
-    <div class="badge" style="background: var(--c1); color: #fff;">ALTA PRIORIDAD ({{ alta|length }})</div>
-    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Unanimidad o mayoria fuerte</p>
-  </div>
-  {% for r in alta %}
-  <div class="rx-card rx-alta">
-    <p>{{ r.texto }}</p>
-    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} expertos: {{ r.expertos|join(', ') }}</p>
-  </div>
-  {% endfor %}
-  {% endif %}
-
-  {% if media %}
-  <div style="margin: 1.5rem 0 1rem;">
-    <div class="badge" style="background: var(--c5); color: var(--fg);">MEDIA PRIORIDAD ({{ media|length }})</div>
-    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Mayoria de expertos</p>
-  </div>
-  {% for r in media %}
-  <div class="rx-card rx-media">
-    <p>{{ r.texto }}</p>
-    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} expertos: {{ r.expertos|join(', ') }}</p>
-  </div>
-  {% endfor %}
-  {% endif %}
-
-  {% if baja %}
-  <div style="margin: 1.5rem 0 1rem;">
-    <div class="badge" style="background: var(--c2); color: #fff;">PARA CONSIDERAR ({{ baja|length }})</div>
-    <p style="font-size: 0.8rem; opacity: 0.7; margin: 0.3rem 0;">Propuestas individuales</p>
-  </div>
-  {% for r in baja %}
-  <div class="rx-card rx-baja">
-    <p>{{ r.texto }}</p>
-    <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.3rem;">{{ r.expertos|length }} experto: {{ r.expertos|join(', ') }}</p>
-  </div>
-  {% endfor %}
-  {% endif %}
 </div>
 
 </div>
@@ -472,12 +475,13 @@ document.querySelectorAll('.collapsible-header').forEach(h => {
   h.addEventListener('click', () => h.parentElement.classList.toggle('open'));
 });
 
-/* ── Radar Chart ── */
+/* ── Pure SVG Radar Chart ── */
 (function() {
-  const dimensions = [{% for p in synthesis.puntuaciones_consolidadas %}"{{ p.dimension }}"{{ "," if not loop.last }}{% endfor %}];
-  const avgScores = [{% for p in synthesis.puntuaciones_consolidadas %}{{ p.score }}{{ "," if not loop.last }}{% endfor %}];
-
-  const expertData = {
+  var CX = 260, CY = 260, R = 200;
+  var dimensions = [{% for p in synthesis.puntuaciones_consolidadas %}"{{ p.dimension }}"{{ "," if not loop.last }}{% endfor %}];
+  var N = dimensions.length;
+  var avgScores = [{% for p in synthesis.puntuaciones_consolidadas %}{{ p.score }}{{ "," if not loop.last }}{% endfor %}];
+  var expertData = {
     {% for key, ev in expert_evaluations.items() %}
     "{{ key }}": {
       color: "{{ expert_metas[key].color }}",
@@ -486,86 +490,90 @@ document.querySelectorAll('.collapsible-header').forEach(h => {
     {% endfor %}
   };
 
-  const ctx = document.getElementById('radarChart').getContext('2d');
+  function angleFor(i) { return (Math.PI * 2 * i / N) - Math.PI / 2; }
+  function pointAt(i, val) {
+    var a = angleFor(i), r = (val / 10) * R;
+    return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+  }
+  function polyPoints(scores) {
+    return scores.map(function(s, i) { return pointAt(i, s).join(','); }).join(' ');
+  }
 
-  const avgDataset = {
-    label: 'Promedio',
-    data: avgScores,
-    borderColor: '#1a1a1a',
-    backgroundColor: 'rgba(26,26,26,0.1)',
-    borderWidth: 3,
-    pointRadius: 5,
-    pointBackgroundColor: '#1a1a1a',
-    pointBorderColor: '#fff',
-    pointBorderWidth: 2,
-  };
+  /* Build static SVG grid */
+  var svgParts = ['<svg viewBox="0 0 520 520" class="radar-svg" xmlns="http://www.w3.org/2000/svg">'];
 
-  const chart = new Chart(ctx, {
-    type: 'radar',
-    data: { labels: dimensions, datasets: [avgDataset] },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      scales: {
-        r: {
-          min: 0, max: 10,
-          ticks: { stepSize: 2, font: { family: "'JetBrains Mono', monospace", size: 11 }, backdropColor: 'transparent' },
-          grid: { color: '#d4d0c8' },
-          angleLines: { color: '#d4d0c8' },
-          pointLabels: { font: { family: "'DM Sans', sans-serif", size: 12, weight: '600' }, color: '#1a1a1a' }
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          titleFont: { family: "'Syne', sans-serif" },
-          bodyFont: { family: "'JetBrains Mono', monospace" },
-          callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + ctx.raw + '/10'; } }
-        }
-      }
+  /* Background circles */
+  [2, 4, 6, 8, 10].forEach(function(v) {
+    var r = (v / 10) * R;
+    svgParts.push('<circle cx="'+CX+'" cy="'+CY+'" r="'+r+'" fill="none" stroke="#d4d0c8" stroke-width="1"/>');
+    if (v % 2 === 0) {
+      svgParts.push('<text x="'+(CX + 4)+'" y="'+(CY - r + 12)+'" font-size="10" font-family="JetBrains Mono, monospace" fill="#999">'+v+'</text>');
     }
   });
 
-  /* Toggle logic */
-  const activeExperts = new Set();
-
-  function rebuildDatasets() {
-    const ds = [avgDataset];
-    activeExperts.forEach(key => {
-      const e = expertData[key];
-      ds.push({
-        label: key,
-        data: e.scores,
-        borderColor: e.color,
-        backgroundColor: e.color + '20',
-        borderWidth: 2,
-        pointRadius: 4,
-        pointBackgroundColor: e.color,
-        pointBorderColor: '#fff',
-        pointBorderWidth: 1,
-        borderDash: [5, 3],
-      });
-    });
-    chart.data.datasets = ds;
-    chart.update();
+  /* Axis lines + labels */
+  for (var i = 0; i < N; i++) {
+    var ep = pointAt(i, 10);
+    svgParts.push('<line x1="'+CX+'" y1="'+CY+'" x2="'+ep[0]+'" y2="'+ep[1]+'" stroke="#d4d0c8" stroke-width="1"/>');
+    var lp = pointAt(i, 11.8);
+    var anchor = 'middle';
+    if (lp[0] < CX - 20) anchor = 'end';
+    else if (lp[0] > CX + 20) anchor = 'start';
+    /* Wrap long labels */
+    var words = dimensions[i].split(' ');
+    var line1 = words.slice(0, Math.ceil(words.length / 2)).join(' ');
+    var line2 = words.slice(Math.ceil(words.length / 2)).join(' ');
+    svgParts.push('<text x="'+lp[0]+'" y="'+(lp[1] - 6)+'" text-anchor="'+anchor+'" font-size="11" font-family="DM Sans, sans-serif" font-weight="600" fill="#1a1a1a">'+line1+'</text>');
+    if (line2) svgParts.push('<text x="'+lp[0]+'" y="'+(lp[1] + 8)+'" text-anchor="'+anchor+'" font-size="11" font-family="DM Sans, sans-serif" font-weight="600" fill="#1a1a1a">'+line2+'</text>');
   }
 
-  document.querySelectorAll('.radar-toggle').forEach(btn => {
+  /* Expert overlay group (will be replaced dynamically) */
+  svgParts.push('<g id="radarExperts"></g>');
+
+  /* Average polygon (always visible) */
+  svgParts.push('<polygon points="'+polyPoints(avgScores)+'" fill="rgba(26,26,26,0.08)" stroke="#1a1a1a" stroke-width="2.5"/>');
+  avgScores.forEach(function(s, i) {
+    var p = pointAt(i, s);
+    svgParts.push('<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5" fill="#1a1a1a" stroke="#fff" stroke-width="2"/>');
+  });
+
+  svgParts.push('</svg>');
+
+  document.getElementById('radarContainer').innerHTML = svgParts.join('');
+
+  /* Toggle experts */
+  var activeExperts = {};
+
+  function redrawExperts() {
+    var g = document.getElementById('radarExperts');
+    var html = '';
+    Object.keys(activeExperts).forEach(function(key) {
+      var e = expertData[key];
+      html += '<polygon points="'+polyPoints(e.scores)+'" fill="'+e.color+'15" stroke="'+e.color+'" stroke-width="2" stroke-dasharray="6,3"/>';
+      e.scores.forEach(function(s, i) {
+        var p = pointAt(i, s);
+        html += '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="'+e.color+'" stroke="#fff" stroke-width="1.5"/>';
+      });
+    });
+    g.innerHTML = html;
+  }
+
+  document.querySelectorAll('.radar-toggle').forEach(function(btn) {
     btn.addEventListener('click', function() {
-      const key = this.dataset.key;
+      var key = this.dataset.key;
       if (key === 'promedio') return;
-      if (activeExperts.has(key)) {
-        activeExperts.delete(key);
+      if (activeExperts[key]) {
+        delete activeExperts[key];
         this.classList.remove('active');
         this.style.background = '';
         this.style.color = '';
       } else {
-        activeExperts.add(key);
+        activeExperts[key] = true;
         this.classList.add('active');
         this.style.background = this.dataset.color;
         this.style.color = '#fff';
       }
-      rebuildDatasets();
+      redrawExperts();
     });
   });
 })();
