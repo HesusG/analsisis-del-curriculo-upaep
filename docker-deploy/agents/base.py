@@ -82,4 +82,10 @@ class EvaluatorAgent:
         # LLM sometimes wraps the object in a list — unwrap it
         if isinstance(data, list):
             data = data[0]
+        # LLM sometimes wraps in a function-call envelope — unwrap it
+        if isinstance(data, dict) and "metadata" not in data:
+            for key in ("parameters", "arguments", "function"):
+                if key in data and isinstance(data[key], dict):
+                    data = data[key]
+                    break
         return FullEvaluation(**data)

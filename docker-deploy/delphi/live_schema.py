@@ -17,7 +17,7 @@ DIMENSIONS = [
 
 class DimensionScore(BaseModel):
     dimension: str
-    score: int = Field(ge=1, le=10)
+    score: float = Field(ge=1, le=10)
     justificacion: str
 
 
