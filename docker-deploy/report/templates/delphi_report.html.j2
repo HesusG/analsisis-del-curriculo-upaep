@@ -129,11 +129,11 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
 }
 .consolidated-table th {
   font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;
-  background: var(--fg); color: var(--bg); padding: 0.6rem 0.4rem;
+  background: #1a1a1a; color: #F5F0E8; padding: 0.6rem 0.4rem;
 }
 .consolidated-table th:first-child, .consolidated-table td:first-child { text-align: left; width: 30%; }
 .consolidated-table tbody tr:hover { background: #ede8df; }
-.consolidated-table .prom-col { border-left: 3px solid var(--fg); font-size: 1rem; }
+.consolidated-table .prom-col { border-left: 3px solid #1a1a1a; font-size: 1rem; }
 
 /* ── Lists ── */
 .bullet-list { padding-left: 1.5rem; margin: 0.5rem 0; }
@@ -433,7 +433,7 @@ footer {
       <tr>
         <th>Dimension</th>
         {% for key, meta in expert_metas.items() %}
-        <th><span style="font-size: 1.2rem;">{{ meta.emoji }}</span><br><span style="font-size: 0.6rem; opacity: 0.8;">{{ meta.name.split(' ')[-1] }}</span></th>
+        <th><span style="font-size: 1.2rem;">{{ meta.emoji }}</span><br><span style="font-size: 0.6rem; color: inherit;">{{ meta.name.split(' ')[-1] }}</span></th>
         {% endfor %}
         <th class="prom-col">Prom.</th>
       </tr>

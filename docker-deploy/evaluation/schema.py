@@ -100,6 +100,17 @@ class Parte4CompetenciasAprendizajes(BaseModel):
     competencias: SubBloque
     aprendizajes_esperados: SubBloque
 
+    @model_validator(mode="before")
+    @classmethod
+    def _ensure_sub_blocks(cls, values):
+        """Auto-fill missing SubBloque fields — LLM sometimes omits them."""
+        default_block = {"aplica": False, "criterios": []}
+        if isinstance(values, dict):
+            for key in ("competencias", "aprendizajes_esperados"):
+                if key not in values:
+                    values[key] = default_block.copy()
+        return values
+
     @field_validator("rubros_encontrados", mode="before")
     @classmethod
     def _coerce_rubros(cls, v):
